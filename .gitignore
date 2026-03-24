@@ -1,0 +1,39 @@
+# =========================
+# Virtual Environments
+# =========================
+/.venv/
+
+# =========================
+# IDEs and Editors
+# =========================
+/.vscode/
+
+# =========================
+# Python Build / Cache
+# =========================
+/ambient_local.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Models and HuggingFace Cache
+# =========================
+/hf_cache/
+/models/
+
+# =========================
+# Data and Caches
+# =========================
+/data/conceptnet_cache.json
+
+# =========================
+# External Dependencies
+# =========================
+/external/
+
+# =========================
+# Logs and Outputs
+# =========================
+/logs/
+example_dirs/

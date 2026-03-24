@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ambient-local"
+version = "0.1.0"
+description = "Local packaged version of the Colab ambient workflow"
+authors = [{name="Niels Hannemann"}]
+dependencies = []

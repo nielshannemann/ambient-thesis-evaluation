@@ -1,0 +1,18 @@
+# Core runtime requirements (no torch here — install via install_torch.sh)
+transformers>=4.30
+accelerate
+bitsandbytes
+numpy
+tqdm
+pandas
+spacy>=3.7
+https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1/en_core_web_lg-3.7.1-py3-none-any.whl
+matplotlib
+seaborn
+sentencepiece
+openai
+scipy
+tenacity
+# optional heavy packages (install if you need them)
+# flash-attn installation can be platform sensitive; try only if needed
+# flash-attn==2.7.4.post1  # only add if your CUDA & environment support it

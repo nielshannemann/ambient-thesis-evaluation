@@ -1,0 +1,2856 @@
+{
+  "metadata": {
+    "timestamp": "2026-03-22T16:40:08Z",
+    "task": "task3_generative_clustering",
+    "model_name": "llama8b",
+    "model_type": "llama",
+    "model_id": "meta-llama/Meta-Llama-3.1-8B",
+    "prompt_type": "disambiguated_control",
+    "hyperparameters": {
+      "num_continuations": 10,
+      "batch_size": 25,
+      "max_examples": 100,
+      "seed": 42,
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "top_k": 0
+    }
+  },
+  "results": [
+    {
+      "id": 942,
+      "ambiguous_sentence": "Education is expensive, and most students take out loans to pay for it, out of necessity.",
+      "gold_disambiguations": [
+        {
+          "premise": "Education is expensive, and most students take out loans to pay for it, out of necessity.",
+          "hypothesis": "Most students take out loans to pay for their education.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Education is expensive, and most students would have to take out loans to pay for it.",
+          "hypothesis": "Most students take out loans to pay for their education.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "You know, my loans are a little bit scary, says Ex'pression College student Barret Hill, laughing.",
+        "Back in my day, students took out loans to vacation.",
+        "Making your dollars stretch takes on particular significance when you're making the transition from college life to post-graduate work.",
+        "We know that a student takes on significant debt, said Samantha Parnell, University of Richmond's new financial aid director.",
+        "Need is the keyword here: Loans are usually only for those who need them.",
+        "Student debt in the US has climbed to roughly $1 trillion, up from the $830 billion that existed in mid 2017, according to Mark",
+        "Student loans usually refers to those taken out by the student, rather than the parent, although sometimes we'll see currency that refers to a parent loan.",
+        "Pre-payment penalties are extra fees borrowers pay when they pay off their student loans faster than required.",
+        "While our loans are large, they represent a commitment to a promising future, Bryn Mawr alumna Muna Mire tweeted (below) after her",
+        "Alternative student loans actually exist, but these are generally for students with poor credit or for those who need more money than the parent plus loan will allow."
+      ]
+    },
+    {
+      "id": "22_c",
+      "ambiguous_sentence": "In order to solve this problem, the engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+      "gold_disambiguations": [
+        {
+          "premise": "In order to solve this problem, the engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "hypothesis": "The engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "label": "entailment"
+        },
+        {
+          "premise": "In order to solve this problem, the engineers needed to computer model that could take into account the flow of water, wind, and other factors, whether or not they succeeded.",
+          "hypothesis": "The engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The model allows us to predict the end result of a sudden erosion event, Arcangelo says.",
+        "Using this model, we were able to examine in great detail what made a ship lean in the water without going near the OC roll and sink stabilizing labs at",
+        "Traditionally, you make a form that is environmentally friendly, meaning relatively complete, but what you see is far from what you get, says Omid Arj",
+        "This does not come easy, says first author Jan Dijkema, environmental scientist with Milieu youngest sister, a Dutch contractor assigned to manage the development.",
+        "When we designed the barrier, it looked like a thin shell at the top of the dam, says Jude Cizdziel of GEO-SLOPE, a",
+        "If there is an extreme condition like an amazing high tide or if there are two high tides in the day of the event, what can happen?",
+        "We also considered how a lot of rafters can walk on the structure at the same time and how this would affect the overall stability, said Joshua Sherman, a",
+        "Read Free For 30 Days and learn MIT's Top 5 Experts on Machine learning at MIT.",
+        "We used the data to design a floating berthing area with our consultants and structural engineers, explained Faber.",
+        "We calibrated the model using data we got from boats that showed the actual maximum current speed, then we adjusted some of the variables, like bottom friction, until the"
+      ]
+    },
+    {
+      "id": 51435,
+      "ambiguous_sentence": "The teacher asked the students to name the countries in North America.",
+      "gold_disambiguations": [
+        {
+          "premise": "The teacher asked the students to name the countries in North America.",
+          "hypothesis": "The teacher asked the students to name the countries in North America.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The teacher asked the students to name the countries in North America.",
+          "hypothesis": "The teacher asked the students if they are able to name the countries in North America.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Columbia, one of them said, loudly.",
+        "I think Canada is north of the USA, suggested one student.",
+        "United States!",
+        "Well, said a student who was smart enough to move her mouth first, Canada, the US, North Dakota...",
+        "Those in North America are the Americans, and this is based on the Census Bureau, the student responded.",
+        "Of course, said Thomas, the first is The United States.",
+        "Mexico, answered Jonatan.",
+        "America?",
+        "Canada America Mexico Exclaimed the class.",
+        "There's Canada, there's Mexico, and there's the United States, said one student, trying to be helpful."
+      ]
+    },
+    {
+      "id": 52718,
+      "ambiguous_sentence": "It is not obvious whether a one-size-fits-all approach is the best way to deal with the problem.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is not obvious whether a one-size-fits-all approach is the best way to deal with the problem.",
+          "hypothesis": "A one-size-fits-all approach is the best way to deal with the problem.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It is difficult to realize that a one-size-fits-all approach is the best way to deal with the problem.",
+          "hypothesis": "A one-size-fits-all approach is the best way to deal with the problem.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "This is a monumental task and a perilous challenge you face with Hurricane Michael, Gore said in a letter to Conner.",
+        "I don't know whether we have a severe problem at all, said physicist Cristian Danilin, a Fermilab researcher working on the Superkamiokande",
+        "As a cancer surgeon, you tend to think of interventions a certain way..",
+        "My concern is that this is used as an opportunity to cut services.",
+        "One-size-fits-all?",
+        "One size does not fit all, said Wanda Vazquez Garced, who was sworn in as the governor of Puerto Rico on Thursday after the Supreme Court",
+        "Proper social services is a necessity for supporting single mothers who face challenges in raising their children without a male companion, however, without a sense of community",
+        "I think most of our workplaces are at different points in the road with respect to bullying.",
+        "There's invariably a big difference between sexual violence in affluent countries and in poor countries, she said.",
+        "Alcohol and drug use among 15- and 16-year-olds is comparable to that in other industrialized countries."
+      ]
+    },
+    {
+      "id": 97035,
+      "ambiguous_sentence": "I was hoping to see you at the meeting of people",
+      "gold_disambiguations": [
+        {
+          "premise": "I was hoping to see you at the party.",
+          "hypothesis": "I was hoping to see you at the meeting of people",
+          "label": "entailment"
+        },
+        {
+          "premise": "I was hoping to see you at the party.",
+          "hypothesis": "I was hoping to see you at the work meeting.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "in business we are all so busy LOL.",
+        "interested in Area 14 on Sunday, but if you don't learn of it in time, it's too late because the meeting will be held.",
+        "like me at your place!",
+        "aimed at finding out just how good Gordon was at what he does.",
+        "in writ last summer.",
+        "around Mystic Lake at 9:30 next week morning but it was announced only last night.",
+        "who draw stuff, last March.",
+        "who think next month -- I miss dealing with REAL people like you.",
+        "Going Mad with Folk Music but I found myself prostrate and semi-conscious, in addition to which mad hatters are today rather thin on the ground in Daniels",
+        "down with chronic illness."
+      ]
+    },
+    {
+      "id": 59570,
+      "ambiguous_sentence": "The evidence does not support the conclusion reached, which was that the intervention was effective.",
+      "gold_disambiguations": [
+        {
+          "premise": "The evidence does not support the conclusion reached, which was that the intervention was effective.",
+          "hypothesis": "The evidence does not support the conclusion reached, which was that the intervention was ineffective.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The evidence does not support a possible conclusion that the intervention was effective.",
+          "hypothesis": "The evidence does not support a possible conclusion that the intervention was ineffective.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "SchoolGirlQute hour ago This introduction of limited natural.",
+        "It may be advisable in the light of this study to defer implementing a policy of routinely advising patients to adopt this practice.",
+        "Until differences in health and health care are explored, any explanation of racial differences could be misleading, writes the chief social science adviser of the health ministry.",
+        "The Little Baldhead Who was he?",
+        "Our trial did not find any effect of acetylcysteine on contrast-induced acute kidney injury, the authors write.",
+        "This is endangering the lives of babies and the policy ends up costing more, says Branca.",
+        "As investigations into the attacks continue, all citizens and national sectors must work together in order to ensure the integrity of the country's institutional machinery, he said.",
+        "What a high school kid with learning difficulties sees, if their only exposure is to white adults, [is that] those are the jobs that they are capable of",
+        "Un avenir réalisable, Quand on se croise, On ne peut pas nier...",
+        "Russians are annoying: that's how CONVOCATOR процессу п straw pled gets about behind the social networks."
+      ]
+    },
+    {
+      "id": 87325,
+      "ambiguous_sentence": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+      "gold_disambiguations": [
+        {
+          "premise": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+          "hypothesis": "She gets whatever she wants in part because she's the boss's daughter.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It's the simple reason that she's the boss's daughter that explains how she gets whatever she wants.",
+          "hypothesis": "She gets whatever she wants in part because she's the boss's daughter.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+          "hypothesis": "She gets whatever she wants entirely because she's the boss's daughter.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "It's the simple reason that she's the boss's daughter that explains how she gets whatever she wants.",
+          "hypothesis": "She gets whatever she wants entirely because she's the boss's daughter.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "My two older sisters, we go out a lot and get stuff from the shops, she says.",
+        "She's got attitude, man, as one insider put it.",
+        "We all know what it's like when someone gets what they want because we feel sorry for them, she said.",
+        "The first which is Papa's wealth always makes the whole city welcome the champak-flower-faced lady.",
+        "Lee has been raised by her wealthy father, who bought numerous properties for the purpose of training his daughter in real estate business.",
+        "My mannequins are stunning, so I love to dress them all really lovely things, because it's like dressing my friends, she says.",
+        "Our mother is a solicitor and lots of clients would visit the practice.",
+        "Boyfriend Gone is Jordan Caldwell's second novel in a year.",
+        "sugibi's tears dripped on to her father's well polished large-goblet shaped polished shoes.",
+        "Mom bought me every Barbie, even when I didn't need a new one."
+      ]
+    },
+    {
+      "id": 89448,
+      "ambiguous_sentence": "It is hard to believe the fact that a show that was once so popular is now struggling to find viewers.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is hard to believe the fact that a show that was once so popular is now struggling to find viewers.",
+          "hypothesis": "A show that was once so popular is now struggling to find viewers.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is doubtful that a show that was once so popular is now struggling to find viewers.",
+          "hypothesis": "A show that was once so popular is now struggling to find viewers.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "South Park started out as a Peabody Award winning show, but many people feel it has become a series that does more offending than entertaining",
+        "One Tree Hill is a TV series that probably will come to an end in 2012, it IS going to be the last episode ever.",
+        "The Originals has lost a huge amount of viewers from season 1 to season 2 and as a result, it seems to be losing its things.",
+        "American Idol has been having a steep decline in its viewership since the end of Simon Cowell's reign as a judge.",
+        "The Big Bang Theory for sure was one of the most widely watched TV sitcoms during the 10 years that it was airing on CBS.",
+        "The Walking Dead is one of the long-standing shows in the business.",
+        "Big Band Theory has been around for decades with Shelley Long playing the iconic Dharma up until 2005.",
+        "Gilmore Girls is one of the most talented, creative, and well thought piece of television that could ever have been achieved.",
+        "True Blood is no doubt one of those shows whose popularity started to dwindle with time and will have to call it quits when its sixth season finishes.",
+        "The Big Bang Theory achieved the greatest spot in the Nielsen ratings last year, stretching over 20 years, which also makes it the longest-lasting TV program to"
+      ]
+    },
+    {
+      "id": 60459,
+      "ambiguous_sentence": "The more you practice, the better you'll get; practice is necessary for getting better.",
+      "gold_disambiguations": [
+        {
+          "premise": "The more you practice, the better you'll get; practice is necessary for getting better.",
+          "hypothesis": "If you don't practice, you'll never get better.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The more you practice, the better you'll get, though there may be other ways of getting better, too.",
+          "hypothesis": "If you don't practice, you'll never get better.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The more you repeat, continue to do, practice.",
+        "If you really want to improve, there's nothing more concrete you can do than to practice, Bygrave agrees.",
+        "I'm shafting outYou absolutely will ave choices to do to be able to do mo exercises the better you will get.",
+        "Practice makes perfect is true to a certain extent, and this is especially true with any skill that requires performance - particularly those involving a musical instrument.",
+        "Nobody ever gets a musical instrument and it works out just right every time, Branford Marsalis points out.",
+        "If you're practicing, you're ready for anything, whereas if you don't practice on a regular basis, you're wasting the gift of life.",
+        "Tirelessly pray and read over this book: the text is repetitious for a reason.",
+        "However effective your performance is, you can always improve it.",
+        "Praxis means do-step[1].",
+        "Practicing has a certain lexigraphical definition which is necessary if one hopes for one's legal terms to mean what they say."
+      ]
+    },
+    {
+      "id": 81977,
+      "ambiguous_sentence": "The fact that there are many different types of glass is evidence for the fact that it is a popular material.",
+      "gold_disambiguations": [
+        {
+          "premise": "The fact that there are many different types of glass is evidence for the fact that it is a popular material.",
+          "hypothesis": "Glass is a popular material.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The fact that there are many different types of glass is evidence for the hypothesis that it is a popular material.",
+          "hypothesis": "Glass is a popular material.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Glass windows are everywhere nowadays, they've outlived the centuries and will probably still be around for quite a while, explained Alex Stockhausen from FensterMe",
+        "Toughened glass or shatter glass is one of such types.",
+        "A man of magnifying, not a one of dimming is the Kenyan proverb on knowledge.",
+        "Although glass is often viewed as a homogeneous material, even for the naked eye it is clearly not - glasses are colourless, borosilicate glasses can be",
+        "Applying putty is actually quite easy with the right tools, warns Griffin.",
+        "Float glass accounts for approximately 90% of the total glass production globally, with the remaining 10% coming from other types of production.",
+        "Clear, tinted, ceramic, decorative and opaque are just some of the many different types of glass window, and",
+        "Out of glass you can make practically any thing is a famous quote by Sir William Siemens.",
+        "Annealed or plain glass is the term used to refer to the standard glass that is manufactured daily.",
+        "Machine glass refers to a glass sheet with an even thickness produced by the method of machines pressing the molten glass."
+      ]
+    },
+    {
+      "id": 16733,
+      "ambiguous_sentence": "He refused to give up as a result of his failing.",
+      "gold_disambiguations": [
+        {
+          "premise": "Even though he was failing, he refused to give up.",
+          "hypothesis": "He refused to give up as a result of his failing.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Even though he was failing, he refused to give up.",
+          "hypothesis": "He refused to give up, because he was failing.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Make the changes you always sought to make and live the life you really want.",
+        "My fate is no more than my own man.",
+        "I am in turmoil, but I am not in despair.",
+        "Just because it never worked doesn't mean it's not going to work.",
+        "I'm not sure to don't forget.",
+        "Just like a pokemon who got poisoned, the effects damage your body.",
+        "If you do what you've always done, you'll get what you've always gotten.",
+        "There is often nothing left to it but to be carried.",
+        "You will pass, he said to himself, whether I can help you or not.",
+        "Staying within where the Lord had positioned him that he did not need to deliver where the Lord is demanding him to visit, Taylor claimed."
+      ]
+    },
+    {
+      "id": 17416,
+      "ambiguous_sentence": "A number of my friends, though not all of them, have been affected by the recent lay-offs.",
+      "gold_disambiguations": [
+        {
+          "premise": "A number of my friends, though not all of them, have been affected by the recent lay-offs.",
+          "hypothesis": "All of my friends have been affected by the recent lay-offs.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "A number of my friends, possibly all of them, have been affected by the recent lay-offs.",
+          "hypothesis": "All of my friends have been affected by the recent lay-offs.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "In light of our current economic situation, it's with deep regret that we must reduce our staff, my boss says.",
+        "What should we do?",
+        "Heart felt sympathy is a common response to such an occurrence, but I have a different reaction.",
+        "Come one.",
+        "Your employee reviews were recently were done and you've been put on a Performance Improvement Plan (PIP) with a 45 day notice.",
+        "Engineer to Unemployed in 21 Days was shaken from Gymmer's Tree today.",
+        "Downsized-itis strikes once more at the Eby Ridge community.",
+        "What happened?",
+        "True enough, they say, but so far it seems that it's the upper and mid-level executives that are getting the boot.",
+        "Justice by Verascenic (ðŸ'Ž)- â€œmy hair turned acid green a few days ago and it's really nasty..."
+      ]
+    },
+    {
+      "id": 54530,
+      "ambiguous_sentence": "Some, perhaps all, of the students are required to wear uniforms.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the students are required to wear uniforms.",
+          "hypothesis": "Some, perhaps all, of the students are required to wear uniforms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "All of the students are required to wear uniforms.",
+          "hypothesis": "Some of the students are required to wear uniforms, and others are not.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "I don't like the uniform, but I'm used to it, he said.",
+        "Fuggin', ice cold Motherfucker That's the slogan of Glasgow's number 1 boy band- The Chosen Project.",
+        "Dear Sir, In May, when it was hot, we weren't allowed baseball caps because we weren't supposed to wear any kind of head-gear at school",
+        "School officials, citing tests taken by third-graders, link these uniforms to higher reading scores, Scott reports.",
+        "My stopwatch was running, and it had added 2 minutes to the official time that was given when I checked it briefly and compared it to the Javelin",
+        "There are people who believe that all teenagers should wear uniforms.",
+        "Certainly I am not against giving uniforms to Mata Amritanandamayi Math to ensure safety, the best research institutions and opportunities.",
+        "White means they can mostly wear their own clothes.",
+        "Nothing pretty, nothing cute, explains Slinger.",
+        "Instant student loan relief applications for Sanghavi, she said."
+      ]
+    },
+    {
+      "id": 45595,
+      "ambiguous_sentence": "Some of the lights were out, others were on.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the lights were out.",
+          "hypothesis": "Some of the lights were out, others were on.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "All of the lights were out.",
+          "hypothesis": "At least some of the lights were out.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "But the village council in Belgium warned that the community would remain closed to all visitors until Monday, when it plans to reach a decision.",
+        "The President has confirmed he is in a White House that was secure, and protected, and so that is a very good sign.",
+        "I am sorry.",
+        "Been that way for the last couple months, because something broke upstairs that someone hasn't been able to fix yet, Hockstad said.",
+        "I'm not prepared for it tomorrow, said Hilde.",
+        "C could see the chief from the lights reflected in his eyeballs.",
+        "It's just little mix-ups like this.",
+        "What?",
+        "They said I didn't need to worry about him; he was all jacked up and sealed off.",
+        "For a time I could only look now and then away from him and see what a world, how an earth, filled with triumphant forms so beaute"
+      ]
+    },
+    {
+      "id": 69709,
+      "ambiguous_sentence": "The new hospital is close to the interstate, making it easy for patients to get to the hospital.",
+      "gold_disambiguations": [
+        {
+          "premise": "The new hospital is close to the interstate, making it easy for patients to get to the hospital.",
+          "hypothesis": "It is easy to get to the new hospital.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The new hospital is close to the interstate, making it easy for patients to get to the interstate.",
+          "hypothesis": "It is easy to get to the new hospital.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Sometimes you don't want to go on a freeway, but this is the best location we could get.",
+        "The highway is right outside the doors of the patient elevators [because] this is a 'Hotel Motel' or an 'In and Out Mall,' said",
+        "I think it's important for people to understand what we're doing for the community and what's exciting about it, this is a hospital for the 21st",
+        "Are you sitting there?",
+        "The airport is actually right there.",
+        "The new hospital is located in the community of Abee, AB, Canada.",
+        "The designation was really a symbolic and nice thing to do but this hospital has...",
+        "They say less than two kilometers to two hundred twenty fifth street in New Berlin.",
+        "We want to be able to accommodate the public, Executive Director Tony Grisanti said Friday morning.",
+        "Because I know as soon as the trauma alert went out, all three hospitals were working together."
+      ]
+    },
+    {
+      "id": 17497,
+      "ambiguous_sentence": "In some cases, the company's treasurer might be authorized to borrow funds on behalf of the company.",
+      "gold_disambiguations": [
+        {
+          "premise": "In some cases, the company's treasurer might be authorized to borrow funds on behalf of the company.",
+          "hypothesis": "The treasurer is not authorized to borrow funds.",
+          "label": "neutral"
+        },
+        {
+          "premise": "In some cases, the company's treasurer is allowed to be authorized to borrow funds on behalf of the company.",
+          "hypothesis": "The treasurer is not authorized to borrow funds.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The treasurer can usually get a line of credit by letter of credit, as there are rather fewer requirements for them to provide a large amount of personal collateral or have",
+        "Maximizing the Partner Profits Formula  Larry 4.",
+        "Accounts Receivable Disclosure Page of 11 Chapter 8 | Discounting Accounts Receivable.",
+        "It is impossible to objectively determine how big any loan is to a corporate borrower with little information provided, argues Sharon Einheber, a partner at Hirschfeld",
+        "Settlement Life.",
+        "We've got some improvements here for you, in fact, Schering-Plough's president, Frank S.",
+        "in full payment of.",
+        "Risk management and the control of risk should be linked to developing the chapter or account's objectives for that period Charity organizations are sometimes formed for political purposes.",
+        "statement discusses the criteria for finding a related party transaction, what conditions lead to a related party transaction, and which related persons are within the scope of FASB",
+        "You know the method, here is your potential material.It will supposedly machine into your winning designExcellent customer service and quality is my motto.He soon discovers that they were"
+      ]
+    },
+    {
+      "id": 22376,
+      "ambiguous_sentence": "Research has proved that happy people are more likely to be successful.",
+      "gold_disambiguations": [
+        {
+          "premise": "Research has proved that happy people are more likely to be successful.",
+          "hypothesis": "Unhappy people are more likely to be successful.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The particular piece of research concludes that happy people are more likely to be successful.",
+          "hypothesis": "Unhappy people are more likely to be successful.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Happiness defines a higher quality of life.",
+        "When your happiness is lower than 4.2 on a scale of 1 to 6, your brain is not open to negotiate, discuss or accept advice",
+        "Being happy makes you successful, not the other way around, says a scientific study from the University of Dodrecht published earlier this year.",
+        "People who do consume more'sweets,' their blood sugar tends to drop rapidly, and with it any energy.",
+        "Joy is the strength that comes from knowing God's love for you (MSG).",
+        "You could say entrepreneurial confidence is closely linked to intelligence, one academic told us recently.",
+        "It's conclusively demonstrated that success and happiness are highly correlated.",
+        "I asked thousands of people trying to find the most important factor for success and happiness.",
+        "The happiest people have very strong support systems, they have a sense of purpose, and they have high self-esteem, gushes Alice Miller, Ph.D.,",
+        "Success meaning wealth and all those materialistic gains one pursues in life."
+      ]
+    },
+    {
+      "id": 56909,
+      "ambiguous_sentence": "The study showed that people who are more conscientious are more likely to be successful.",
+      "gold_disambiguations": [
+        {
+          "premise": "The study showed that people who are more conscientious are more likely to be successful.",
+          "hypothesis": "More conscientious people are more likely to be successful.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The study concluded that people who are more conscientious are more likely to be successful.",
+          "hypothesis": "More conscientious people are more likely to be successful.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Consistency is one of the Five Factor Model personality traits.",
+        "For example, when we compare people who were hired on the basis of a set of recommendations, our more conscientious interviewees turned out to be better than their",
+        "That means I won't get the big kill every first day of the season, but I might have wood chopper deer in my freezer.",
+        "Our research supports the idea that effort plays a role in shaping achievements, lead author Martin Bobadilla-Suarez, associate professor at Tecnológico de Monter",
+        "We found that conscientiousness found that people who were more honest had greater work success as opposed to those who we not, said Schwartz.",
+        "To understand the mechanisms underlying previously observed associations between personality and success, researchers examined archived longitudinal and diary studies of 600 adults.",
+        "Conscientious means ones who pay attention to details and have a high sense of duty and don't shirk responsibility.",
+        "Maybe Conscientiousness is considered successful because it is associated with so many strengths, she said.",
+        "The test is a reliable, valid for organizational behavior (personality inventory that corresponds to specific values ​​and provides an outcome that is consistent with research in Organizational",
+        "Successful means in a variety of different ways, such as being more empowered, achieving better results in school, having better grades, and even just generally being happier"
+      ]
+    },
+    {
+      "id": "108_c",
+      "ambiguous_sentence": "In Seattle, I've only lived in the northern part.",
+      "gold_disambiguations": [
+        {
+          "premise": "In Seattle, I've only lived in the northern part.",
+          "hypothesis": "I haven't lived outside of Seattle.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I haven't lived anywhere in the world besides the northern part of Seattle.",
+          "hypothesis": "I haven't lived outside of Seattle.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "The northern po (Stockholm)",
+        "South of the Ship Canal seems like another world entirely, but I visited the North Beacon Hill neighborhood today for the first time.",
+        "My cousin lives in the burbs is the joke, when talking about having someone come over whose partner doesn't share our very urban lifestyle.",
+        "Rate Point 5 is what I call our neighborhood, between 45th and 50th Streets across the Ship Canal (47th and Owen have been",
+        "Upper left.",
+        "Uppermost parts are on the list* (see below), but Ballard and Magnolia don't ring up below infrequent status.",
+        "Hoods I prefer to think of as neighborhoods...",
+        "The city is in the south/northwest quadrant.",
+        "South has always been uncharted territory for me.",
+        "Queen Anne, Ballard, Upper Phinney Ridge, Summit Ave."
+      ]
+    },
+    {
+      "id": 103802,
+      "ambiguous_sentence": "I want to see the movie, but I don't have time.",
+      "gold_disambiguations": [
+        {
+          "premise": "I want to see the movie, but I don't have time.",
+          "hypothesis": "I don't want to see the movie.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "It is not necessarily the case that I don't want to see the movie, it is that I don't have time.",
+          "hypothesis": "I don't want to see the movie.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "I will do it is not quite accurate here.",
+        "I'm running a personal errand.",
+        "Wanting always to see)) We had to find time, but we did not succeed.",
+        "rep poco posa il, esita un poco=no, me rallie ugly lichetage infimum moody perilously deliquescento wench",
+        "Everything Wrong with Moulin Rouge in 8 Minutes or Less is a short featurette by Cuss Bug that breaks down the romantic comedy, Mou",
+        "I'm afraid it won't be ready until later.",
+        "I want to keep the job, but I'm tired and when I try to fall asleep, I have a hard time.",
+        "It is my desire to go there but I am not going to.",
+        "I is doing a lot of talking, if you notice.",
+        "U phoenios refugee camp."
+      ]
+    },
+    {
+      "id": 53095,
+      "ambiguous_sentence": "We need to adapt to the world around us that is constantly changing.",
+      "gold_disambiguations": [
+        {
+          "premise": "We need to adapt to the world around us that is constantly changing.",
+          "hypothesis": "The world is constantly changing, and we need to change with it.",
+          "label": "entailment"
+        },
+        {
+          "premise": "We need to be able to adapt to the world around us when it changes.",
+          "hypothesis": "The world is constantly changing, and we need to change with it.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "No one swims against the tide.",
+        "The path to success lies in the opposite direction to the considerations of the world, Pope Paul VI said.",
+        "Taking care of health and care is a challenging area for social innovation.",
+        "If it aint broke, don't fix it, is a cliche that makes for a sure drop in productivity and has no room for long-term results.",
+        "What Is Change?",
+        "There is nothing new.",
+        "Adaptation is a series of photographs by Bruno Pieters which aims to generate thoughts and awareness about climate change.",
+        "Innovate, or die is not just a marketing jingle but a gruesome reality - a fast to the point of no return.",
+        "To improve is to change - Benjamin Franklin stated, and one of the most efficient ways to improve is learning.",
+        "One constant change is that Alpacas always add value to a cotton-jersey product and creating 'Sustainable Transition into a more sustainable way of living -"
+      ]
+    },
+    {
+      "id": "37_c",
+      "ambiguous_sentence": "She wants to work with whichever professor in the department has the largest citation count.",
+      "gold_disambiguations": [
+        {
+          "premise": "She wants to work with whichever professor in the department has the largest citation count.",
+          "hypothesis": "The citation count of a professor matters to her.",
+          "label": "entailment"
+        },
+        {
+          "premise": "She wants to work with a professor who happens to have the largest citation count in the department.",
+          "hypothesis": "The citation count of a professor matters to her.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "A Professor's Project Portfolio Linked To Friends' Success The New York Times March 5, 2010.",
+        "The largest citation count is ambiguous.",
+        "The professor with the most citations is very busy, she points out.",
+        "Given a set of citation counts for each professor, can I and if so how do I determine who has the most citation count?",
+        "That's when we asked Dunleavy's guys if I could do it, Lembo said.",
+        "She wants to major in the field that has the highest citation count.",
+        "I decided that I want to help people see themselves even in places that historically disadvantaged people haven't been able to go, she told National Geographic.",
+        "Blaine explains that he just feels an obligation to do as many shows as possible, and that historical accuracy is his top priority.",
+        "On provenance reconstruction through first-person and contextual information and behavioral analysis, Themis: An Online Education Community Platform with Semantic Technologies, Orbit",
+        "Her work is published in the top journals, but it hasn't gotten the attention it deserves, she comments."
+      ]
+    },
+    {
+      "id": "139_c",
+      "ambiguous_sentence": "I can't remember when I last saw her; it has been a long time.",
+      "gold_disambiguations": [
+        {
+          "premise": "I can't remember when I last saw her; it has been a long time.",
+          "hypothesis": "I haven't seen her in a long time.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I can't recall when I last saw her.",
+          "hypothesis": "I haven't seen her in a long time.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "You grew tall after a while.",
+        "Well, she taught me trigonometry and geometry.",
+        "Long time no see, though common in Chinese, sounds so incongruous to my English ear.",
+        "The Revolution begins in the Kitchen: A Renauld cookbook.",
+        "How are you, lady?",
+        "Her being Agatha Christie of course.",
+        "It was very close to the end of the road for me, I think, says Kelly Bensimon of now, I said, Take me!",
+        "If it walks like a duck and it messes in the water then it is a duck.",
+        "How are you?",
+        "She who shall not be mentioned ."
+      ]
+    },
+    {
+      "id": 83923,
+      "ambiguous_sentence": "He is such a talented musician that he might have been a professional.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is such a talented musician that he might have been a professional.",
+          "hypothesis": "He is a professional musician.",
+          "label": "neutral"
+        },
+        {
+          "premise": "He is such a talented musician that he could have become a professional.",
+          "hypothesis": "He is a professional musician.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "God is in the details, says Kyle in Iguana's commercial which stresses human care through attentive phone support.",
+        "See what says mayaya jaiswal (mayajiswal) has discovered on Pinterest, the world's biggest collection of ideas.",
+        "By the time I was 17, I was better than a lot of other professional drummers my age.",
+        "Asfor Rock-a-Bye Baby, Music Teacher Ceceena, music skills manager for Heidesheim, cannada U.S.",
+        "Materialistic Man I don't know about a rift, I think it was just my members calling him...",
+        "You can't get around it; you're going to be an entertainment programmer, she said.",
+        "Where could he get advice from?",
+        "Eva Schur heeft dit alles kunstvolledig geknipt.",
+        "I couldn't give up singing, not even with the split times that we fix it never stopped.",
+        "I consider myself to be a professional amateur, he said."
+      ]
+    },
+    {
+      "id": 75877,
+      "ambiguous_sentence": "The defense does not have to prove that the defendant is definitely innocent.",
+      "gold_disambiguations": [
+        {
+          "premise": "The prosecution has the burden of proof to show that the defendant is guilty beyond a reasonable doubt.",
+          "hypothesis": "The defense does not have to prove that the defendant is definitely innocent.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The prosecution has the burden of proof to show that the defendant is guilty beyond a reasonable doubt.",
+          "hypothesis": "The defense does not have to prove that the defendant is legally innocent.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "VERIFY.",
+        "The jury may have a reasonable doubt as to his guilt, though they may be of the opinion that he actually did the act, for reasons of public policy.",
+        "Beyond a reasonable doubt is the highest standard of proof known to the law",
+        "The entitlement of any criminal defendant to a fair trial is implied by the text of the Sixth Amendment to the Constitution, which says that no person shall be deprived of",
+        "This is an issue between state",
+        "Reasonable doubt is doubt based on reason and common sense.",
+        "This silly saying of Eugène Viollet-le-Duc at a time which now seems immensely distant, says Tolstoy in chapter 3:100 of Anna",
+        "The concept of perfect certainty can be abandoned as unrealistic.",
+        "I was not there is a good plea.",
+        "Reasonable doubt  means doubting something that, if true, is an element of the crime."
+      ]
+    },
+    {
+      "id": 6566,
+      "ambiguous_sentence": "Despite not agreeing with you, that doesn't mean I hate you.",
+      "gold_disambiguations": [
+        {
+          "premise": "Despite not agreeing with you, that doesn't mean I hate you.",
+          "hypothesis": "I don't agree with you.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Merely not agreeing with you doesn't mean I hate you.",
+          "hypothesis": "I don't agree with you.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Temporary hatred in the sense I ran earlier doesn't even not count here.",
+        "Sarcasm gets out of control very quickly.",
+        "To hate, according to dictionary.com, Means to resent; dislike this may be completely different from disagreeing with someone.",
+        "Leds: I run dual 6800's in a render at temps of around 75.",
+        "People are more likely to see the evidence he says risking a life, does this mean you will go to jail as I know at least 4 unarmed people",
+        "Conservatism or Liberalism has nothing to do with it.",
+        "The thing about Democrats is they hate America.",
+        "Like 25 years ago hate doesn't mean hate ::)\nYeah, I'll just ignore that.",
+        "Agree to Disagree is still a core tenet of my philosophy.",
+        "But few parts of the chapter drag."
+      ]
+    },
+    {
+      "id": 79603,
+      "ambiguous_sentence": "The easiest way to solve the problem is to call a meeting, but there are other ways.",
+      "gold_disambiguations": [
+        {
+          "premise": "The easiest way to solve the problem is to call a meeting, but there are other ways.",
+          "hypothesis": "The problem cannot be solved without a meeting.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The easiest way to solve the problem, perhaps the only way, is to call a meeting.",
+          "hypothesis": "The problem cannot be solved without a meeting.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Discipline through chaos is actually possible.",
+        "A doctor needs to pay attention, he should not ignore.",
+        "Does that help you?",
+        "Does the situation really warrant a legal meeting?",
+        "Contentious issues are ones such as violations of group standards.",
+        "We just have the dialog.",
+        "easiest way to solve the problem/the other way What is the error here?",
+        "As a study that analyzed the accident, unknown until the accident and did not notify is the existence of defects in the transverse stiffener of the ship's engine",
+        "Communication is key, says Catherine Schultz, president of Business Achievment Inc., a firm that helps companies choose health-care providers.",
+        "Group Intervention\n​Free Addictions And Recovery Printables\nThe recovery coach isn't there to diagnose what's going on or what to do."
+      ]
+    },
+    {
+      "id": 3711,
+      "ambiguous_sentence": "The organization is moving to flatten its structure.",
+      "gold_disambiguations": [
+        {
+          "premise": "The challenge for the organization is to make the transition from a traditional hierarchical structure to a more flattened organization.",
+          "hypothesis": "The organization is moving to flatten its structure.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The challenge for the organization is to make the transition from a traditional hierarchical structure to a more flattened organization.",
+          "hypothesis": "It is necessary that the organization flattens its structure.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We're lean, certainly we're not fat..",
+        "After leaving Consolidated Glass Holdings, which is based in Pennsylvania, he signed with Seeco as an independent sales rep, calling on southern Virginia and the North Carolina",
+        "Our failure to manage...",
+        "Leaner is a popular term in most companies, including management consultancy.",
+        "There must have been 100 of us there, and there's just no way we can 'author' a document like that if we're stuck on it,",
+        "We are aiming to shrink the layers between our user and our products.",
+        "I believe [the rally] will send a message to the president, one White House official told CNN.",
+        "If I look back at the most successful times in this company, this is when we were flat.",
+        "Organizations that want to be successful and breakthrough the barriers of the mid-cap level (sausage factories) are doing this as well.",
+        "Meyer says the move means that project teams will no longer sit in their individual silos, independent of each other."
+      ]
+    },
+    {
+      "id": 51834,
+      "ambiguous_sentence": "The union and the company have not been able to agree on a new contract during ongoing negotiations.",
+      "gold_disambiguations": [
+        {
+          "premise": "The union and the company have not been able to agree on a new contract during ongoing negotiations.",
+          "hypothesis": "The company and the union have been negotiating a new contract.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The union and the company have differing opinions on what might go in a new contract.",
+          "hypothesis": "The company and the union have been negotiating a new contract.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The negotiation process is currently continuing, said Coca-Cola spokeswoman Birgit Warth earlier this week.",
+        "Since then, things have been slowly going downhill, explains Stefan Endl, chairman of the works council at the Friedrichshafen plant.",
+        "Obviously we're prepared to take this out to the streets, much to the",
+        "We will participate in the strike on Dec.",
+        "The company accosted our members as soon as contract...",
+        "New York first reported:",
+        "There are three main points of contention that are currently delaying reaching a final agreement, the company wrote.",
+        "It has been going on for quite a while, and I'd say we're stuck at this point, Jeff Bates, left, director of public markets — which",
+        "No work one day, said the union's strike coordinator, Bent Noergaard.",
+        "Trades taking part in this negotiation have a track record of workplace violence."
+      ]
+    },
+    {
+      "id": 74872,
+      "ambiguous_sentence": "The company's expansion plans are to open more stores in the US.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's expansion plans are to open more stores in the US.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's expansion plans are to open stores in the US for the first time.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The company's expansion plans are to open new stores located in the US.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "US will be huge market for us in the next three years, says Ujjwal Sinha.",
+        "Things are accelerating rapidly, he said.",
+        "We have identified several prime locations to roll out our stores says the Vice President Atif Rahman.",
+        "When it's all done, Bose Place will be a much more powerful and cohesive environment for the guiding vision based on an almost religious tribute to the founding family of",
+        "The viral success of Nutella chip ice cream, which is Mandarin for Nepal's 'chocolate cream ice cream' - has spawned competition from local rivals, it",
+        "We expect because of that, we'll probably open more stores later this year, said Yusaku Maezawa, founder and CEO of Zozo Inc.",
+        "As we move on, we are getting more international, Steve Squeri, the chief executive of American Express, said on a call with analysts, quantifying",
+        "Moving forward, we will be opening more stores in the US and also expanding overseas to other markets based on our research, said Simon Cowell, Chief Director of",
+        "They want their smokers to have a similar experience in Korea, so some of the items being selected in Korea will become available in the U.S., explained P",
+        "We will have a positive trading outlook, he said."
+      ]
+    },
+    {
+      "id": "132_c",
+      "ambiguous_sentence": "There is a particular woman in this neighborhood who gives birth every year.",
+      "gold_disambiguations": [
+        {
+          "premise": "There is a particular woman in this neighborhood who gives birth every year.",
+          "hypothesis": "There is a particular woman with a birth rate of once per year.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Every year, some woman in this neighborhood gives birth.",
+          "hypothesis": "There is a particular woman with a birth rate of once per year.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "That's the way we are, Mommy.",
+        "Surely no one will be as miserable as I, she thinks.Surely I will want something different.",
+        "Oh, that woman has twins every year.",
+        "She can physically make anything she wants, says one friend of the American mom.",
+        "How could you???",
+        "Rafiqua must be on some kind of birth control, it's every year!",
+        "Little Tree Unfading Flower might sound like a title for a Hallmark Christmas card, but it's actually the name of the last storefront in this year",
+        "Seven babies already, how does she do it?",
+        "Julia is her first name.",
+        "Terrible person, Book Four says."
+      ]
+    },
+    {
+      "id": "40_c",
+      "ambiguous_sentence": "There is someone here who I know to be lying.",
+      "gold_disambiguations": [
+        {
+          "premise": "There is someone here who I know to be lying.",
+          "hypothesis": "I know who is lying.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I know that someone here is lying, though not necessarily who it is.",
+          "hypothesis": "I know who is lying.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "I have only one day to solve this.",
+        "I've got something to show you.",
+        "After he got married, she insisted, he started to drink heavily again.",
+        "My back must have gone out.",
+        "ask him who he was before tomorrow's game.",
+        "I am just joking.",
+        "This is a novel, not a biography, to which fact the reader should be prepared, Ryan says as he begins his story; perhaps contrary to his intention,",
+        "-– Nelson Mandela in Monsoon Wedding",
+        "W was followed closely by p.",
+        "Jean Brodie has claimed to be over 70."
+      ]
+    },
+    {
+      "id": 58103,
+      "ambiguous_sentence": "The employees were not given overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+      "gold_disambiguations": [
+        {
+          "premise": "The Board rejected the union's argument that the employees were entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "hypothesis": "The employees were not given overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The Board rejected the union's argument that the employees were entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "hypothesis": "The employees were not entitled, in principle, to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "News registered nursing has submitted our position and argued the benefits to the students acquiring the education/education.",
+        "An employer may require a non-exempt employee to participate in training during non-working hours when the employee: i.) does not perform any productive work during the training",
+        "The department recognizes that there is no statutory exemption for employees who are required to attend training sessions on a day when they would otherwise be scheduled to work, the decision",
+        "This is a violation of the federal Fair Labor Standards Act, and specifically its overtime requirements, Singh wrote.",
+        "They took the overtime that should've been paid, and added it onto these already high premiums for the salaries that these people make.",
+        "The final piece of the puzzle has now been put in place at UKI, says DFDS CEO, Torben Carlsen.",
+        "The company has the right to require an employee to attend meetings with employees of the same craft, which did not constitute apprenticeship, trade-room meetings, conferences dealing",
+        "Coaching staff, consisting of a team of employees selected by the club, determines the roster of athletes to be represented in the tournament.",
+        "Summit Skyride at bma is located in Huntington Station.",
+        "Emails, body, skin color, hair style all these things indicate, and more what someone looks like than looks like."
+      ]
+    },
+    {
+      "id": "94_c",
+      "ambiguous_sentence": "She said that she will pick me up at 4pm and that I can leave at 6pm.",
+      "gold_disambiguations": [
+        {
+          "premise": "She said that she will pick me up at 4pm and that I can leave at 6pm.",
+          "hypothesis": "She said I can leave at 6pm.",
+          "label": "entailment"
+        },
+        {
+          "premise": "She said that she will pick me up at 4pm; I can leave at 6pm.",
+          "hypothesis": "She said I can leave at 6pm.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Czemu Dekon filtry postac ukoncowy?",
+        "I'm not going to let you go by ourselves (in Spanish, I'm not going to let you go by yourselves) was her logic.",
+        "Customs charges.",
+        "Thank you, Abby.",
+        "My friend said her sister worked as the retail manager of a ski store so I invited her in.",
+        "Thank you Tim Allen.",
+        "But I will be there by 4 thirty, so I told her and she said, that I'll just join in at 4:30 and then she",
+        "February 7, 2018, between 1850 and 2065 hours at the Nike Site, located at 202 Madison Rd, Hamilton OH",
+        "Sylvia Ketukuy changed his mind about coming - I thought.",
+        "But it's too hot, she remarked."
+      ]
+    },
+    {
+      "id": "78_c",
+      "ambiguous_sentence": "The door was open before, and John opened the door again.",
+      "gold_disambiguations": [
+        {
+          "premise": "The door was open before, and John opened the door again.",
+          "hypothesis": "John opened the door before.",
+          "label": "neutral"
+        },
+        {
+          "premise": "John opened the door before, and did it again.",
+          "hypothesis": "John opened the door before.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Long a** game eh?",
+        "Come in, Myra, he invited as they walked in.",
+        "Come bye.",
+        "You're not going to a girl?",
+        "John, it's not polite to open other people's doors ...",
+        "Be warned, he said.",
+        "Come on in.",
+        "Only confused babe indeed!",
+        "Then what do you have to\ndo?",
+        "Scoot over Irene, he said."
+      ]
+    },
+    {
+      "id": 3578,
+      "ambiguous_sentence": "The class is about how to write a research paper.",
+      "gold_disambiguations": [
+        {
+          "premise": "The class is about how to write a research paper.",
+          "hypothesis": "The class is about how to write a persuasive essay.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The class will, at some point, discuss how to write a research paper.",
+          "hypothesis": "The class will, at some point, discuss how to write a persuasive essay.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Not too many students in our school come early enough to hear what needs to be written on research papers.",
+        "In addition to timely information, stated Flavia Peres, my article includes marketing tactics and advice on how to promote your content efficiently.",
+        "Contribute your experiences of life and future expectations progressively, and the readers with predicament will cherish the articles.",
+        "The Nobel Laureate John Mather, who is a Caltech astronomer, took the subject for a research paper of Astronomy.",
+        "the steps to write and then how to.information such as if there was already something out there that had the same ern college thesis research paper thesis for a",
+        "They are just pieces of furniture here; all they do all day in the kitchen is 'clocking down' [in lunch breaks between jobs around the stage",
+        "How to write a research paper Booklet describes the topics such as publication process, writing paper, key words, article form, and how",
+        "In research of writing a research paper, we need to ask some questions.",
+        "Kyran was great.",
+        "The Common Sense is considered as an influential essay."
+      ]
+    },
+    {
+      "id": 9139,
+      "ambiguous_sentence": "The man was charged only with second degree murder.",
+      "gold_disambiguations": [
+        {
+          "premise": "The man was charged with first degree murder.",
+          "hypothesis": "The man was charged only with second degree murder.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The man was charged with first degree murder.",
+          "hypothesis": "The man was charged with second degree murder, possibly among other charges.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "If there is one thing responsible parents have in common, it is their desire to do what's best for their children.",
+        "Some people think he deserves life in prison, Officer David Ward of the Trenton Police Department said.",
+        "They knew, step by step by step, what had happened, said Robinson.",
+        "I don't know a special prosecutors' name while I'm under oath.",
+        "One of the main things I want about moving forward with the tragedy is finding the truth and doing whatever I have to do to treat Chris that's best",
+        "He pleaded change of charges to avoid the death penalty, said as a testimony goes down telling us of Captain Friedman.",
+        "Coming to North Hollywood is like a dream actually, amazing because of E!",
+        "Because of the overwhelming medical and circumstantial evidence showing his guilt, the decision not to escalate the charge doesn't make sense to me, said Lauren Hitt,",
+        "The first time I sat down and an Officer said, 'Sir I know you are innocent, I would never lie to you.'.",
+        "We think it is the correct charge and it will be up to trial whether to actually go further and convict him."
+      ]
+    },
+    {
+      "id": "140_c",
+      "ambiguous_sentence": "I don't taste anything suspicious.",
+      "gold_disambiguations": [
+        {
+          "premise": "I don't taste anything suspicious.",
+          "hypothesis": "Something tastes like fish.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I don't taste anything similar to fish.",
+          "hypothesis": "Something tastes like fish.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Her mind grappled with the possibility that a strange guy with no other device https://www.arcap.org/2016/06/27/norsemen",
+        "Of course you're not.",
+        "Heavy fog and two alcohol in a half bottle of champagne.",
+        "the mind popped and splashed, never-ending thirst, as though the earth imitative soul.",
+        "Style Points representing the bottle's ubiquitousness during the holiday season, she says.",
+        "One of us (the narrator or Harry) went to see the alewife and followed her home in silence but for once the figurines were silent.",
+        "A gas leak or a gas problem was to blame for the explosion, Kiesling said at a news conference at 9 a.",
+        "Vinobis!",
+        "-Commodore John Rodman\nI have received the required numbers of nobel votes in patapsco.",
+        "They're from the same company!"
+      ]
+    },
+    {
+      "id": 77092,
+      "ambiguous_sentence": "I think that the new software is not exceptionally user-friendly, though it may be somewhat user-friendly.",
+      "gold_disambiguations": [
+        {
+          "premise": "I think that the new software is not exceptionally user-friendly, though it may be somewhat user-friendly.",
+          "hypothesis": "I think that the new software is user-friendly.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I think that the new software is not user-friendly.",
+          "hypothesis": "I think that the new software is user-friendly.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Add to/from required me to open the message that I wanted to add, click on use actions and then only then could I add to/from.",
+        "How to turn off user-friendly in your software?",
+        "Easy to understand is a relative term, so I have no personal issue with that.",
+        "Not exceptionally user-friendly is not a complaint; it's an analysis.",
+        "Fluid is a newborn application, and, methinks, cumbersome.",
+        "Smith Wigglesworth was very conscious of obedience to God.",
+        "user Included!, when she told me that she had successfully installed the new software and signed into her AOL account, the program crashed and she lost her login information.",
+        "What?, you may say, surely user friendly should mean exactly what it says and that includes making it as easy as possible for the user.",
+        "User-friendly is not a nice term in the church, because some people interpret it to mean the pastor's message is watered-down and non-confront",
+        "We've got this nifty app and some cool Looking over the catalog makes me wish there were more LOD elements to choose from."
+      ]
+    },
+    {
+      "id": 3654,
+      "ambiguous_sentence": "A large number of people, and possibly all people, were not willing to take the risk.",
+      "gold_disambiguations": [
+        {
+          "premise": "A large number of people, and possibly all people, were not willing to take the risk.",
+          "hypothesis": "A small number of people were willing to take the risk.",
+          "label": "neutral"
+        },
+        {
+          "premise": "A large number of people, but not all people, were not willing to take the risk.",
+          "hypothesis": "A small number of people were willing to take the risk.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "The proposal was rejected for heavyweight reasons.",
+        "They were not willing to take the risk, or only a large number were?",
+        "I will singlehandedly lead an army to exile,  he condescendingly proclaimed proudly, standing at the exit of the sea gate.",
+        "Self-Protection is practiced by not going out hunting because (as you say) it's your friend, not something you know about from elsewhere in the world",
+        "Oh God, what confronted us was so true and real, more real than life itself!",
+        "Commercials such as laughs and..",
+        "Vegetarian Planet: 350 Big-Flavor Recipes for Out-Of-This-World Food All Year Long (New Comstock Books) by PM.",
+        "The skies were empty, he said.",
+        "It was kind of a scary time, he said.",
+        "Hungry and Cold and Blood were the most likely paths."
+      ]
+    },
+    {
+      "id": 59560,
+      "ambiguous_sentence": "The poet laureate is a title given to a poet by a government or institution.",
+      "gold_disambiguations": [
+        {
+          "premise": "The poet laureate is an honorary position given to a poet by a government or institution.",
+          "hypothesis": "The poet laureate is a title given to a poet by a government or institution.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The poet laureate is an honorary position given to a poet by a government or institution.",
+          "hypothesis": "The poet laureate is a job given to a poet by a government or institution.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Official poet laureates are usually appointed by a government to honor a poet's achievements, beat a dead horse, punish the dead horse, or in the Great",
+        "In the modern era poets laureate are usually appointed by the government, with the title becoming common in England in the 17th century, but the role can",
+        "Laureate turned from being an adjective describing the wearing of a laurel wreath into a technical term for the poet being so crowned.",
+        "Laureate means you've conquered enough in poetry (in your writings, or your life) to symbolise victory.",
+        "Laureate originally came to mean a holder of a laurel wreath usually given to poets, but evolved to mean the poet himself.",
+        "Poet Laureate was first introduced in 1773 by the Society of Antiquaries of London.",
+        "Poet laureate can also refer to a writer of poetry.",
+        "Laureate is derived from the Latin meaning bearer of wreaths of victory).",
+        "Nowadays – no longer bound merely to be the'sole lyrical voice' – the poet laureate is expected to be an advocate for poetry and to perform",
+        "poet laureate (1989), of our 2017 term in the Dictionary of Modern Proverbs Tillinghast, Joseph Rodman,"
+      ]
+    },
+    {
+      "id": 102113,
+      "ambiguous_sentence": "It is important to remember that although many of the people who emigrated to the United States in the late 1800s were poor, not all of them were.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is important to remember that although many of the people who emigrated to the United States in the late 1800s were poor, not all of them were.",
+          "hypothesis": "Many of the people who emigrated to the United States in the late 1800s were poor.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is important to remember that it is not the case that all of the people who emigrated to the United States in the late 1800s were poor.",
+          "hypothesis": "Many of the people who emigrated to the United States in the late 1800s were poor.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Many of the cash surplus of the American people of the time together with vast migration to the cities were pouring monies into the money market.",
+        "Look carefully at the early immigration census records from New York and the passengers who came to America on steamers in the early 1800s.",
+        "Mayflower descendants and people like Mrs.",
+        "By the time of the Great Depression and the urban exodus to the...",
+        "Perhaps the most distinguishing characteristic of the immigrants who came to America in the late 1800s was the north European.",
+        "Almost half of the wealth of the United States, Elting E.",
+        "From Tide Mills is based on actual events that occurred in a small village in Maine.",
+        "Parcel E is the one we are interested in.",
+        "According to investigations and reports of careers of unsrcuples for the past.",
+        "Good authors, too, who once knowing duteously/d srive at truth, are sunk as in a Summer sea,/Where, all but crown'd above"
+      ]
+    },
+    {
+      "id": 15380,
+      "ambiguous_sentence": "Some but not all of the students turned in their homework on time.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the students turned in their homework on time.",
+          "hypothesis": "Some but not all of the students turned in their homework on time.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "All of the students turned in their homework on time.",
+          "hypothesis": "At least some of the students turned in their homework on time.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Some of the program's enrolled students pay the full tuition for the credit hours they earn, while others pay on a per-hourly-charge system, with the",
+        "I'm not any good!: He was not good at soccer.",
+        "My Mistress Emily Dickinson (2)For Questions 3-4, write your answers in the response.",
+        "Turned it in is not the same as were due (it's not a verb).",
+        "We should left a little early last night, Shauna stated to her friends.",
+        "Any work that we missed from previous lessons, DO IT FOR HOMEWORK!.",
+        "Not the good guys, sir!",
+        "On time is to be taken very loosely here: only 5 or 6 of the 17 students manage to turn in their homework before the second day",
+        "A few students didn't turn in their homework on time.",
+        "Some of them is too heavy for the subject, tone, and mood:\nThe students turned over all the required exercises (even those who thought them unnecessary)."
+      ]
+    },
+    {
+      "id": 76612,
+      "ambiguous_sentence": "If the rock is too big, we can't move it; otherwise we can.",
+      "gold_disambiguations": [
+        {
+          "premise": "If the rock is too big, we can't move it; otherwise we can.",
+          "hypothesis": "We can move the rock if it's not too big.",
+          "label": "entailment"
+        },
+        {
+          "premise": "If the rock is too big, we can't move it, and there may be other preventative factors too.",
+          "hypothesis": "We can move the rock if it's not too big.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "says Linus Pauling.",
+        "You divide by zero, x = 0, but this time it may result in the desire complex.",
+        "That's got to be the smartest rock in cyberspace.",
+        "Given that in order to saturate a site for static electricity you have to have particulate matter embedded in an insulating body, inside a static charge you must",
+        "Any scripture at all, he thinks it good to read.",
+        "Hackers steal data before ransom demand is a good example of hyperleap and as a matter of fact that's exactly what is happening too!.",
+        "Our rule is not to mess with big rocks.",
+        "> \nGRE➶ If the rock is too big, we can't move it; otherwise we can.",
+        "The shortest excuse: we can't drop the town's name.",
+        "A giant rock drilled hole during the Cretaceous period might be better wording."
+      ]
+    },
+    {
+      "id": 24621,
+      "ambiguous_sentence": "The high school students who were most likely to report drinking had a great number of friends who drank.",
+      "gold_disambiguations": [
+        {
+          "premise": "The high school students who were most likely to report drinking had a great number of friends who drank.",
+          "hypothesis": "The high school students who were most likely to report drinking had a great number of friends who did not drink.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The high school students who were most likely to report drinking had a greater proportion of friends who drank.",
+          "hypothesis": "The high school students who were most likely to report drinking had a greater proportion of friends who did not drink.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "These results suggest that peer group selection of students with more friends who drink may account for some of the relationship between friends who drink and drinking adolescents, said Emory",
+        "The literature has found that it is important to establish connectedness through peer groups and that it helps to communicate healthy messages about drinking, said Dr.",
+        "In fact, having more than one friend who drinks is a stronger predictor of binge drinking than any other factors we looked at, Scott Welker of the Christopher and",
+        "Does makes more sense.",
+        "There were tons of kids at school who were really popular...because people would think that if you're into someone like that then you must have a cool image.",
+        "It's easier to drink if they're there, Mock says.",
+        "A lot of it comes from peer pressure, Cutolo said.",
+        "Currently drinking and friends' drinking interacted the strongest or most frequently regarding their effects on risky behaviors,",
+        "Zero-tolerance policies are evaluated as to whether they produce such high rates of arrests and consequential dropout rates.",
+        "The more socializing the adolescents report, the higher the observed percentage drinking, she says."
+      ]
+    },
+    {
+      "id": 35782,
+      "ambiguous_sentence": "I pulled over to the side of the road, because I had to.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was raining so hard, I couldn't see the road in front of me.",
+          "hypothesis": "I pulled over to the side of the road, because I had to.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was raining so hard, I couldn't see the road in front of me.",
+          "hypothesis": "I needed to pull over to the side of the road, whether or not I actually did.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "I'll never have time to call, so I'll just let you read this.",
+        "Oh no, not again  I muttered to myself as I felt a prick of pain in my side.",
+        "Dear Lord, I spoke, I prayed.",
+        "You, I said to the passenger next to me, a recent college grad with a strong desire to see the world, go back home.",
+        "Giver, I called to the figure concealed in a cloud of water, somebody's burning as we speak.",
+        "This is against the law and is considered reckless driving?",
+        "Get me back to my body, right now.",
+        "Are you kidding,  I said to Cherie.",
+        "I can't take it anymore!",
+        "What's wrong?"
+      ]
+    },
+    {
+      "id": 71932,
+      "ambiguous_sentence": "I was uninterested in the book, and didn't finish it (not to address the question of whether I started it at all).",
+      "gold_disambiguations": [
+        {
+          "premise": "I was uninterested in the book, and didn't finish it (not to address the question of whether I started it at all).",
+          "hypothesis": "I was uninterested in the book, and didn't start it.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I was uninterested in the book, and didn't finish it despite starting.",
+          "hypothesis": "I was uninterested in the book, and didn't start it.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Tosh - not that I recall.",
+        "Gone with the Wind is good, The Red Badge of Courage is another example of a book pretending to be about war but that's really about",
+        "Deleted from mind.",
+        "Literary and Christian seem to fit together like oil and water.",
+        "Political climate fit the immediate environment, and my memories solidified it.",
+        "Over-the-shoulder of God?",
+        "The Landscape of History struck me as sloppy, and I found myself annoyed when so much attention was paid to differences in the regional and local character of cultures,",
+        "Hotcakes (specifically: pancakes) inspired a song, though.",
+        "diplomatic controversy isn't just a major circus story, maybe not just a circus story at all, it's a claim that early and late (like",
+        "Suppose you are interested in engineering applications, I use the examples of lens design methods, reflector design, rocket trajectories, magnetic beams, gravitational waves, and"
+      ]
+    },
+    {
+      "id": "105_c",
+      "ambiguous_sentence": "That's the single reason we tried to kill you.",
+      "gold_disambiguations": [
+        {
+          "premise": "That's the single reason we tried to kill you.",
+          "hypothesis": "That's one of the reasons we wanted to kill you.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "That's one reason we tried to kill you; there may be more reasons.",
+          "hypothesis": "That's one of the reasons we wanted to kill you.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We shot down your ship to save the Waters.",
+        "This guy doesn't chase a girl.",
+        "I want to be rid of you, once and for all.",
+        "There is, however--I wish it to be understood--pleasure with which we embrace new knowledge.",
+        "We walked into the village, in order to warn the people, of the fatality awaiting them, should you escape.",
+        "My brother's dead.",
+        "WHAT?!?",
+        "When one person violates the fundamental rights of another seriously is the main clause at trials of any war crimes in the world law.",
+        "And he's not worried about you.",
+        "My son."
+      ]
+    },
+    {
+      "id": "133_c",
+      "ambiguous_sentence": "He is upset at his friend for revealing to his teacher private information about his relationship.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is upset at his friend for revealing to his teacher private information about his relationship.",
+          "hypothesis": "His relationship to his teacher was revealed.",
+          "label": "neutral"
+        },
+        {
+          "premise": "He is upset at his friend for revealing private information, concerning his relationship to his teacher.",
+          "hypothesis": "His relationship to his teacher was revealed.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Is it really true that James told?",
+        "What happened with Pappi is completely normal, she says.",
+        "Playing the role of Ari's confidant in a truthful and creative way made Tia feel closer to her Dad.",
+        "It's a basic form of getting information from another human being.",
+        "Do not reveal about others.",
+        "He has going out with this girl for about a month now, said one of his friends.",
+        "The Out of This World War.",
+        "I told him nothing, and never would have told him my definition concerning this, should I have known he would tell somebody else � (the teachers).",
+        "Do my feelings make me gay?",
+        "You have to trust me, said Kent Jones in a text conversation with Carr at approximately 11:30 on the night of December 21,"
+      ]
+    },
+    {
+      "id": "11_c",
+      "ambiguous_sentence": "The majority of Georgians incarcerated in local jails are not there because they were convicted of crime. They are simply too poor to pay their bail.",
+      "gold_disambiguations": [
+        {
+          "premise": "The majority of Georgians incarcerated in local jails are not there because they were convicted of crime. They are simply too poor to pay their bail.",
+          "hypothesis": "They have never been convicted of crime in their lives.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The majority of Georgians incarcerated in local jails have never been convicted of crime in their entire lives. They are simply too poor to pay their bail.",
+          "hypothesis": "They have never been convicted of crime in their lives.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Typically, 30 to 70 percent of all pretrial jail population is poor...",
+        "Pretrial detention is borrowing from the poor.",
+        "Meaning little more than money bail in practice, bail schedules represent a hidden, pernicious form of wealth-based incarceration, says Cassandra Baur.",
+        "Pre-trial incarceration is the next prison boom, says R.",
+        "Georgians pay with their lives when America refuses to pay with its tax dollars to care for their most vulnerable and needy.",
+        "Jail Time: Criminalizing Poverty in the South, an ACLU report published in September 2015, explores Georgia's debtors prisons practices, which can trap",
+        "Money bail is a controversial practice–it's not particular to just one state or to one race.",
+        "Writ large, this is a social justice issue, says public interest attorney Sarah Gerwig-Moore.",
+        "The problem is it's about money and it's about being poor, said Jeff Wall, president and CEO of the U.S.",
+        "Being poor is technically not a crime..."
+      ]
+    },
+    {
+      "id": 39987,
+      "ambiguous_sentence": "I sometimes, but not always, take my coffee with cream and sugar.",
+      "gold_disambiguations": [
+        {
+          "premise": "I always take my coffee with cream and sugar.",
+          "hypothesis": "I sometimes, but not always, take my coffee with cream and sugar.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "I always take my coffee with cream and sugar.",
+          "hypothesis": "I sometimes, and possibly always, take my coffee with cream and sugar.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Creaming beds down a cake batter, while creaming the sugar into a dough aerates it and therefore takes a lot of time.",
+        "Cream and sugar to me, means I use 1 or 2 tablespoons of Half and Half, one-half teaspoon of fine brown sugar or evaporated cane",
+        "My here means it's my choice, not that there is a stash of milk and sugar just for me.",
+        "Ensalada, literally salad in Spanish, is a tiny strip mall restaurant​ tucked away in a very eclectic part of Portland, Oregon.",
+        "What?",
+        "Alen Jenton is a sweet marriage of luscious home-swopping innkeeper Alen Nicholls and sultry baker Jenton Cole.",
+        "Several international dietary guidelines recommend strongly limiting or avoiding full-fat dairy (such as butter) due to its saturated fat content, Clark points out.",
+        "Together means that both of us, or more, will watch a movie at home or in the cabana.",
+        "Sometimes, but not always is a different type of tautology, a very common one like she goes to school, which is more correct English than",
+        "Sometimes means I'm not consistent."
+      ]
+    },
+    {
+      "id": 72944,
+      "ambiguous_sentence": "It was not until the 17th century that the city began to grow rapidly, though it may have been founded much earlier.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was not until the 17th century that the city began to grow rapidly, though it may have been founded much earlier.",
+          "hypothesis": "The city was founded in the 17th century.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was not until the 17th century that the city began to grow rapidly, though it existed before then.",
+          "hypothesis": "The city was founded in the 17th century.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The history of decomposition is the history of microorganisms.",
+        "Coronado,ґСДrubbdsjdkuorkzdsokuinbgdvtdknov.ru a native of Cuenca, Spain",
+        "Celtic, derives from the phrase meaning poverty-stricken, miserable city in Latin, was used to offensively refer to Lepizig.",
+        "Mariazell is also the name of a mineral and an arrondissement of the Lüneburg overlordship (1409–1803/1814",
+        "Monclova is said to be a derivative of the French word for monclo, which is short for moncloire, or cloak.",
+        "although the church was built near the sea, 30 feet below the level of the ground, because in that part of the world there was a plague which every",
+        "Well, mead did stick with me!",
+        "Syx Saxonien fyrede sigers sande so the history books say, and there you have it; that's all you need to know about",
+        "s-bronnen waarop bloed wordt gedronken; animosictige gemeenschappen gevormd door liefhebbers van bloedrituel",
+        "yaounde in Latin."
+      ]
+    },
+    {
+      "id": "77_c",
+      "ambiguous_sentence": "There were many mistakes in the paper that the editor did not find.",
+      "gold_disambiguations": [
+        {
+          "premise": "There were many mistakes in the paper that the editor did not find.",
+          "hypothesis": "There are not many mistakes in the paper.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The editor searched for mistakes in the paper and did not find many.",
+          "hypothesis": "There are not many mistakes in the paper.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Shave and never shave are opposite to each other.",
+        "Dialogue in Late Antiquity | fall 2013.",
+        "Mistakes was made or mistakes was made in I caught a wrong bus by accident?",
+        "Super-flammable algae remove from the article.",
+        "It is the editor's conscience that often keeps him so very independent, eager to find mistakes and to correct them.",
+        "The economies can make big tourism markets in small boats.",
+        "I said there were many mistakes, let's find it out quickly!",
+        "Here, it turns out, the flat plating method of vertical board and web, the editor specifically says that the height of the production should not go beyond the",
+        "Kimchi: From the Fridge to the International Table was published in Korea in January 2016.",
+        "Even if self-accident was not cause-efficacy, was too many mistakes of a paper?[Rebuttal?]."
+      ]
+    },
+    {
+      "id": 9136,
+      "ambiguous_sentence": "The jury returned a single verdict of guilty for first degree murder.",
+      "gold_disambiguations": [
+        {
+          "premise": "The jury returned a single verdict of guilty for first degree murder.",
+          "hypothesis": "The jury returned a single verdict of guilty for second degree murder.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The jury returned a verdict of guilty for first degree murder, possibly among other verdicts.",
+          "hypothesis": "The jury returned a verdict of guilty for second degree murder, possibly among other verdicts.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We argued the case and made our presentation to the jury before the closing arguments.",
+        "All the evidence at trial is looked on collectively by the law as one indivisible whole, and in that way, all the circumstances are open to the jury for",
+        "As far as we know, no one else has reviewed their findings, she said.",
+        "But it goes beyond that, Carey said Thursday.",
+        "And as more and more of Bill's soul was taken away and more and more the cho,ers him to make the next move.",
+        "The man we arrested is the man who committed the crime, Ermanno says.",
+        "The verdict can go one of two ways, said Brentwood PD Beth Orban.",
+        "It's a very different relationship that prior to today, criminal juries heard about knee slap robbery 3rd degree and robbery in the 2nd degree but",
+        "He get lot of crimes in Brazil.",
+        "As with most complex cases, what really pulled this case together toward the final minutes of deliberation was the testimony of the victim and her sister about the defendant's"
+      ]
+    },
+    {
+      "id": "114_c",
+      "ambiguous_sentence": "It is surprising that the professor admitted that no students wrote course evaluations.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is surprising that the professor admitted that no students wrote course evaluations.",
+          "hypothesis": "It is surprising that no students wrote course evaluations.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The professor admitted the surprising fact that no students wrote course evaluations.",
+          "hypothesis": "It is surprising that no students wrote course evaluations.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "There might be those whose intake is two or three potato chips at a meal.",
+        "Was it written this way, and all the questions were the same, and no one ever suggested there could be amelioration?",
+        "We should have known!",
+        "No student, because that was the sample that was chosen for that, that particular time.",
+        "You can guess the impressions of the students by the tone of student complaints.",
+        "Huh?",
+        "Tired faculty seminar attendees do not do so too.",
+        "It has not yet been on a class somewhere that a conspiracy, – said the woman.",
+        "In one day of popular, selective courses with new material, my point was that, because evaluations were prioritised, grading was no longer tied to quizzes ming",
+        "That's really bad."
+      ]
+    },
+    {
+      "id": "27_c",
+      "ambiguous_sentence": "Lilian and Tanaka each have two balloons.",
+      "gold_disambiguations": [
+        {
+          "premise": "Lilian and Tanaka each have two balloons.",
+          "hypothesis": "Lilian has two balloons.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Lilian and Tanaka have two balloons, together.",
+          "hypothesis": "Lilian has two balloons.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "I just gave one of mine to Tanaka, Tet says.",
+        "Don't let all three of my\nHi!",
+        "You Dear char states that one of the two balloons is filled with helium and the other with hydrogen.",
+        "After Lilian and Tanaka have traded one balloon, I'll have a total of 8 balloons, Tanaka said.",
+        "Suppose Lilian gives Tanaka two of her balloons, then Tanaka gives Lilian three of his balloons in return.",
+        "Goldfishbonk!",
+        "Today is the third balloon seminar, says Lilian.",
+        "Let's play tug of war, says Lilian.",
+        "These balls are very important to me!",
+        "I will randomly select a balloon from my two balloons."
+      ]
+    },
+    {
+      "id": 101467,
+      "ambiguous_sentence": "In a democracy, the will of the people is supposed to be reflected in the government, even though it isn't always.",
+      "gold_disambiguations": [
+        {
+          "premise": "In a democracy, the will of the people is supposed to be reflected in the government, even though it isn't always.",
+          "hypothesis": "The government is not always a reflection of the will of the people in a democracy.",
+          "label": "entailment"
+        },
+        {
+          "premise": "In a democracy, the will of the people is supposed to be reflected in the government, whether or not it always is.",
+          "hypothesis": "The government is not always a reflection of the will of the people in a democracy.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Civil society is represented in Congress by special-interest groups.",
+        "They have the vote.",
+        "Lecanto means here have I been.",
+        "If you assemble a representative group, by whatever method, they actually have expressed the preference...",
+        "Here's a key great idea...",
+        "A peoples' movement is now underway wrote Georgia State Rep.",
+        "Government used to be defined as of/belonging to the people, but over time the word has come to mean some small group which exerts control over",
+        "Democracy has another meaning: running political institutions are influenced by economic issues and in a capitalist democracy, the will of those who control the economy is what decides",
+        "Consensus doesn't necessarily equate with democracy, though it does sometimes.",
+        "The will of the people is often used as a countermaneuver to the rightwing on occasions, but the wilfulness of capitalist extraction rates their ability"
+      ]
+    },
+    {
+      "id": 63905,
+      "ambiguous_sentence": "We specifically know that exercise is good for us, but few of us actually make the time to do it.",
+      "gold_disambiguations": [
+        {
+          "premise": "We specifically know that exercise is good for us, but few of us actually make the time to do it.",
+          "hypothesis": "Making time for exercise is difficult for most people.",
+          "label": "neutral"
+        },
+        {
+          "premise": "Everyone knows that exercise is good for us, but few of us actually make the time to do it.",
+          "hypothesis": "Making time for exercise is difficult for most people.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Extraer you probably realize that many of us own the operational skills to be in better shape and the psychological fortitude to fight against disease and aging, but",
+        "A brisk walk at an enjoyable pace (such as a stroll around your neighborhood) will support your weight-loss efforts, as will going to parks, zoos,",
+        "I don't have enough time is one of the common complaints we hear from people who value accomplishments and are defined by the way they spend their time.",
+        "A lot of people shy away from exercise because they think 'I have to put on spandex and loud tech gear.'",
+        "Doctors say that the body should move three times per week, like bread and fruit, 60 minutes is enough, says Dr.",
+        "Our bodies were made to move, says Gabrielle McClinton, head trainer for fitness company POUND and author Where Are Your Limits ( Available Here ).",
+        "The trick is to understand just a little more about the biology of this, how mitochondrial function is related in so many different metabolic pathways in the body, said Martin",
+        "I can do it tomorrow, is an all-too-common phrase, and tomorrow never quite arrives.",
+        "Good for us means several things from our specific points of view, as well as tangibly affecting the health quality of our bodies.",
+        "Your best recipe for motivation to exercise is to exercise, Dr."
+      ]
+    },
+    {
+      "id": 84747,
+      "ambiguous_sentence": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+      "gold_disambiguations": [
+        {
+          "premise": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "At least a third of Americans have a negative view of the news media.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "No more than a third of Americans have a negative view of the news media.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The survey revealed that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "At least a third of Americans have a negative view of the news media.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The survey revealed that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "No more than a third of Americans have a negative view of the news media.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "We all know the saying, 'A picture is worth a thousand words,' he said.",
+        "There is deep distrust of the party in power in Washington — and the media.",
+        "When it comes to the media's defense of the First Amendment, that's an area where most people do feel the issue should be important, but the media are",
+        "It would be appropriate for media companies to adopt a more vigorous approach to pledging steps to restore public trust around the world, says WACC's Secretary General,",
+        "In all fairness, in this country, when they do a poll, fake polls, Trump said.",
+        "A mere 6-percent view Fox News negatively.",
+        "For a liberal, big government, pro-amnesty presidential nominee to be so unpopular is surprising, he says.",
+        "This is big by any account, Hofstetter said.",
+        "A negative view only says that 37 percent of those surveyed said they didn't trust conventional news.",
+        "The American government is at an all time low in terms of credibility / trust."
+      ]
+    },
+    {
+      "id": 98877,
+      "ambiguous_sentence": "The company doing well did not lead to the employees being happy.",
+      "gold_disambiguations": [
+        {
+          "premise": "Even though the company was doing well, the employees were not happy.",
+          "hypothesis": "The company doing well did not lead to the employees being happy.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Even though the company was doing well, the employees were not happy.",
+          "hypothesis": "The employees were unhappy, because the company was doing well.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "I Need a Pay Increase is a common cry heard these days.",
+        "In the early days, the company did well, and the employees did not explode suddenly.",
+        "It seems that for the company employees, do not know how to bring me the joy, what they are trying to do is to fill me no control, company",
+        "Love machine is really like a love beast, with a certain degree of popularity, employees can get a very good life, but it is not happiness.",
+        "The two were not in the first-, second-place position, we are constrained to a certain extent by the difficulty of recruiting enough people with relevant expertise in this field",
+        "Indeed not, the VP said, as Mr.",
+        "firesale\nThe company doing well did not lead to the employees being happy.",
+        "The system to pretend to be proficient in front of others and to look down on those who were incompetent caused employees with different levels of talent, abilities, and",
+        "Happy people act like happy people.",
+        "I thought it was going to improve slowly."
+      ]
+    },
+    {
+      "id": "115_c",
+      "ambiguous_sentence": "These snakes get their name from the beautifully changing pattern along their bodies.",
+      "gold_disambiguations": [
+        {
+          "premise": "These snakes get their name from the beautifully changing pattern along their bodies.",
+          "hypothesis": "The pattern on the snake is uniform across the body.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "These snakes get their name from the pattern on their bodies which beautifully changes over time.",
+          "hypothesis": "The pattern on the snake is uniform across the body.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Copperheads can live for up to 20 years and are known for attacking swiftly and fiercely if provoked.",
+        "This would make it one of the world's most endangered snakes, notes Galla.",
+        "The color change, scientifically referred to as iridescence, is the result of light wave interactions reflecting off structures that can be found on either their scales or",
+        "Eastern Ratsnake is an alternate name for Northern Black Racers.",
+        "Wateringhole is at 450 buried treasure sites...the possessor gets the pageant, which is traditionally held in Sydney, but councils along the east",
+        "Rainbows are primarily a creeper species.",
+        "Boa is Spanish for snake, and they are sometimes called boa constrictors.",
+        "Corn to be sure, this creamy white rodent-shaped treat features a rich, buttery filling atop a crunchy, harmonious base.",
+        "Colours can give clues to their habitat and how they should feel.",
+        "Testudo means shield or turtle and lagobia thus means a shield-bearer, as they look like young turtles, with a"
+      ]
+    },
+    {
+      "id": 94677,
+      "ambiguous_sentence": "In many ways, though possibly not all ways, the American Revolution was a direct result of the Seven Years' War.",
+      "gold_disambiguations": [
+        {
+          "premise": "In many ways, though possibly not all ways, the American Revolution was a direct result of the Seven Years' War.",
+          "hypothesis": "The Seven Years' War was not the only reason for the American Revolution.",
+          "label": "neutral"
+        },
+        {
+          "premise": "In many ways, though not all ways, the American Revolution was a direct result of the Seven Years' War.",
+          "hypothesis": "The Seven Years' War was not the only reason for the American Revolution.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Priors came before 1937 - dates within each are in red -- alphabetized within war and then conflict date for landscape generation effect.",
+        "The Great Awakenin g occurred between the 1720s and the 1760s in both America and England.",
+        "The Great War for Empire or French and Indian War left the British Crown deeply in debt.",
+        "Considered in the Sandbox Game a Different Level of Difficulty, the Diplomatic Abilitie puts you ahead in a narrow-focued, often cold-hearted",
+        "Many Ways because Crown efforts to strengthen its control over its colonies had been underway well before this war and remained, more or less, in place until the War",
+        "The Seven Years' War was the first global war that occurred as a direct conflict between the French and the British, fought on three continents over four oceans.",
+        "I see myself as millennial who loves to tell stories.",
+        "America: The Nat Defenders: The American Century (ReveniReal 2-23-18) Today we are inspired by grace and gratitude,",
+        "First World, Counter-Revolutionary, Consciousness & Trotskyism.",
+        "The postwar settlement imposed on the American colonies by the terms of the Paris peace treaty of 1763 sealed the fate of the revolution, setting it in train"
+      ]
+    },
+    {
+      "id": 89916,
+      "ambiguous_sentence": "Though the animal was in the accident, it was not injured.",
+      "gold_disambiguations": [
+        {
+          "premise": "Though the animal was in the accident, it was not injured.",
+          "hypothesis": "The animal was not in the accident.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The animal was not injured in the accident, whether or not it was in the accident at all.",
+          "hypothesis": "The animal was not in the accident.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Let's not forget that these animals are a protected species on these lands.",
+        "Foot a few years the alternator of this Volvo S40 had the great idea to solve this to problem please have me and for some reason never came to the",
+        "The daycare is not open.",
+        "I picked her up and called Kim and saved her life, said Rutherford.",
+        "I don't quite know what happened, Boltly said.",
+        "Unfortunately, his animal was not in the condition to be treated in a hospital, said prosecutor Maksym Andrusiv.",
+        "Devil of a horse: Funny photos from the Stone Bridge flight.",
+        "It's one of the most heartwarming stories you'll hear all year, Tyson's Bryan Gilbert told WFSB-TV.",
+        "An encounter occurred on a Friday night after 10 p.",
+        "It's OK, buddy, Morgan said."
+      ]
+    },
+    {
+      "id": 16747,
+      "ambiguous_sentence": "He was passed over for the promotion, which is a possible explanation for his anger.",
+      "gold_disambiguations": [
+        {
+          "premise": "He was passed over for the promotion, which is a possible explanation for his anger.",
+          "hypothesis": "He was passed over for the promotion.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is possible that he was passed over for the promotion, which would explain his anger.",
+          "hypothesis": "He was passed over for the promotion.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We have all kinds of sources of intelligence on what people here are thinking about, and while we don't know what anyone is going to do, they are not",
+        "Its never been about me, and now he's blaming me.",
+        "I would almost rather not continue to live as a human, Mr.",
+        "Is that why he stabbed me in the stomach?",
+        "You wouldn't have been sitting in that, they said.",
+        "I don't think you're right, Madam First Secretary.",
+        "Last night, he was eating dinner with his wife, and he began lashing out, accusing his wife of breaking their vows to one another and betraying him",
+        "I have gone through this sort of tiny possibility, that if he turned, he could be met by a group of his top advisers and top council that he would",
+        "Doctor Iroh?",
+        "There was nothing really done, said Terry O'Neal, 10th Geological Division president."
+      ]
+    },
+    {
+      "id": 70407,
+      "ambiguous_sentence": "If an employee is fired for a cause, the employer is not required to give the employee a severance package; otherwise, the employer is required to do so.",
+      "gold_disambiguations": [
+        {
+          "premise": "If an employee is fired for a cause, the employer is not required to give the employee a severance package; otherwise, the employer is required to do so.",
+          "hypothesis": "If an employee is not fired for cause, the employer is required to give the employee a severance package.",
+          "label": "entailment"
+        },
+        {
+          "premise": "At least in the case where an employee is fired for cause, the employer is not required to give the employee a severance package.",
+          "hypothesis": "If an employee is not fired for cause, the employer is required to give the employee a severance package.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "For cause means violent, unlawful, maliciously aggressive, and disobedient ways of behavior.",
+        "In a breach of contract claim for severance pay under the employment contract, it is an employer's burden to prove a legitimate, non - discriminatory reason for firing",
+        "Due wages include wages saved through for-profit employer-funded retirement plans.",
+        "For cause may include theft, fraud, or any other action that can clearly be done in order to damage the company.",
+        "Separation from work after 15 years at a company is considered long-term leave even though it may be attributed to an employee's misconduct.",
+        "For cause means that the employee's performance falls below the standard which the company requires or that an employee violates ethical or moral requirements established by the company.",
+        "Cause refers to adverse actions taken by a worker that makes them unfit for their employment.",
+        "Cause is used widely in the employment industry and the law, but its definition varies.",
+        "Severance pay was covered by the Hong Kong Industrial Relations Ordinance (Cap...",
+        "For a cause means that the employee has violated certain restrictions, done something unacceptable, or caused damage to someone else, which is beyond the scope of general employee"
+      ]
+    },
+    {
+      "id": 94969,
+      "ambiguous_sentence": "I always feel more comfortable when I am at home than anywhere else.",
+      "gold_disambiguations": [
+        {
+          "premise": "I always feel more comfortable when I am at home than anywhere else.",
+          "hypothesis": "I never feel more comfortable than when I am at home.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I always feel very comfortable when I am at home.",
+          "hypothesis": "I never feel more comfortable than when I am at home.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Home, as we know it for today, is the solution that we offer in real estate.",
+        "Well, after all, it's always been there there and it isn't going to change.",
+        "Kansas Warden High School\nthat for one thing I ought to blame on the dog.",
+        "Home sweet home, please.",
+        "Home is where the heart is is one of my favorite expressions for times when I miss my family that live far from me or when I miss my friends that",
+        "I Drive the Magic School Bus quiz.",
+        "Home Sweet Home is the perfect description of the place that I feel most safe and appreciated.",
+        "Home is where I am in control.",
+        "Stand wisely when you speak - A man's mind may be regularly far more extended, than he has intelligence to trace out.",
+        "Where is home?"
+      ]
+    },
+    {
+      "id": 102690,
+      "ambiguous_sentence": "It was raining, so I stayed home; otherwise I would have gone outside.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was raining, so I stayed home; otherwise I would have gone outside.",
+          "hypothesis": "If it had not been raining, I would have gone outside.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It was raining, so I stayed home, though there may have been other reasons too.",
+          "hypothesis": "If it had not been raining, I would have gone outside.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It's boring anyway, I muttered, walking into my room.",
+        "If it was raining, said Alyx, there would have been no possibility of going out.",
+        "I'm going outside, I told my roommates, who were watching TV.",
+        "Oh oh, I thought, what can I do to entertain myself?",
+        "Don't knock that proper church.",
+        "Indeed there is a huge amount of evidence on the other side, but we would need decades and billions more dollars to get it out.",
+        "Sidewalks?",
+        "Top 25 Rock Songs You Need to Listen To\nJune 10, 2009 at 9:21 p.m.",
+        "Out there is where to find inspiration.",
+        "How come you didn't come outside?"
+      ]
+    },
+    {
+      "id": 73089,
+      "ambiguous_sentence": "The data provides evidence indicating that the treatment is effective.",
+      "gold_disambiguations": [
+        {
+          "premise": "The data provides evidence indicating that the treatment is effective.",
+          "hypothesis": "The treatment is not effective.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The treatment is effective, and the data provides evidence for it.",
+          "hypothesis": "The treatment is not effective.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "He keeps fooling business and similar organizations.",
+        "The protein is contained in a secretin-like, ninhydrin‐positive material removed by elution from the food particles in the stomach, which is probably different",
+        "(Hoch & Noureddine, 2014) The work must balance between being statistically significant...",
+        "Predict # denotes the number of predicted outliers.",
+        "Steven Struijk, Deputy CEO, MIVS The launch of XRAYCARE has enabled us to expand our international offerings of imaging services, which",
+        "We found no toxic cardiovascular, immunological, or haematological effects, particularly if you take into account that our testing was practically done at concentrations far more than",
+        "How To Be Right: The Ultimate Guide to Getting Your Own Way—an accessible, funny, exhilarating and calm-i...",
+        "That is not an unreasonable conclusion, said Kahn, who was not involved in the study.",
+        "EFFECTIVENESS should be defined because there are many treatments which do.",
+        "A series of randomized clinical trials have also shown the effects of physiotherapy exercises on functional outcomes of patients with knee osteoarthritis[63]."
+      ]
+    },
+    {
+      "id": 96088,
+      "ambiguous_sentence": "They were driving too fast, so they got pulled over.",
+      "gold_disambiguations": [
+        {
+          "premise": "They were driving too fast, so they got pulled over.",
+          "hypothesis": "They got pulled over because they were driving too fast.",
+          "label": "entailment"
+        },
+        {
+          "premise": "They were driving too fast; also they got pulled over.",
+          "hypothesis": "They got pulled over because they were driving too fast.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Excuse me, sir?",
+        "Alright, they said, We were driving too fast, officer, and that's when she says, DON'T PUSH YOUR LUCK.",
+        "I'm sorry, officer, said the driver, after the policeman had begun writing him a ticket.",
+        "Okay, they were told.",
+        "Excuse me sir, but did you know the speed limit in this town is 20 kilometers per hour?",
+        "When you drive after 10 pm, do you ever get sleepy?",
+        "May I see your registration?",
+        "I can't believe we got caught, said Good Politician.",
+        "May I see your driver's license?",
+        "It says you'..."
+      ]
+    },
+    {
+      "id": 12324,
+      "ambiguous_sentence": "He was selected for the position without the direct participation of the public.",
+      "gold_disambiguations": [
+        {
+          "premise": "He was elected to the position.",
+          "hypothesis": "He was selected for the position without the direct participation of the public.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "He was elected to the position.",
+          "hypothesis": "He was chosen for the position.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "The military did not use the Preval order to recall Salvador Cabañas and did not include him in the list of officer candidates to be transferred.",
+        "Officials in his administration are proud of the name he will give to Stamp Undersecretary, the source told Al-Monitor.",
+        "at an unidentified hospital He, is on the grounds that on the internet,the western rift valley and the northern molecules have been on holiday by chromosomes on the microgravity",
+        "The potential risks of Covid are important for the decisions of pregnant woman but there are also the professional, financial and educational risks, says Sewy Tząk",
+        "I have no doubt that a new director can do a much better job.",
+        "Chang Je Sul is the 116th appointment of the 147th ministry level.",
+        "I am outraged at both the process that produced the appointment of the interim commissioner and at the resulting decision, said Kevin Rabay, president of the city's Committee",
+        "We fortuitously had in Poland the largest single point of access through the Eastern Bloc of information.",
+        "Gil Tulio Ramírez lost the Popular Consultation declared the MPMR Party in their privilege for the January 21 elections",
+        "They have provided us with this information long before our attorneys, says Heineken assistant PR director, Kevin Hess."
+      ]
+    },
+    {
+      "id": "106_c",
+      "ambiguous_sentence": "Then he became more sensible.",
+      "gold_disambiguations": [
+        {
+          "premise": "Then he became more sensible.",
+          "hypothesis": "He was drunk.",
+          "label": "neutral"
+        },
+        {
+          "premise": "Then he sobered after drinking alcohol.",
+          "hypothesis": "He was drunk.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "No, he said.",
+        "I've been fooling around some old box with some old light fixtures and fixtures and stuff from our garage in Minnesota.",
+        "Hmm, you're right.",
+        "One day, as I was driving along 14th Avenue, I ran into another vehicle, he recalled at the time.",
+        "Ana says that she would quit with me and remain together.",
+        "You won't tell anyone about this incident, will you?",
+        "A nice-looking Londa Jane, the closing phrase, she said.",
+        "Great, just brilliant, E-β",
+        "Won't they?",
+        "But I'll be able to do nothing, she looked at her mirror and was almost shocked at how Christmas celebrated their ninth year of marriage on Intermission Hill,"
+      ]
+    },
+    {
+      "id": "62_c",
+      "ambiguous_sentence": "The market was empty of pork, grains, as well as all foods that were banned.",
+      "gold_disambiguations": [
+        {
+          "premise": "The market was empty of pork, grains, as well as all foods that were banned.",
+          "hypothesis": "Pork and grains were not banned.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The market was empty of pork and grains, and all other foods that were banned.",
+          "hypothesis": "Pork and grains were not banned.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Jiaoxie, the official regulations!",
+        "2% won't stay.",
+        "In what possible way can we remain in hiding?",
+        "Our goods are continually jeopardized as the Tusker Knights are threatening the village, Abigail yelled.",
+        "Erection island, which projects the edge of the republic's realm, facing the mainland of the holy land of Yin Hell A natural cause for that We must guard",
+        "The world had been locked in an endless war with the devil, and who knew the end would come.",
+        "I don't know what the basis for the ratings is, he said.",
+        "A haven for red ants and centipedes, meat was beloved of ancient Romans who had gorged on it during Winter's long mealless days.",
+        "During the 411-day siege, people were hungry all the time, mainly because of the blockade.",
+        "There are many complaints lodged against the government's policy of imposing price controls and undue restrictions on the transportation of commodities, All Assam Cashew Traders' Association"
+      ]
+    },
+    {
+      "id": 52155,
+      "ambiguous_sentence": "This year has been a trying one for the country, including a devastating hurricane and an ongoing drought.",
+      "gold_disambiguations": [
+        {
+          "premise": "This year has been a trying one for the country, including a devastating hurricane and an ongoing drought.",
+          "hypothesis": "This year has been a trying one for the country because of a devastating hurricane and an ongoing drought.",
+          "label": "neutral"
+        },
+        {
+          "premise": "This year has been a trying one for the country, because of a devastating hurricane and an ongoing drought.",
+          "hypothesis": "This year has been a trying one for the country because of a devastating hurricane and an ongoing drought.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "What I really want to talk about today is the cuts in the Congressional budget resolution that have significant implications in Arkansas, Woolsey told conference attendees, raising the prospect",
+        "Our thoughts and prayers go out to everybody in Texas, President Donald Trump said at a news conference Friday morning.",
+        "It's been remembered by many that February was dry, said Walt Biggin, president of Canadian Friends of Lake Winnipeg.",
+        "Extremely difficult and dangerous.",
+        "Who needs anything?",
+        "I'm sure you are all missing Record Audio Equipment, Inc, and we are missing you too!, Management says as they pray for the people devastated by hurricane Irma",
+        "But this is one of the worst years in memory for amphibians and reptiles.",
+        "When you think about it we had 170 people killed in 2011, and now through [April] we have nearly 600 people killed, Tromp",
+        "Labor Day marks the end of summer for many Americans, but for these communities it'll bring home just how much economic damage has been inflicted upon them, said David",
+        "Unfortunately, the initial effects of the initial epidemic in 2016 and 2017 has resulted in a deleterious effect on Florida's citrus groves this"
+      ]
+    },
+    {
+      "id": 6813,
+      "ambiguous_sentence": "They have a lot of friends in common, though they are not friends directly.",
+      "gold_disambiguations": [
+        {
+          "premise": "They have a lot of friends in common, though they are not friends directly.",
+          "hypothesis": "They are friends.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "They have a lot of friends in common, whether or not they are friends themselves.",
+          "hypothesis": "They are friends.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Oh, you're on the Sijil Pelajaran Malaysia-- wait, that's Malaysian for 'Certificate of Education', isn't it?",
+        "I imagine that just allows for a nice easy access in working together, he said.",
+        "Girls' HQ Netbuzz serves as the best example.",
+        "Foolishness, partisanship, civil war, publicly turn against each other; but all are caused by this Roman emperor.",
+        "Monty Towsend Wallman is the persona he used before becoming Mr.",
+        "rank_8: 2511, return: [ { Like there was a gender barrier.",
+        "Evidence shows that bearded dragons, despite their cold-bloodedness, possess emotions that are not better than that of an average dog, they concluded.",
+        "I figured it out, Jesus said.",
+        "Friends of a friends  (direct translations a direct object), or  friends of friends ._\nWhat do you talk about?",
+        "What if he runs for president?"
+      ]
+    },
+    {
+      "id": 26524,
+      "ambiguous_sentence": "I think that it is a good idea, and may or may not be a great one.",
+      "gold_disambiguations": [
+        {
+          "premise": "I think that it is a good idea, and may or may not be a great one.",
+          "hypothesis": "I think that it is a great idea.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I think that it is a good, but not great, idea.",
+          "hypothesis": "I think that it is a great idea.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The proposal creates a formal process for certifying local institutions as part of THECB's ongoing effort to encourage community outreach, boost local support for higher education, and",
+        "I regularly had to hear interpretative accounts of Colonialism and on occasion apartheid, but it still comes with its limitations, Anything that helps students learn more about",
+        "Scouts are BADD Ten-X!",
+        "Harvey W.",
+        "Innate IQ tests (what are actually nonsense word tests) have a good track record of predicting school grade point averages, but yes, they",
+        "Right Kind, Authority, big sky country or not?",
+        "Cops as a procedural is hardly a PBS standard, or any network's for that matter.",
+        "May or may not be a great one seems to be the way the world is going with crypto-currencies in general.",
+        "We are all American Gun Owners.",
+        "We're up to 15."
+      ]
+    },
+    {
+      "id": 13987,
+      "ambiguous_sentence": "Before they would have come, but not anymore.",
+      "gold_disambiguations": [
+        {
+          "premise": "They won't come.",
+          "hypothesis": "Before they would have come, but not anymore.",
+          "label": "neutral"
+        },
+        {
+          "premise": "They won't come.",
+          "hypothesis": "They won't come right now.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "tell me then meaning of your strange way of living.",
+        "They With a sigh, Monomotapa cced a hand aewond.rw.rwpxn96dx OSAKA AREMAKITISH",
+        "Under our initial set-up, we are the last unifying office visited, said Yiosan Rodriguez-Guerrasian, CIPC director of international client services",
+        "The topic of 'overlapping jurisdiction' was very much on their minds underneath arguably sanctions of the Scriptures, addressing him by name.",
+        "I'm ashamed, who came to direct several productions for high schools and colleges throughout the United States.",
+        "DONALD DRUMPT?",
+        "washed their hands nobody's fault.",
+        "Just help me!",
+        "the H If the Aeolians would speak to someone they know in  A little domestic concern trying to cope with governmental.",
+        "The community feel is a lot different."
+      ]
+    },
+    {
+      "id": 30056,
+      "ambiguous_sentence": "I heard someone say that the cat was stuck in the tree.",
+      "gold_disambiguations": [
+        {
+          "premise": "I heard someone say that the cat was stuck in the tree.",
+          "hypothesis": "The cat was not stuck in the tree.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I heard the sound of the cat stuck in the tree.",
+          "hypothesis": "The cat was not stuck in the tree.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "That poor baby, I exclaimed and let that be my last comment.",
+        "What for?",
+        "Well, says a bystander, give it a good push.",
+        "Can't the man just jump up and get it down?",
+        "Never!",
+        "talk about one cat being in a pickle\nCreate an image for your business.",
+        "Help!",
+        "The cat is *in* the tree...",
+        "The cat's in the tree was a common phrase because as we know cats love climbing trees.",
+        "No, it's not a cat, it's a small boy in a cat costume."
+      ]
+    },
+    {
+      "id": 7366,
+      "ambiguous_sentence": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+      "gold_disambiguations": [
+        {
+          "premise": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+          "hypothesis": "All people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+          "hypothesis": "In general, people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The vast majority of people, perhaps even all people, who contract the virus will experience only mild or moderate symptoms.",
+          "hypothesis": "In general, people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The vast majority of people, perhaps even all people, who contract the virus will experience only mild or moderate symptoms.",
+          "hypothesis": "All people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Coronavirus exposure is everywhere right now, Dr.",
+        "You ain't going to surprise me, they said.",
+        "Immunisations have been shown to be a safe and effective way to prevent disease.",
+        "It was not every year.",
+        "We have the ability to protect gigantic elderly populations in nursing homes and in...",
+        "Across the world, WHO fears that at least a billion people have been infected, with the possibility that far more will be, as global efforts are underway to create",
+        "Resolved means that the person has been diagnosed with the infection and has recovered or died.",
+        "You cannot protect yourself if you don't know where you're going to; The 1% of cyclist accident deaths could have been largely reduced if just some had",
+        "Humans and animals must be at a safe distance from each other.",
+        "Kentucky restaurants and businesses are all doing a good job said Governor Beshear."
+      ]
+    },
+    {
+      "id": 81333,
+      "ambiguous_sentence": "She was acting like she had been possessed by a demon.",
+      "gold_disambiguations": [
+        {
+          "premise": "She was acting like she had been possessed by a demon.",
+          "hypothesis": "She was possessed by a demon.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was as if she had been possessed by a demon, though she was not.",
+          "hypothesis": "She was possessed by a demon.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "I'm going to kill you.",
+        "Bless your heart, Trace.",
+        "I'm completely sated, not wanting, strangely, she murmured.} I'm completely sated, not wanting, strangely, she murmured.",
+        "No, ah-ah, we need to head up to the moon.",
+        "No, no, don't stop what you're doing.",
+        "Not again!",
+        "No, baby, we need to talk.",
+        "Look, she might not want you to see her, she finally said.",
+        "either as thick as a stall-fed bear or as for very long periods of time.",
+        "YES HEY she yelled."
+      ]
+    },
+    {
+      "id": 43732,
+      "ambiguous_sentence": "The main goal is to find a cure for cancer as a disease, which may include preventing cancer in the first place.",
+      "gold_disambiguations": [
+        {
+          "premise": "The main goal is to find a cure for cancer as a disease, which may include preventing cancer in the first place.",
+          "hypothesis": "The main goal is to find a way to prevent cancer.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The main goal is to find a cure for cancer after it has developed in the body.",
+          "hypothesis": "The main goal is to find a way to prevent cancer.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Recently, World Health Organization estimates, on the basis of available data and the current trend, that around 8 million people die due to diseases of heart in",
+        "If a cancer is found it should be be cured.",
+        "Interestingly, motor delays are also often seen in pregnancy with heavy substance use, and improved motor development with substance use treatment during pregnancy has been reported, she told Curriculum",
+        "The Lancashire and Greater Manchester region, with its advanced scientific facilities and expertise, is unrivalled in the UK.",
+        "Cancerich cells for the purpose of ecologically conscious cancer management and prevention techniques, it is necessary to make a list of compounds, known factors and signals",
+        "Melanocyte is named after melanin and cyte, which means cell.",
+        "Prevention may include preventing development of precancerous lesions (i.e.",
+        "Institut Curie wants to provide new treatments, in which patients can have full confidence, a necessary condition to reduce the suffering of patients, explained it's",
+        "How We Work could start with something like this: Every cancer patient is seen and their lifestyle and their cancer is noted.",
+        "Cancer cure is the alleviation of cancer through treatment of new or pre-existing cancerous growths."
+      ]
+    },
+    {
+      "id": "135_c",
+      "ambiguous_sentence": "I'll be impressed if you understand his T shirt.",
+      "gold_disambiguations": [
+        {
+          "premise": "I'll be impressed if you understand his T shirt.",
+          "hypothesis": "I'll be impressed if you understand his T shirt.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I'll be impressed if you understand his T shirt.",
+          "hypothesis": "I'll be impressed if you acquire his T shirt.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Arts Council Big Lottery (c) 2010.",
+        "Lecter in my purdy red sarpezzo\nMaybe we could start a fan club makeover of FBI agents and have a competition or something.",
+        "Fear of a modern world.",
+        "When Honor is lost, Rust will follow-/g\nHow...human.",
+        "Domi-Loga is Russian",
+        "vote torrance must indicate that he's at one of the most liberal cities in California...",
+        "Miko Kicks...",
+        "Shakin' the tree = defloration, The Quilt is brunette (Scarlett Johansson), and in reference to a famous comment she made to",
+        "Ckumbucket double brazilian curl tube and I have no clue what they are on about.",
+        "Fear jumps out, I suppose, alluding to his fear of heights."
+      ]
+    },
+    {
+      "id": "120_c",
+      "ambiguous_sentence": "He is the only one who told her what she needed to know.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is the only one who told her what she needed to know.",
+          "hypothesis": "Other people may have told her the same thing.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "What he told her is all she needed to know.",
+          "hypothesis": "Other people may have told her the same thing.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "ISBN: avg rating — 9 Ratings.",
+        "Your son is only three-and-a-half and he is your best friend and doesn't keep your secrets to keep his job, he said on the phone from Oregon",
+        "We have to go return his notebook, Yoshida recounts.",
+        "said his mother.",
+        "Her in this case meaning the government called Raila Odinga.",
+        "It was not the horror, ithe cliffhanger and flow forth with the water.",
+        "I think maybe it would be best if we see each other again this evening.",
+        "Who cares about a stable world.",
+        "Chalk another one up for the men, he said, starting to tear up and shedding a couple of tears.",
+        "I was looking for the color green, like his eyes, she recalls."
+      ]
+    },
+    {
+      "id": 71750,
+      "ambiguous_sentence": "The athlete (a specific person) will not be disqualified from the competition.",
+      "gold_disambiguations": [
+        {
+          "premise": "If an athlete uses a banned substance, they will be disqualified from the competition.",
+          "hypothesis": "The athlete (a specific person) will not be disqualified from the competition.",
+          "label": "neutral"
+        },
+        {
+          "premise": "If an athlete uses a banned substance, they will be disqualified from the competition.",
+          "hypothesis": "The athlete (as a generic) will not be disqualified from the competition.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Specific\nHow are you supposed to know when one athlete cannot be paired with another - unless for specific athletes there are extensive explanations in the rulebook.",
+        "Nullity is the word to describe it.",
+        "Disqualification of an athlete or referee, or of their team-mates,選手の退場、審判員による選手の退場,選手一団",
+        "Flat ground means an incline of no more than10 degrees.",
+        "The athlete will compete in the lifelong event that is his dream.",
+        "If an athlete a can overpower an athlete B, it's ok and normal to win fair and square, speed skater Shani Davis stated at the end of",
+        "Ugly sport redirects here.",
+        "Particular instances may be ruled wrong without the penalty of disqualification.",
+        "Only a tribunal consisting of three qualified and neutral persons shall have the right to impose the sanction of disqualification upon a person.",
+        "Showing a finger, however, has a multifaceted meaning, which may be a good reason to include the gesture in the Regulations, as we encounter it most"
+      ]
+    },
+    {
+      "id": 4728,
+      "ambiguous_sentence": "The flu virus is spreading rapidly among the population.",
+      "gold_disambiguations": [
+        {
+          "premise": "The flu virus is causing an epidemic.",
+          "hypothesis": "The flu virus is spreading rapidly among the population.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The flu virus is causing an epidemic.",
+          "hypothesis": "The flu virus is spreading rapidly in the environment.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It's already fully out there, state epidemiologist Benjamin Cowley told the BBC News website.",
+        "It's worse than in previous years, reported Irene Dror, spokeswoman at the Emek Medical Center in Afula, north of Tel Aviv.",
+        "Flu season is starting to take its toll and tens of thousands of new people are getting the flu everyday.",
+        "I have no doubt that this form of flu is circulating, she said of the H1N1 the virus, better known as the Swine Flu Virus.",
+        "The bug  spreads through the air, therefore we try to avoid as many affects of the disease as much as we can.",
+        "Health tells what happens to the body when infecting influenza virus, what to expect and how to fight it.",
+        "Normal signs and symptoms include fever, chills, headaches, body aches, a cough or sore throat, and fatigue, Do you remember this from your",
+        "Every day, every week, says Sarah Schmitt, Immunization and Science Institute, we reach an outbreak in the United States.",
+        "Both number of patients and number of deaths climbing, which is only up.",
+        "Don't Get the Flu Shot, It's Dangerous is the latest headline that scares many Americans."
+      ]
+    },
+    {
+      "id": 10452,
+      "ambiguous_sentence": "It is clear that our current education system is not preparing students for the real world, which it should do.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is clear that our current education system is not preparing students for the real world, which it should do.",
+          "hypothesis": "Students should be prepared for the real world by our current education system.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is clear that our current education system is not preparing students for the real world, whether or not that should be the aim.",
+          "hypothesis": "Students should be prepared for the real world by our current education system.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Students are treated as children, so they feel inferior, and also do not learn how to work together to get things done.",
+        "Our present educational institutions misrepresent reality and cause more harm than good to students, says Mohammed Said al-Sadiq.",
+        "It is clear that our current education system is not preparing students for the real world, which it should do.",
+        "Education reforms delivering for all students, whatever their background reads the headline of a press release by Damian Hinds MP, the UK's Secretary of State for Education",
+        "College For All movement has distorted the high school mentality.",
+        "Real world it might be a somewhat vague term but in terms of anthropological dimensions it can never be escaped.",
+        "One way to contribute to ensuring that students have the skills they need in the 21st century is to update the teachers who will help educate them...",
+        "Business is not tantamount to success.",
+        "Preparation is not shown by basic terms, but also done by more advance terms.",
+        "We've been lamenting for quite a while"
+      ]
+    },
+    {
+      "id": "98_c",
+      "ambiguous_sentence": "It's hard to work together when you literally don't speak the same language.",
+      "gold_disambiguations": [
+        {
+          "premise": "It's hard to work together when you literally don't speak the same language.",
+          "hypothesis": "Language barriers make it hard to work together.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It's hard to work together when you don't understand one another well.",
+          "hypothesis": "Language barriers make it hard to work together.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We're trying to build a land of Intolerance.",
+        "One Small Square Latvia.",
+        "Person was made for people who want to maintain privacy over audio recording or cutting out noise in videos, just as the name suggests.",
+        "People in the U.S.",
+        "The Turin Horse, a 2011 film from Hungarian director Bela Tarr (who characterizes the movie as possibly the last film in the world",
+        "I speak to my wife in Spanish.",
+        "Ajaj, bailing out, English Yorkshiremen don't braai, dingopants -- this is how the second team (Red Army",
+        "Duplicolor spraypaint for the panels of an ambulance.",
+        "Communicate More helps your show conflicts work better by breaking down communication barriers.",
+        "In engineering, there's a process before you can build anything called the design review process, where you get everybody together and make sure all the departments are on the"
+      ]
+    },
+    {
+      "id": "35_c",
+      "ambiguous_sentence": "She wants to work with whichever professor in the department has the best reputation.",
+      "gold_disambiguations": [
+        {
+          "premise": "She wants to work with Dr. Smith, the professor with the best reputation in the department.",
+          "hypothesis": "She wants to work with whichever professor in the department has the best reputation.",
+          "label": "neutral"
+        },
+        {
+          "premise": "She wants to work with Dr. Smith, the professor with the best reputation in the department.",
+          "hypothesis": "She wants to work with a professor who happens to have the best reputation in the department.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Well, all of us are pretty good, except for Mary Jane Glocker, chimed a voice from across the room.",
+        "The distinction goes to color, she says.",
+        "You don't stand still - or your reputation does terrible things to you.",
+        "Which department really kills in Boston, she says, is really troubling.",
+        "Not caring about the reputation of any professor in her department is to actively choose against it.",
+        "How to add a thesis?",
+        "I was greatly influenced by him when I was in graduate school.",
+        "It is a nice, recent, air-conditioned building, says the student.",
+        "I will take advantage of the various study abroad opportunities whilst studying here, says Alana.",
+        "Provider Profiles , Search for the Best Professors in Law, UX Design for Professor Nomination System, Data Viz: Best Professors"
+      ]
+    },
+    {
+      "id": 45119,
+      "ambiguous_sentence": "You are expected to be able to figure it out.",
+      "gold_disambiguations": [
+        {
+          "premise": "I'm sure you'll be able to figure it out.",
+          "hypothesis": "You are expected to be able to figure it out.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I'm sure you'll be able to figure it out.",
+          "hypothesis": "You will, in reality, be able to figure it out.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "He submit fewer coaching mails.",
+        "Please take off your shoes and put on house slippers.",
+        "If you don't figure it out, you'll figure it out!",
+        "OK, I have a tree here.",
+        "Figuring it out means the basics of the block placement.",
+        "That's not my business.",
+        "Some people might",
+        "Permission is hereby granted, says that, ironically.",
+        "Why is this the way it is is eventually a matter of preference.",
+        "Think fast, you hear people say, and see others gasp things like, You're smarter than that, and If only I'd thought about it"
+      ]
+    },
+    {
+      "id": 59262,
+      "ambiguous_sentence": "We cannot simply sit by and watch as the world around us crumbles; we must take action to prevent it.",
+      "gold_disambiguations": [
+        {
+          "premise": "We cannot simply sit by and watch as the world around us crumbles; we must take action to prevent it.",
+          "hypothesis": "We must take action to prevent the world from crumbling.",
+          "label": "entailment"
+        },
+        {
+          "premise": "We cannot simply sit by and watch as the world around us crumbles; we must take action of some sort, though not necessarily to prevent the crumbling.",
+          "hypothesis": "We must take action to prevent the world from crumbling.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Show Your Face  warns of the moral decline in American society and calls for a return to personal responsibility.",
+        "He spoke to them begining early in the morning, standing on the shore; but he showed them alone, and did not speak to them about the incident of",
+        "Appear on the horizon with us!",
+        "They cannot always have new men, and we must realize there is only a limited number of times you can call Bud [PBS news host Bud Krogh] -",
+        "We Need To Stop Bullshit is our answer to the constant struggle of sliding back into old habits; of battling with ourselves to break free from patterns of shame",
+        "The only permanent feature in our universe is change, claimed Ricky Green, an alumnus from 2003 and Member Experience Officer at The Wilmington Trust at a",
+        "UR COMPROMISING SATANIC AMOR TRUTH BET FREEWill  Robinson gives us a profound revelation of how to live the victorious life.",
+        "The Great Collapse is a poem urging everyone to act now before it is too late.",
+        "We must act is the core message we would like to share in meme format, with a collection of images illustrating the stark reality of today's struggles as well",
+        "The mission of the conservation movement is to arrest and reverse the spiraling deterioration of the environment and to restore Earth to an ecologically healthy state, for the benefit"
+      ]
+    },
+    {
+      "id": "103_c",
+      "ambiguous_sentence": "Mykonos has had a head start as far as diving is concerned because it was never banned here like it was in other places (after all, there are no ancient sites to protect).",
+      "gold_disambiguations": [
+        {
+          "premise": "Mykonos has had a head start as far as diving is concerned because it was never banned here like it was in other places (after all, there are no ancient sites to protect).",
+          "hypothesis": "Diving was banned in places other than Mykonos.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Mykonos has had a head start as far as diving is concerned because it was never banned here, regardless of whether there were bans in other places (after all, there are no ancient sites to protect).",
+          "hypothesis": "Diving was banned in places other than Mykonos.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Now the restrictions have eased at other resorts and there's a lot more activity all round, but Mykonos is still the favourite spot.",
+        "Here, we began out of a recreational background, says Choenos of the founders of the club, who are US military veterans.",
+        "It's is a very well-developed destination but not too crowded if you want to get away from the tourists.",
+        "Times has changed a lot, but the traditional guy was looked at a bit like a criminal if he went diving.",
+        "On the contrary says Stephanos Syrogiannis, President of the Society of Protected and Evolutionary Sea Creatures on the island we have a rash of",
+        "Sandy Boy started offering diving courses about thirty years ago to everyone from hotel owners to water sports professionals.",
+        "So far so good, but there's a problem here too, says diving instructor George Kouskouris, who has dived at more than 200",
+        "I got my diving license when I went to Athens in 1986; they just gave me the certificate and told me to read the book, recalls Arani",
+        "The most important spots are not on the main island of Mykonos but koutala (a local slang for the nearby islands).",
+        "Swimming is allowed only within specified hours and with special permits is the last line in the Greek Diving Regulations and it's a specific law on Mykon"
+      ]
+    },
+    {
+      "id": "45_c",
+      "ambiguous_sentence": "The turkey is ready to be eaten.",
+      "gold_disambiguations": [
+        {
+          "premise": "The turkey is ready to be eaten.",
+          "hypothesis": "The turkey is alive.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The turkey is ready to be fed.",
+          "hypothesis": "The turkey is alive.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "You can call the clock work.",
+        "Buko kamote patch  Where Does The Difference Come From?...bamn not only rolls, but rolls 'em all– rice, bread, newspaper,",
+        "Get in here, you won't be sorry!",
+        "Wing it is a term that is used to mean just do it and hope that it all works out in the end.",
+        "We meaning me and my lodger, Mr.",
+        "So much for minimum wage and Abramoff, groaned aggravated Sagia as they wait for help.",
+        "There are butterflied turkeys, turkey with a salty brine, turkey stuffed with broccoli and cheese, crowning such surreal culinary adventures is a grand moment",
+        "Ooo wee oo wee ooo we, sings Daniel Tiger's neighbor Dr.",
+        "Sweet Charlotte runs in the background of this film.",
+        "All the meat I can eat, a friend of mine quipped, nearly hiccupping through his mustardy beards as we chomped away."
+      ]
+    },
+    {
+      "id": 14789,
+      "ambiguous_sentence": "The company's profits have tripled because it began its expansion into new markets.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's profits have tripled because it began its expansion into new markets.",
+          "hypothesis": "The company's expansion into new markets is the reason why its profits have tripled.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's profits have tripled after it began its expansion into new markets, though the relationship is not necessarily causal.",
+          "hypothesis": "The company's expansion into new markets is the reason why its profits have tripled.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Mr.",
+        "But I'm fighting some realities in this too-fast-moving world, he said.",
+        "Astonishingly prolific and stupefyingly perverse is the reaction of Phillippe Marliere to some record sales in the Northeast.",
+        "You have to add up all those numbers, Ballmer said, noting that better known brands could be bought cheaply and offered all sorts of new areas for growth",
+        "MGN's social responsibility is contributing to social development by ensuring people can manage their assets with safety and comfort, says John.",
+        "We have focused on expanding expanding growth, which is paying off rather handsomely.",
+        "# Number Expression Match  English Wideo.",
+        "With this capital, the company will expand satskingstars.co.uk into east Asia, says the CEO.",
+        "We have now tripled our revenues, and expanded operations by acquiring many actors and talents, Paul said.",
+        "It had been dominating the market."
+      ]
+    },
+    {
+      "id": 34579,
+      "ambiguous_sentence": "The office of the President is not beholden to the law.",
+      "gold_disambiguations": [
+        {
+          "premise": "The President is not above the law.",
+          "hypothesis": "The office of the President is not beholden to the law.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The President is not above the law.",
+          "hypothesis": "The current President is not being held accountable to the law.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Practical experience of such communities makes it clear that the reason for the failure is its utter disregard or mockery of the Constitutional integrity of the nation and the democracy en",
+        "You shall not question the lion!",
+        "Executive privilege is a term used to cover the illegal acts of the POTUS until lawyers can concoct a story that is delivered to the media that will du",
+        "Department of Justice is not a department of law.",
+        "The reason we have a president elected for life is because it allows him to break the law without consequence.",
+        "I'd like to close this circular movement.",
+        "Inauguration Day is always irreversible.",
+        "That is something the government has officially decreed.",
+        "During the incoming administration of President-elect Rodrigo Duterte, I believe that we should allow him to largely exercise the discretion given to the presidency as understood under our legal system",
+        "I had to fly to Corpus Christi for work on Thursday and I'm not back until Monday."
+      ]
+    },
+    {
+      "id": "91_c",
+      "ambiguous_sentence": "I would like to finish reading the book sometime this year.",
+      "gold_disambiguations": [
+        {
+          "premise": "I would like to finish reading the book sometime this year.",
+          "hypothesis": "I plan to finish writing the book.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "I would like to finish writing the book sometime this year.",
+          "hypothesis": "I plan to finish writing the book.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "We are a running organization.",
+        "The Girl With All the Gifts.",
+        "Mutatis mutandis, isn't it?",
+        "Deeply saddened at this news...",
+        "Jesus can do anything but fail.",
+        "Hur egyptisk ordbok, af et omrekke om 35,000 ord.",
+        "just read is a meme hosted by Daniel from Taking Up Room and Amy at Mahaska.",
+        "Never read The Scream by Vigeland - that's the abortion of a seagull flying low above the surface.",
+        "The Art and Architecture of Rome seems to be very fascinating.",
+        "Baseball is the U NSTITUTE OF POLITICAL STUDIES, UNIVERSITY CAMPUS A M."
+      ]
+    },
+    {
+      "id": "141_c",
+      "ambiguous_sentence": "The box is not lockable.",
+      "gold_disambiguations": [
+        {
+          "premise": "The box is not lockable.",
+          "hypothesis": "The box can be locked.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The box can be unlocked.",
+          "hypothesis": "The box can be locked.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "[PDF] free yamaha f6hay exc 15 hp lagi manual.",
+        "Lock box is a name of thing and make believe.",
+        "Not working\nThe SHOTBOX Studio is not a lockable, secured shipping vault.",
+        "Blooms If the loft is adjusted properly then the overall bloom volume should be higher.",
+        "Conflicts are conflicts ; the Swiss positiv law hearts the legal problems of conflicts of law are the exclusive basis for the positive evolution of the well-sett",
+        "Assange, left, and Classic on the balcony of the Ecuadorean embassy in London, after Julian Assange reveals that Ecuador gave two names of Wikileaks",
+        "Barcode for spaces: Another unwanted element.",
+        "There have been some dry boxes with latches that have been damaged when dropped while latched.",
+        "The TSR-07 belt carving machine is an important tool in the landscape gardening industry.",
+        "On slides and switches are column identification labels."
+      ]
+    },
+    {
+      "id": "131_c",
+      "ambiguous_sentence": "She told me that two weeks ago, her mom was in town.",
+      "gold_disambiguations": [
+        {
+          "premise": "She told me that two weeks ago, her mom was in town.",
+          "hypothesis": "She told me two weeks ago.",
+          "label": "neutral"
+        },
+        {
+          "premise": "She told me two weeks ago that her mom was in town.",
+          "hypothesis": "She told me two weeks ago.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Every day, she would wake up at 9 a.m.",
+        "She'll be here again this summer, my friend said as she helped me plan the delivery of a cart-full of clothes and other items, thinking ahead to the",
+        "We were in our ugg boots, and we went to the mall that has the Christmas decorations and lights.",
+        "I try to go home every year, Lynn said.",
+        "OK, so says she was doing a show here, and she was coming down.",
+        "It was the first time in six years she had seen my best friend, who had become wheeled into my mom's bedroom at this very house, bound to",
+        "Can you believe that?",
+        "I went to visit her, she said, and I didn't recognize her.",
+        "She knew, she said, and laughed.",
+        "I cooked you every single day, she told her over Skype."
+      ]
+    },
+    {
+      "id": 103217,
+      "ambiguous_sentence": "The study demonstrated that children who were read to more frequently had better reading comprehension skills.",
+      "gold_disambiguations": [
+        {
+          "premise": "The study demonstrated that children who were read to more frequently had better reading comprehension skills.",
+          "hypothesis": "Reading to children frequently leads to better reading comprehension skills.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The study concluded that children who were read to more frequently had better reading comprehension skills.",
+          "hypothesis": "Reading to children frequently leads to better reading comprehension skills.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Does Information Book Use by Parents Predict Growth in the Reading Skills of African American and Hispanic Children from Low-income Families?",
+        "The researchers report that the sooner young children start being read to, and the greater number of books to which they are exposed over time, the more likely they are",
+        "That is, the way that the adults do the read aloud task is important in promoting young children's comprehension development, she explained.",
+        "Parents should be encouraged to use existing programs such as Reach Out and Read to keep stories alive, and develop language and literacy skills in their young children as they grow",
+        "Very small children who are read to a lot can tell what an author's main point or theme is, use story language, talk about what happened next in a",
+        "Keeping a child engaged in a book stimulates brain areas needed for reading comprehension, such as the middle temporal gyrus, which helps us to visually remember the story,",
+        "what got you into weightlifting?",
+        "Compared with those who were rarely exposed to books, children with higher levels of book exposure had 15-month and two-year leads on reading tests.",
+        "The idea is that kids get conditioned, sort of like Pavlov's dogs, whether they're going to associate books, and reading, and learning with positive emotions",
+        "The use of inference skills to understand how an author organizes information to successfully convey a message appears in the language that adults use when they read to children ("
+      ]
+    },
+    {
+      "id": 13321,
+      "ambiguous_sentence": "Inflation is often, but not always, caused by an increase in the money supply.",
+      "gold_disambiguations": [
+        {
+          "premise": "Inflation is often, but not always, caused by an increase in the money supply.",
+          "hypothesis": "An increase in the money supply is not the only cause of inflation.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Inflation is often, perhaps always, caused by an increase in the money supply.",
+          "hypothesis": "An increase in the money supply is not the only cause of inflation.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The cost of living increases if the value of money decreases.",
+        "IRL —in other words, in real life— Australia's 2020 inflation rate was a far more manageable 1.67%.",
+        "A bad economy, in which consumers cut back on purchases, will cause unit labor costs to fall, since it normally becomes cheaper to hire workers (fewer workers",
+        "Printing Press Economics  sensationally depicts the seeming simplicity of increasing the local currency through rhetoric with the printed text that indicates that the money is real.",
+        "How great is the inflation you have answered each somewhat?",
+        "Inflation Overhangis what can happen when insufficient effort has been made before inflation rises, to make room for it in people's expectations.",
+        "Monetary inflation speeds up economic activity and increases prices, but is not limited to rising commodity prices.",
+        "As a general rule, the current rate of inflation is roughly equal to the rate of growth of the money supply (all else being equal), further reads the rate",
+        "Inflation is always and everywhere a monetary phenomenon.",
+        "Wisdom is the supreme part of happiness."
+      ]
+    },
+    {
+      "id": 55390,
+      "ambiguous_sentence": "The company's sales increased by (at least) 3 percent last quarter.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's sales increased by 4 percent last quarter.",
+          "hypothesis": "The company's sales increased by (at least) 3 percent last quarter.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's sales increased by 4 percent last quarter.",
+          "hypothesis": "The company's sales increased by only 3 percent last quarter.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "You're hearing mixed messages with some companies blindsiding Redmond.",
+        "I wouldn't say that we're accelerating, but sales are certainly increasing",
+        "Supporting\nThe company's sales increased by (at least) 3 percent last quarter.",
+        "Having said that, we are entering the next quarter with pricing.",
+        "The Best.",
+        "Better to keep good people.",
+        "Hurricane Harvey came right after hurricane Irma...",
+        "The plus 3 order",
+        "He has really improved his reaction time this season.",
+        "They are still an emerging player with a long runway to grow into before their sales growth could be considered mature, said a Goldman Sachs analyst."
+      ]
+    },
+    {
+      "id": 53458,
+      "ambiguous_sentence": "In the early days of the internet, web pages were simple and focused on delivering information, which is not the case anymore.",
+      "gold_disambiguations": [
+        {
+          "premise": "In the early days of the internet, web pages were simple and focused on delivering information, which is not the case anymore.",
+          "hypothesis": "Web pages are not simple.",
+          "label": "entailment"
+        },
+        {
+          "premise": "At least in the early days of the internet, web pages were simple and focused on delivering information.",
+          "hypothesis": "Web pages are not simple.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Complexity is the outcome of wickedness, not its cause- R.",
+        "If you are just showing a row of words and pictures on the screen, you are losing, Andy W.",
+        "Web 2.0 refers to fluid web pages that are an integral part of what is called the social web.",
+        "Today, they perform crucial logistical and transactional functions for customers, partners, and employees, notes web developer Chris Coyier in his book Harry Robinson's Guide to",
+        "Responsive, accordance with its name, means Responsive to the actions of its site visitors.",
+        "Flash sites (a website developed using Flash) lack basic accessibility features, making it difficult for visually impaired people to use them.",
+        "Web 2.0 is definitely a buzzword right now, and the scope and scale of websites is increasing rapidly.",
+        "Web apps in the form of full-blown applications can do just about anything, from editing documents to analyzing datasets.",
+        "Layout standards for the web are no longer just about how items fit together on the page, but now must include all visual design attributes like colors, textures,",
+        "Today the web is full of what we call'surprises' and 'navigative exposures' that drive customer behavior in a nonlinear fashion, so we're"
+      ]
+    }
+  ]
+}

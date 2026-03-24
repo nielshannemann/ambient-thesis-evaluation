@@ -1,0 +1,2858 @@
+{
+  "metadata": {
+    "timestamp": "2026-03-22T04:33:58Z",
+    "task": "task3_generative_clustering",
+    "model_name": "llada8b",
+    "model_type": "llada",
+    "model_id": "GSAI-ML/LLaDA-8B-Base",
+    "prompt_type": "disambiguated_control",
+    "hyperparameters": {
+      "num_continuations": 10,
+      "batch_size": 25,
+      "max_examples": 100,
+      "seed": 42,
+      "temperature": 0.8,
+      "top_p": 0.9,
+      "top_k": 50,
+      "cfg_scale": 3.5,
+      "diffusion_steps": 128
+    }
+  },
+  "results": [
+    {
+      "id": 942,
+      "ambiguous_sentence": "Education is expensive, and most students take out loans to pay for it, out of necessity.",
+      "gold_disambiguations": [
+        {
+          "premise": "Education is expensive, and most students take out loans to pay for it, out of necessity.",
+          "hypothesis": "Most students take out loans to pay for their education.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Education is expensive, and most students would have to take out loans to pay for it.",
+          "hypothesis": "Most students take out loans to pay for their education.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Student loans are evil, admits one.",
+        "Student loans are evil, admits Chan.",
+        "Student loans are evil, admits Marcus.",
+        "Student loans are evil, admits Collins.",
+        "Student loans are evil, admits Dave.",
+        "Student loans are evil, admits Dave.",
+        "Student loans are evil, admits one.",
+        "Student loans are evil, admits Jones.",
+        "Student loans are evil, admits Chan.",
+        "Student loans are evil, admits one."
+      ]
+    },
+    {
+      "id": "22_c",
+      "ambiguous_sentence": "In order to solve this problem, the engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+      "gold_disambiguations": [
+        {
+          "premise": "In order to solve this problem, the engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "hypothesis": "The engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "label": "entailment"
+        },
+        {
+          "premise": "In order to solve this problem, the engineers needed to computer model that could take into account the flow of water, wind, and other factors, whether or not they succeeded.",
+          "hypothesis": "The engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Our model was incredibly sophisticated, Engineer Maria explained.",
+        "Our model was incredibly sophisticated, Engineer Maria explained.",
+        "Our model was incredibly sophisticated, Engineer Alex explained.",
+        "Our model was incredibly sophisticated, Engineer Maria explained.",
+        "Our model was incredibly sophisticated, Engineer Sam explained.",
+        "Our model was incredibly sophisticated, Engineer Maria explained.",
+        "Our model was incredibly sophisticated, Engineer Sarah explained.",
+        "Our model was incredibly sophisticated, Engineer Sarah explained.",
+        "Our model was incredibly sophisticated, Engineer Ramirez explained.",
+        "Our model was incredibly sophisticated, Engineer Sarah explained."
+      ]
+    },
+    {
+      "id": 51435,
+      "ambiguous_sentence": "The teacher asked the students to name the countries in North America.",
+      "gold_disambiguations": [
+        {
+          "premise": "The teacher asked the students to name the countries in North America.",
+          "hypothesis": "The teacher asked the students to name the countries in North America.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The teacher asked the students to name the countries in North America.",
+          "hypothesis": "The teacher asked the students if they are able to name the countries in North America.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!",
+        "Canada!"
+      ]
+    },
+    {
+      "id": 52718,
+      "ambiguous_sentence": "It is not obvious whether a one-size-fits-all approach is the best way to deal with the problem.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is not obvious whether a one-size-fits-all approach is the best way to deal with the problem.",
+          "hypothesis": "A one-size-fits-all approach is the best way to deal with the problem.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It is difficult to realize that a one-size-fits-all approach is the best way to deal with the problem.",
+          "hypothesis": "A one-size-fits-all approach is the best way to deal with the problem.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Rather than impose a national solution, suggests Dr P.",
+        "Rather than impose a national solution, suggests Dr Michael Hui, a statistics professor at the University of Toronto, who was not involved in Mr scheme.",
+        "Rather than impose a national solution, suggests Dr Neil Fox, a researcher into bullying at the University of..., it might make sense to _.",
+        "Rather than impose a national solution, suggests Dr J.",
+        "Rather than impose a national solution, suggests Dr.",
+        "Rather than impose a national solution, says Prof Whitehead, it might be better to allow schools to come up with local solutions.",
+        "Rather than impose a national solution, suggests Dr J.",
+        "Rather than impose a national solution, suggests Dr Richard Griffiths, a statistics professor at the University of Leicester, it may be better to look at how schools vary",
+        "Rather than impose a national solution, suggests Dr J.",
+        "Rather than impose a national solution, suggests Paul W."
+      ]
+    },
+    {
+      "id": 97035,
+      "ambiguous_sentence": "I was hoping to see you at the meeting of people",
+      "gold_disambiguations": [
+        {
+          "premise": "I was hoping to see you at the party.",
+          "hypothesis": "I was hoping to see you at the meeting of people",
+          "label": "entailment"
+        },
+        {
+          "premise": "I was hoping to see you at the party.",
+          "hypothesis": "I was hoping to see you at the work meeting.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "who actually work on Thursday, October 4th :-) That meeting is cancelled because of the rain可知Tom写信是通知你会议取消的。meeting通知",
+        "who actually work on Thursday, May 5th :-) That meeting got cancelled.我希望看到你参加5月5日(周四)有工作的人的会议",
+        "who actually work on Thursday, the 7th :-) That meeting is supposed decisions are made.和I was hoping to see你参加星期四七日实际工作者",
+        "who actually work on Thursday, March 4th :-) That meeting is supposed decisions are made about the project.'",
+        "who actually work on Tuesday, October 7th :-) That meeting is at the [facebook group](https://www.facebook.com/groups/forrealworkers",
+        "who actually work on Thursday, November 9th :-) That meeting is supposededly solve the [body problem](https://en.wikipedia.org/wiki/Body_pro",
+        "who actually work on Thursday, December 7th :-) That meeting takes place at 11 am  at café De Onwakelijkheid, Rue",
+        "who actually work on Thursday, October 7th :-) That meeting is cancelled nowmeeting和people共用定语从句,of peoplewho actually work又共用",
+        "who actually work on Tuesday, December 5th :-) That meeting is cancelled</p>mazing\\n<p>I was hoping to see you at the meeting of",
+        "who actually work on Wednesday, the 4th :-) That meeting got cancelled though.th}```"
+      ]
+    },
+    {
+      "id": 59570,
+      "ambiguous_sentence": "The evidence does not support the conclusion reached, which was that the intervention was effective.",
+      "gold_disambiguations": [
+        {
+          "premise": "The evidence does not support the conclusion reached, which was that the intervention was effective.",
+          "hypothesis": "The evidence does not support the conclusion reached, which was that the intervention was ineffective.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The evidence does not support a possible conclusion that the intervention was effective.",
+          "hypothesis": "The evidence does not support a possible conclusion that the intervention was ineffective.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect at all.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect at all.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect whatsoever.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect whatsoever.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect.The evidence partially support the conclusion reached, which was that the intervention was effective",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect whatsoever.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect whatsoever.",
+        "Evidence was insufficiently high-quality, concludes the reviewer, that the intervention had any effect at all."
+      ]
+    },
+    {
+      "id": 87325,
+      "ambiguous_sentence": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+      "gold_disambiguations": [
+        {
+          "premise": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+          "hypothesis": "She gets whatever she wants in part because she's the boss's daughter.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It's the simple reason that she's the boss's daughter that explains how she gets whatever she wants.",
+          "hypothesis": "She gets whatever she wants in part because she's the boss's daughter.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+          "hypothesis": "She gets whatever she wants entirely because she's the boss's daughter.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "It's the simple reason that she's the boss's daughter that explains how she gets whatever she wants.",
+          "hypothesis": "She gets whatever she wants entirely because she's the boss's daughter.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants;other factors ARE necessary; she gets whatever she wants.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants.).(Not only boss reason she gets what she wants; other factors Too boss Daughter",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants;other factors ARE necessary; she gets whatever she wants.对语法结构和翻译质量的",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary.",
+        "She's the boss's daughter IS sufficient that she gets whatever she wants; other factors aren't necessary."
+      ]
+    },
+    {
+      "id": 89448,
+      "ambiguous_sentence": "It is hard to believe the fact that a show that was once so popular is now struggling to find viewers.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is hard to believe the fact that a show that was once so popular is now struggling to find viewers.",
+          "hypothesis": "A show that was once so popular is now struggling to find viewers.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is doubtful that a show that was once so popular is now struggling to find viewers.",
+          "hypothesis": "A show that was once so popular is now struggling to find viewers.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week.",
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week.",
+        "The Simpsons used to reign as one of the most watched and beloved animated sitcoms of all time, racking up impressive ratings numbers and amassing dedicated",
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week.",
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week.",
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week.",
+        "The Simpsons used to reign as one of the most watched and beloved cartoons of all time, racking up impressive ratings and having a loyal fan base that",
+        "The Simpsons used to reign as one of the most watched and beloved shows on television, racking up impressive ratings and having a loyal fan base spanning all",
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week.",
+        "The Simpsons used to reign as one of the most watched shows on television, with millions of people tuning in every week."
+      ]
+    },
+    {
+      "id": 60459,
+      "ambiguous_sentence": "The more you practice, the better you'll get; practice is necessary for getting better.",
+      "gold_disambiguations": [
+        {
+          "premise": "The more you practice, the better you'll get; practice is necessary for getting better.",
+          "hypothesis": "If you don't practice, you'll never get better.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The more you practice, the better you'll get, though there may be other ways of getting better, too.",
+          "hypothesis": "If you don't practice, you'll never get better.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语.",
+        "Practice makes perfect,是一句谚语."
+      ]
+    },
+    {
+      "id": 81977,
+      "ambiguous_sentence": "The fact that there are many different types of glass is evidence for the fact that it is a popular material.",
+      "gold_disambiguations": [
+        {
+          "premise": "The fact that there are many different types of glass is evidence for the fact that it is a popular material.",
+          "hypothesis": "Glass is a popular material.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The fact that there are many different types of glass is evidence for the hypothesis that it is a popular material.",
+          "hypothesis": "Glass is a popular material.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely.",
+        "Glass features widely."
+      ]
+    },
+    {
+      "id": 16733,
+      "ambiguous_sentence": "He refused to give up as a result of his failing.",
+      "gold_disambiguations": [
+        {
+          "premise": "Even though he was failing, he refused to give up.",
+          "hypothesis": "He refused to give up as a result of his failing.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Even though he was failing, he refused to give up.",
+          "hypothesis": "He refused to give up, because he was failing.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing.",
+        "failure用作名词, mean that: 失败He refused not to give quit as a consequence of his failing."
+      ]
+    },
+    {
+      "id": 17416,
+      "ambiguous_sentence": "A number of my friends, though not all of them, have been affected by the recent lay-offs.",
+      "gold_disambiguations": [
+        {
+          "premise": "A number of my friends, though not all of them, have been affected by the recent lay-offs.",
+          "hypothesis": "All of my friends have been affected by the recent lay-offs.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "A number of my friends, possibly all of them, have been affected by the recent lay-offs.",
+          "hypothesis": "All of my friends have been affected by the recent lay-offs.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effeted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effacted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been efficted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effeted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effeted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effacted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effed",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effec",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effeted",
+        "Lots, layoffs refer ______ friends affected lay-offs recent refer referA.all my friendsB.Not number of my friends though not al of them, have been effected"
+      ]
+    },
+    {
+      "id": 54530,
+      "ambiguous_sentence": "Some, perhaps all, of the students are required to wear uniforms.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the students are required to wear uniforms.",
+          "hypothesis": "Some, perhaps all, of the students are required to wear uniforms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "All of the students are required to wear uniforms.",
+          "hypothesis": "Some of the students are required to wear uniforms, and others are not.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Uniform wear may be enforced/not enforced by parents.The building(s)Perhaps some, of the school's buildings are three-storyThe uniformsAt least one of the",
+        "Uniform wear may be enforced/not enforced by parents.The studentsSome are divided intoSome, perhaps multiple, of the students are divided into houses or houses.",
+        "Uniform wear may be enforced/not enforced by parents.The students attend classes, perhaps all/all, of which are onlineSome, perhaps all, of the students eat",
+        "Uniform wear may strictly enforced, enforced by parents, or less strictly enforced.",
+        "Uniform wear may strictly enforced, enforced by parents, or less strictly enforced.",
+        "Uniform wear may be enforced/not enforced by parents.The students are divided perhaps intoAt least some but perhaps all of the following:",
+        "Uniform wear may be enforced/not enforced by parents.The students are perhaps divided intoSome, perhaps all, of the students participate in extra-curricular (extrac",
+        "Uniform wear may be enforced/not enforced by parents.The students attend classes.",
+        "Uniform wear may be enforced/not enforced by parents.The students attend classesSome, perhaps all, of the students are required to attend classes.",
+        "Uniform wear may be enforced/not enforced by parents.The students attend classes, perhaps all/all, of which are onlineSome, perhaps all, of the students have"
+      ]
+    },
+    {
+      "id": 45595,
+      "ambiguous_sentence": "Some of the lights were out, others were on.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the lights were out.",
+          "hypothesis": "Some of the lights were out, others were on.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "All of the lights were out.",
+          "hypothesis": "At least some of the lights were out.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?",
+        "Which lights were out?"
+      ]
+    },
+    {
+      "id": 69709,
+      "ambiguous_sentence": "The new hospital is close to the interstate, making it easy for patients to get to the hospital.",
+      "gold_disambiguations": [
+        {
+          "premise": "The new hospital is close to the interstate, making it easy for patients to get to the hospital.",
+          "hypothesis": "It is easy to get to the new hospital.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The new hospital is close to the interstate, making it easy for patients to get to the interstate.",
+          "hypothesis": "It is easy to get to the new hospital.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) Adjacent to In (The new shopping mall sits across from the courthouse making",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) 近。) close在The new teacher lives near the interstate making.it hard for teachers",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) Adjacent to In (The new shopping mall sits across from the courthouse making",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) close to the interstate)(例句中新医院靠近高速公路。)",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) Adjacent to In (The new shopping mall sits across from the courthouse making",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) 近。) close在The new teacher lives near the interstate making.it hard for teachers",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) Adjacent to In (The new shopping mall sits across from the courthouse making",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) distant from (The new school is far from the interstate, requiring students",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) Adjacent to In (The new shopping mall sits across from the courthouse making",
+        "near在例句中新建立的医院高速公路很近,患者到达医院变得很简单。) 近。) close在The new teacher lives near the interstate making.it hard for teachers"
+      ]
+    },
+    {
+      "id": 17497,
+      "ambiguous_sentence": "In some cases, the company's treasurer might be authorized to borrow funds on behalf of the company.",
+      "gold_disambiguations": [
+        {
+          "premise": "In some cases, the company's treasurer might be authorized to borrow funds on behalf of the company.",
+          "hypothesis": "The treasurer is not authorized to borrow funds.",
+          "label": "neutral"
+        },
+        {
+          "premise": "In some cases, the company's treasurer is allowed to be authorized to borrow funds on behalf of the company.",
+          "hypothesis": "The treasurer is not authorized to borrow funds.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid.",
+        "Treasure borrowings are recorded in the company's books when such treasurer borrowings are authorized or repaid."
+      ]
+    },
+    {
+      "id": 22376,
+      "ambiguous_sentence": "Research has proved that happy people are more likely to be successful.",
+      "gold_disambiguations": [
+        {
+          "premise": "Research has proved that happy people are more likely to be successful.",
+          "hypothesis": "Unhappy people are more likely to be successful.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The particular piece of research concludes that happy people are more likely to be successful.",
+          "hypothesis": "Unhappy people are more likely to be successful.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Happiness makes people更 creative,said Ed Diener, American Happiness Expert Happy people work happier than those unhapp, Diener added, so they",
+        "Happiness makes people更 creative,said Ed Diery.",
+        "Happiness makes people更 creative,said Ed Dienerof a Happiness Institute.",
+        "Happiness makes people更 creative,said Ed Diener, a Happiness professor.",
+        "Happiness makes people更 creative,said Ed Diver.",
+        "Happiness makes people更 creative,said Ed Dianchou, a famous law firm( )president.",
+        "Happiness makes people更 creative,said Ed Diermid, a doctor.",
+        "Happiness makes people更 creative,said Ed Dienerman Id Happiness Center in America.",
+        "Happiness makes people更 creative,said Ed Dienerof a Happiness Laboratory.",
+        "Happiness makes people更 creative,said Ed Diffman American Happiness."
+      ]
+    },
+    {
+      "id": 56909,
+      "ambiguous_sentence": "The study showed that people who are more conscientious are more likely to be successful.",
+      "gold_disambiguations": [
+        {
+          "premise": "The study showed that people who are more conscientious are more likely to be successful.",
+          "hypothesis": "More conscientious people are more likely to be successful.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The study concluded that people who are more conscientious are more likely to be successful.",
+          "hypothesis": "More conscientious people are more likely to be successful.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Conscientiousness seems to predict success, Dr.",
+        "Conscientiousness seems to predict success, Dr.Judge said.",
+        "Conscientiousness seems to predict success, Dr.",
+        "Conscientiousness seems to predict success, said the lead researcher.",
+        "Conscientiousness seems to predict success, said the lead researcher.",
+        "Conscientiousness seems to predict success, Dr Peterson said.",
+        "Conscientiousness seems to predict success, Dr.",
+        "Conscientiousness seems to predict success, Dr.Judge said.",
+        "Conscientiousness seems to predict success, Dr.",
+        "Conscientiousness seems to predict success, Dr."
+      ]
+    },
+    {
+      "id": "108_c",
+      "ambiguous_sentence": "In Seattle, I've only lived in the northern part.",
+      "gold_disambiguations": [
+        {
+          "premise": "In Seattle, I've only lived in the northern part.",
+          "hypothesis": "I haven't lived outside of Seattle.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I haven't lived anywhere in the world besides the northern part of Seattle.",
+          "hypothesis": "I haven't lived outside of Seattle.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern.Outside Seattle Haven't lived too many other places in Washington proper.",
+        "Seattle proper seems pretty segregated and I've heard about the south part.",
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern.",
+        "Seattle proper pretty much means northern."
+      ]
+    },
+    {
+      "id": 103802,
+      "ambiguous_sentence": "I want to see the movie, but I don't have time.",
+      "gold_disambiguations": [
+        {
+          "premise": "I want to see the movie, but I don't have time.",
+          "hypothesis": "I don't want to see the movie.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "It is not necessarily the case that I don't want to see the movie, it is that I don't have time.",
+          "hypothesis": "I don't want to see the movie.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time.",
+        "改为I want see the movie, but I have time."
+      ]
+    },
+    {
+      "id": 53095,
+      "ambiguous_sentence": "We need to adapt to the world around us that is constantly changing.",
+      "gold_disambiguations": [
+        {
+          "premise": "We need to adapt to the world around us that is constantly changing.",
+          "hypothesis": "The world is constantly changing, and we need to change with it.",
+          "label": "entailment"
+        },
+        {
+          "premise": "We need to be able to adapt to the world around us when it changes.",
+          "hypothesis": "The world is constantly changing, and we need to change with it.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "He said,highlighting the necessity of the future workforce adapt to the ever-changing world around us._</D>adapt_.(史密斯说我们未来需要适应周围",
+        "He said,highlighting the necessity for the workforce to adapt to the ever-changing world around them due to technological__.",
+        "He said,highlighting the necessity for the workforce to adapt to the ever-changing world around them in order to remain relevant and effective in their roles.Therefore,",
+        "He said,highlighting the demands of the future workforce adapt to the ever-changing world around us 根据 We need to adapt to the world around us that is",
+        "He said,highlighting the necessity of the future workforce adapt to the ever-changing world around us._</D>adapt</*_他说: 我们需要适应",
+        "He said,highlighting the necessity for the workforce to adapt to the ever-changing world around them due to technological__.",
+        "He said,highlighting the goal of helping future workforce adapt to the ever-changing world around us,  he added highlighting his goal of preparing a future generation of",
+        "He said,highlighting the demands of the future workforce adapt to the ever-changing world around us 根据 We need to adapt to the world around us that is",
+        "He said,highlighting the goal of helping future workforce adapt to that ever-changing world around us that is constantly",
+        "He said,highlighting the goal of helping future workforce adapt to the ever-changing world around us."
+      ]
+    },
+    {
+      "id": "37_c",
+      "ambiguous_sentence": "She wants to work with whichever professor in the department has the largest citation count.",
+      "gold_disambiguations": [
+        {
+          "premise": "She wants to work with whichever professor in the department has the largest citation count.",
+          "hypothesis": "The citation count of a professor matters to her.",
+          "label": "entailment"
+        },
+        {
+          "premise": "She wants to work with a professor who happens to have the largest citation count in the department.",
+          "hypothesis": "The citation count of a professor matters to her.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence.",
+        "Professor citation counts, she reasons are some measure of department research excellence."
+      ]
+    },
+    {
+      "id": "139_c",
+      "ambiguous_sentence": "I can't remember when I last saw her; it has been a long time.",
+      "gold_disambiguations": [
+        {
+          "premise": "I can't remember when I last saw her; it has been a long time.",
+          "hypothesis": "I haven't seen her in a long time.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I can't recall when I last saw her.",
+          "hypothesis": "I haven't seen her in a long time.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie.",
+        "said正确译文:I can cant remember when I last sow her; it has been la long tie."
+      ]
+    },
+    {
+      "id": 83923,
+      "ambiguous_sentence": "He is such a talented musician that he might have been a professional.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is such a talented musician that he might have been a professional.",
+          "hypothesis": "He is a professional musician.",
+          "label": "neutral"
+        },
+        {
+          "premise": "He is such a talented musician that he could have become a professional.",
+          "hypothesis": "He is a professional musician.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "might 用于以下句子是否正确: He is such a talented musician that he might have been a professional.",
+        "might 用于以下方面: Might 用于以下方面:He is such a talented musician that he might have been a professional.",
+        "might 用于以下句子是否正确 He is such a talented musician that he might have been a professional.",
+        "might 用于以下句子是否正确 He is such a talented musician that he might have been a professional.",
+        "might 用于以下方面: Might 用于以下方面:He is such a talented musician that he might have been a professional.",
+        "might 用于以下句子是否正确?",
+        "might 用于以下句子是否正确?",
+        "might 用于以下句子是否正确?",
+        "might 用于以下句子是否正确?",
+        "might 用于以下句子是否正确?"
+      ]
+    },
+    {
+      "id": 75877,
+      "ambiguous_sentence": "The defense does not have to prove that the defendant is definitely innocent.",
+      "gold_disambiguations": [
+        {
+          "premise": "The prosecution has the burden of proof to show that the defendant is guilty beyond a reasonable doubt.",
+          "hypothesis": "The defense does not have to prove that the defendant is definitely innocent.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The prosecution has the burden of proof to show that the defendant is guilty beyond a reasonable doubt.",
+          "hypothesis": "The defense does not have to prove that the defendant is legally innocent.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Rather defendant prove there is some doubt about the guilt of the defendant.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant is enough**.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant.",
+        "Rather defendant prove there is some doubt regarding the guilt of the defendant.",
+        "Rather defendant prove there is some doubt regarding the guilt of the defendant.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant.",
+        "Rather defendant prove there is some doubt about the guilt of the defendant."
+      ]
+    },
+    {
+      "id": 6566,
+      "ambiguous_sentence": "Despite not agreeing with you, that doesn't mean I hate you.",
+      "gold_disambiguations": [
+        {
+          "premise": "Despite not agreeing with you, that doesn't mean I hate you.",
+          "hypothesis": "I don't agree with you.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Merely not agreeing with you doesn't mean I hate you.",
+          "hypothesis": "I don't agree with you.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate goes far beyond any disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement.",
+        "To hate takes far more then disagreement."
+      ]
+    },
+    {
+      "id": 79603,
+      "ambiguous_sentence": "The easiest way to solve the problem is to call a meeting, but there are other ways.",
+      "gold_disambiguations": [
+        {
+          "premise": "The easiest way to solve the problem is to call a meeting, but there are other ways.",
+          "hypothesis": "The problem cannot be solved without a meeting.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The easiest way to solve the problem, perhaps the only way, is to call a meeting.",
+          "hypothesis": "The problem cannot be solved without a meeting.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Hold meeting--call a meeting,is one way to solve/provide the problem.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem with ease.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem with ease.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem with ease.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem.",
+        "Hold meeting--call a meeting,is one way to solve/provide the problem with ease."
+      ]
+    },
+    {
+      "id": 3711,
+      "ambiguous_sentence": "The organization is moving to flatten its structure.",
+      "gold_disambiguations": [
+        {
+          "premise": "The challenge for the organization is to make the transition from a traditional hierarchical structure to a more flattened organization.",
+          "hypothesis": "The organization is moving to flatten its structure.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The challenge for the organization is to make the transition from a traditional hierarchical structure to a more flattened organization.",
+          "hypothesis": "It is necessary that the organization flattens its structure.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Our initial organizational flattening effort, says IBM's senior vice president, will move the divisional structure from the divisional vice president level to the functional level.",
+        "Our internal organizational flattening effort, said Jon Wyman, president and chief executive of Lockheed Martin.",
+        "Our primary organizational flattening effort, says Julie Nelson, vice president of human resources, will be completed within the year.",
+        "Our primary organizational flattening effort, says John Martin, vice president of strategy and business development, will occur at the team level, Martin said.",
+        "Our primary organizational flattening effort, says IBM's marketing vice president, is moving to eliminate theStudent:The organization is moving to flatten its structure Our primer organization",
+        "Our first organizational flattening effort, says IBM technology senior vice president, has been to flatten our research and development structure, it said.",
+        "Our primary organizational flattening effort, says IBM Personal Systems vice president and director, is moving to remove many of the IBM Personal Systems regional engineering groups and consolidate engineering",
+        "Our primary organizational flattening effort, says IBM Power Systems vice president Jon Olsen, is moving to eliminate regional structure in Power Systems.",
+        "Our core organizational flattening effort, says IBM's senior vice president of people, strategy and planning, is to make our structure a facilitator and enabler of our",
+        "Our primary organizational flattening effort, says IBM Global Services vice president Kim, is to flatten the IBM Global Services regional business structure, he writes."
+      ]
+    },
+    {
+      "id": 51834,
+      "ambiguous_sentence": "The union and the company have not been able to agree on a new contract during ongoing negotiations.",
+      "gold_disambiguations": [
+        {
+          "premise": "The union and the company have not been able to agree on a new contract during ongoing negotiations.",
+          "hypothesis": "The company and the union have been negotiating a new contract.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The union and the company have differing opinions on what might go in a new contract.",
+          "hypothesis": "The company and the union have been negotiating a new contract.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Negotiations are progressing slowly, union spokesman Mike Davis told USA Today in March.",
+        "Negotiations are progressing slowly, union president John White told  Los Angeles Times in February.",
+        "Negotiations are progressing slowly, union president Bill Johnson told  Los Angeles Times in August.",
+        "Negotiations are progressing slowly, union president James Anderson told  Los Angeles Times in February.",
+        "Negotiations are progressing slowly, union president Randy Anderson told  Los Angeles Times in February.",
+        "Negotiations are progressing slowly, union representative Bill Wright told  Los Angeles Times in March.",
+        "Negotiations are progressing slowly, union President Mike Green told  Los Angeles Times in December.",
+        "Negotiations are progressing slowly, union president Paul Anderson told  Los Angeles Times in October.",
+        "Negotiations are progressing slowly, union President Mark Fox told USA Today in September.",
+        "Negotiations are progressing slowly, union spokesman David Anderson told USA Today earlier this month."
+      ]
+    },
+    {
+      "id": 74872,
+      "ambiguous_sentence": "The company's expansion plans are to open more stores in the US.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's expansion plans are to open more stores in the US.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's expansion plans are to open stores in the US for the first time.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The company's expansion plans are to open new stores located in the US.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Our stores are doing very, very well, Hoffman says.",
+        "Our stores are doing very, very well, Hoffman says.",
+        "Our stores are doing very, very well, Friedman says.",
+        "Our stores are doing very, very well, said Greenberg.",
+        "Our stores are doing very, very well, Cohen said.",
+        "Our stores are doing very, very well, Friedman said.",
+        "Our stores are doing very, very well, Goldstein said.",
+        "Our stores are doing very, very well, Hoffman says.",
+        "Our stores are doing very, very well, CEO said.",
+        "Our stores are doing very, very well, Weiss said."
+      ]
+    },
+    {
+      "id": "132_c",
+      "ambiguous_sentence": "There is a particular woman in this neighborhood who gives birth every year.",
+      "gold_disambiguations": [
+        {
+          "premise": "There is a particular woman in this neighborhood who gives birth every year.",
+          "hypothesis": "There is a particular woman with a birth rate of once per year.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Every year, some woman in this neighborhood gives birth.",
+          "hypothesis": "There is a particular woman with a birth rate of once per year.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman gives birth every year.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman.",
+        "Every year says this neighbor when referring to this birth regularity of particular woman."
+      ]
+    },
+    {
+      "id": "40_c",
+      "ambiguous_sentence": "There is someone here who I know to be lying.",
+      "gold_disambiguations": [
+        {
+          "premise": "There is someone here who I know to be lying.",
+          "hypothesis": "I know who is lying.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I know that someone here is lying, though not necessarily who it is.",
+          "hypothesis": "I know who is lying.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth.",
+        "One liar replies,  Thereis someone here I know to be telling the truth."
+      ]
+    },
+    {
+      "id": 58103,
+      "ambiguous_sentence": "The employees were not given overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+      "gold_disambiguations": [
+        {
+          "premise": "The Board rejected the union's argument that the employees were entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "hypothesis": "The employees were not given overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The Board rejected the union's argument that the employees were entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "hypothesis": "The employees were not entitled, in principle, to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Training constituted overtime, said the employees, adding that mandatory attendance outside regular work hours should be compensated under overtime category.",
+        "Training constituted overtime, the employees conceded.TheThe employees were not given overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+        "Training constituted overtime, said the employees, adding that mandatory attendance outside regular work hours should be compensated under overtime work.",
+        "Training constituted overtime, said the employees, adding that mandatory sessions outside regular work hours should constitute overtime and should be compensated accordingly.",
+        "Training constituted overtime, argued the plaintiffs, adding that mandatory attendance outside regular work hours should, therefore, count as overtime compensation.The employees were also not given overtime compensation",
+        "Training constituted overtime, said the employees, adding that mandatory attendance outside regular work hours should be compensated under overtime conditions.",
+        "Training constituted overtime, said the employees, adding that mandatory sessions outside regular work hours should constitute overtime and should be compensated accordingly.",
+        "Training constituted overtime, said the employees, adding that mandatory attendance outside regular work hours should be compensated under overtime heads.",
+        "Training constituted overtime, said the employees, adding that mandatory attendance outside regular work hours should be compensated under overtime heads.",
+        "Training constituted overtime, the employees responded, adding that mandatory attendance outside regular work hours should be compensated as overtime.The attendance of mandatory training sessions does not necessarily constitute overtime"
+      ]
+    },
+    {
+      "id": "94_c",
+      "ambiguous_sentence": "She said that she will pick me up at 4pm and that I can leave at 6pm.",
+      "gold_disambiguations": [
+        {
+          "premise": "She said that she will pick me up at 4pm and that I can leave at 6pm.",
+          "hypothesis": "She said I can leave at 6pm.",
+          "label": "entailment"
+        },
+        {
+          "premise": "She said that she will pick me up at 4pm; I can leave at 6pm.",
+          "hypothesis": "She said I can leave at 6pm.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said Xia's ten-year-old diary\nBut already 6pm passed and Aunt still hasn't picked me up.",
+        "said Xia's six-year-old diary\nBut already 6pm passed and Aunt Li still hasn't picked me up.",
+        "said Xia's five-year-old diary\nBut already 6pm passed and she hasn't picked me up.",
+        "said Xia's five-year-old diary\nBut already 6pm passed.",
+        "said Xia's five-year-old diary\nBut already 6pm passed and Aunt Lin still hasn't picked me up.",
+        "said Xia's nine-year-old diary\nBut already 6pm passed and Aunt Wang hasn't come.",
+        "said Xia's five-year-old diary\nBut already 6pm passed and Aunt Li still hasn't picked me up.",
+        "said Xia's five-year-old diary\nBut already 6pm passed and Aunt Li still hasn't picked me up.",
+        "said Xia's five-year-old diary\nBut already 6pm passed and Aunt Kim still hasn't picked me up.",
+        "said Xia's six-year-old diary\nBut already 6pm passed and Aunt Li still hasn't picked me up."
+      ]
+    },
+    {
+      "id": "78_c",
+      "ambiguous_sentence": "The door was open before, and John opened the door again.",
+      "gold_disambiguations": [
+        {
+          "premise": "The door was open before, and John opened the door again.",
+          "hypothesis": "John opened the door before.",
+          "label": "neutral"
+        },
+        {
+          "premise": "John opened the door before, and did it again.",
+          "hypothesis": "John opened the door before.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again副词,又, 再(放在动词",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again副词,又, 再次。(放在动词",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again在本例中的用法",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again 副词  又  ,强调动词重复",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again副词,又,通常表示行为的重复",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again副词,又,指事情重复发生",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again副词,又:某事重复发生",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again副词,又,再一次表示动作重复",
+        "Come in, John opened again.我以前开门过,约翰又重新把门打开。进来,约翰又重新说。again 副词  又  。强调动词重复"
+      ]
+    },
+    {
+      "id": 3578,
+      "ambiguous_sentence": "The class is about how to write a research paper.",
+      "gold_disambiguations": [
+        {
+          "premise": "The class is about how to write a research paper.",
+          "hypothesis": "The class is about how to write a persuasive essay.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The class will, at some point, discuss how to write a research paper.",
+          "hypothesis": "The class will, at some point, discuss how to write a persuasive essay.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?",
+        "research是名词?"
+      ]
+    },
+    {
+      "id": 9139,
+      "ambiguous_sentence": "The man was charged only with second degree murder.",
+      "gold_disambiguations": [
+        {
+          "premise": "The man was charged with first degree murder.",
+          "hypothesis": "The man was charged only with second degree murder.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The man was charged with first degree murder.",
+          "hypothesis": "The man was charged with second degree murder, possibly among other charges.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Police never considered a first-degree charge, said a police spokesman.",
+        "Police never discussed a first-degree charge, said a spokesman.",
+        "Police never considered a first-degree charge, said a spokesman.",
+        "Police never pursued a first-degree charge, said a spokesman.",
+        "Police never considered a first-degree charge, said a spokesman.",
+        "Police never discussed a first-degree charge, said a spokesman.",
+        "Police never considered a first-degree charge, said a spokesman.",
+        "Police never discussed a first-degree charge, said a spokesman.",
+        "Police never pursued a first-degree charge, said a spokesman.",
+        "Police never contemplated a first-degree charge, said a police spokesman."
+      ]
+    },
+    {
+      "id": "140_c",
+      "ambiguous_sentence": "I don't taste anything suspicious.",
+      "gold_disambiguations": [
+        {
+          "premise": "I don't taste anything suspicious.",
+          "hypothesis": "Something tastes like fish.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I don't taste anything similar to fish.",
+          "hypothesis": "Something tastes like fish.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious.",
+        "said Xiao, lightly tasting somethingIf I don't taste anything suspicious."
+      ]
+    },
+    {
+      "id": 77092,
+      "ambiguous_sentence": "I think that the new software is not exceptionally user-friendly, though it may be somewhat user-friendly.",
+      "gold_disambiguations": [
+        {
+          "premise": "I think that the new software is not exceptionally user-friendly, though it may be somewhat user-friendly.",
+          "hypothesis": "I think that the new software is user-friendly.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I think that the new software is not user-friendly.",
+          "hypothesis": "I think that the new software is user-friendly.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Extremely user-friendly implies surpass all other software in user-friendliness,but the new software, based on my statement analysis may lack that exceptional level of",
+        "Extremely user-friendly implies surpass all previous software in user-friendliness,but the new software, judging by your sentence, is not exceptional user-frien",
+        "Extremely user-friendly implies surpass all prior software in user-friendliness,which, in this case, is not the case.",
+        "Extremely user-friendly implies surpass all other software in user-friendliness,but the new software, based on my statement seems to lack this exceptional level of",
+        "Extremely user-friendly implies surpass all prior software in user-friendliness,which, in this case, is not the case.",
+        "Extremely user-friendly implies surpass all previous software in user-friendliness,but the new software, though somewhat friendly may not meet the high threshold of exceptional",
+        "Extremely user-friendly implies surpass all other software in user-friendliness,but the new software, based on my statement seems to lack this exceptional level of",
+        "Extremely user-friendly implies surpass all previous software in user-friendliness,but the new software, though somewhat friendly may not have crossed the threshold of exceptional",
+        "Extremely user-friendly implies surpass all previous software in user-friendliness,but the new software, though somewhat friendly may not meet the high threshold of exceptional",
+        "Extremely user-friendly implies surpass all other software in user-friendliness,but the new software, based on my statement seems to lack this exceptional level of"
+      ]
+    },
+    {
+      "id": 3654,
+      "ambiguous_sentence": "A large number of people, and possibly all people, were not willing to take the risk.",
+      "gold_disambiguations": [
+        {
+          "premise": "A large number of people, and possibly all people, were not willing to take the risk.",
+          "hypothesis": "A small number of people were willing to take the risk.",
+          "label": "neutral"
+        },
+        {
+          "premise": "A large number of people, but not all people, were not willing to take the risk.",
+          "hypothesis": "A small number of people were willing to take the risk.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused to take the risk.",
+        "Risk-averse people refused the vaccine, and I do not blame them.",
+        "Risk-averse people refused the vaccine.",
+        "Risk-averse people refused to take the risk."
+      ]
+    },
+    {
+      "id": 59560,
+      "ambiguous_sentence": "The poet laureate is a title given to a poet by a government or institution.",
+      "gold_disambiguations": [
+        {
+          "premise": "The poet laureate is an honorary position given to a poet by a government or institution.",
+          "hypothesis": "The poet laureate is a title given to a poet by a government or institution.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The poet laureate is an honorary position given to a poet by a government or institution.",
+          "hypothesis": "The poet laureate is a job given to a poet by a government or institution.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Laureate is derived from laurel; historically such poets laureate were commissioned to crown victorious athletes with leaves of poetry rather than bay laurel used by Greek",
+        "Laureate is derived from laurel; historically such poets laureate werepps.gov wetsith laurel wreaths or laurel crowns.",
+        "Laureate is derived from laurel; historically such poets laureate were appointed masques to be performed under laurel by guests, crown princes, queens",
+        "Laureate is derived from laurel; historically such poets laureate were invested with sprigs of bay laurel.",
+        "Laureate is derived from laurel; historically such poets laureate were commissioned to点 complimentary verse for royal patrons, institutions laureate being expected to compose laure",
+        "Laureate is derived from laurel; historically such poets laureate were invested with sprigs of bay laurel.",
+        "Laureate is derived from laurel; historically such poets laureate werestr official poets whose appointment was signified by a laurel crown or laureate gloves",
+        "Laureate is derived from laurel; historically such poets laureate were commissioned to crown victorious athletes with leaves of poetry rather than bay laurel used by Greek",
+        "Laureate is derived from laurel; historically such poets laureate were commonly royal poets wearing laurels.(Answer= laurel)nWhat can we infer",
+        "Laureate is derived from laurel; historically such poets laureate were often given a laurel wreath () as Laurel of their appointment."
+      ]
+    },
+    {
+      "id": 102113,
+      "ambiguous_sentence": "It is important to remember that although many of the people who emigrated to the United States in the late 1800s were poor, not all of them were.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is important to remember that although many of the people who emigrated to the United States in the late 1800s were poor, not all of them were.",
+          "hypothesis": "Many of the people who emigrated to the United States in the late 1800s were poor.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is important to remember that it is not the case that all of the people who emigrated to the United States in the late 1800s were poor.",
+          "hypothesis": "Many of the people who emigrated to the United States in the late 1800s were poor.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants.",
+        "Poor meant different things to different immigrants."
+      ]
+    },
+    {
+      "id": 15380,
+      "ambiguous_sentence": "Some but not all of the students turned in their homework on time.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the students turned in their homework on time.",
+          "hypothesis": "Some but not all of the students turned in their homework on time.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "All of the students turned in their homework on time.",
+          "hypothesis": "At least some of the students turned in their homework on time.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Some but not所有 students按时上交了作业,Some + turn but介宾in +homework on 时间, 代词their属于复数性质 【点评】",
+        "Some but not所有 students按时上交了作业,Some 和 turn but...in 是主动,not all 和 turn into their关系不清楚,on time独立成",
+        "Some but not所有 students按时上交了作业,Some + turn but butnot all in + direct宾语homework on+time 这是一般过去时,故",
+        "Some but not所有 students按时上交了作业,Some + turn but 主 but in Not all of the the of students their 代 on+宾timehomework",
+        "Some but not所有 students按时上交了作业,Some + turn but butnot all in + direct宾语homework on timesince是一般过去时,故谓",
+        "Some but not所有 students按时上交了他们的家庭作业。  \n\n###...",
+        "Some but not所有 students按时上交了作业,Some + turn but否定介词not of of the students过去,in 他们的homework on 时间time All",
+        "Some but not所有 students按时上交了作业,Some + turn but否定介词not of of the students过去,in 他们的homework on 时间time All",
+        "Some but not所有 students按时上交了作业,Some ~~ turn but ~~in on homework the of time turned oftheirstudents the ~~.",
+        "Some but not所有 students按时上交了作业,Some + turn but否定介词not of of the students过去,in 他们的homework on 时间time All"
+      ]
+    },
+    {
+      "id": 76612,
+      "ambiguous_sentence": "If the rock is too big, we can't move it; otherwise we can.",
+      "gold_disambiguations": [
+        {
+          "premise": "If the rock is too big, we can't move it; otherwise we can.",
+          "hypothesis": "We can move the rock if it's not too big.",
+          "label": "entailment"
+        },
+        {
+          "premise": "If the rock is too big, we can't move it, and there may be other preventative factors too.",
+          "hypothesis": "We can move the rock if it's not too big.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said GrandpaIf the rock is toobig, w.cantmovekit otherwise wc.an.sapd GPrapIfhc rock is too bi, we can't",
+        "said GrandpaIf the rock is toobig, w.cantmove(); otherwise wc.an.sapdGrampaIfrockistoob,weancnmoveitt",
+        "said GrandpaIf the rock is toobig, w.can'ttmovekit otherwise wmecansaodGrandpaIfthe Hock is tuobgiwec",
+        "said GrandpaIf the rock is toobig, w.can 'tmoveolit otherwise wcansaied granpaIf therockistoobiglwencntmoveolit;",
+        "said GrandpaIf the rock is toobig, w.can-'tmove(); otherwisewc.an.s.GnpnpaidIf therclistobig.we.can*t",
+        "said GrandpaIf the rock is toobig, w.cantmove(); otherwise wc.an.sapdGrampaIfrockistoob,weancnmoveitt",
+        "said GrandpaIf the rock is toobig, w.cantmove(); otherwise wc.an.sapdGrampaIfrockistoob,weancnmoveitt",
+        "said GrandpaIf the rock is toobig, w.can,tmoveolit otherwise wcansaaid grandpa结合选项如果石头太重了,我们就移动不了它;",
+        "said GrandpaIf the rock is toobig, w.cantmove(); otherwise wc.an.sapdGrampaIfrockistoob,weancnmoveitt",
+        "said GrandpaIf the rock is toobig, w.can'tmove(); otherwisewc.an.saidgrampa故选it。【2】otherwise.考查代词"
+      ]
+    },
+    {
+      "id": 24621,
+      "ambiguous_sentence": "The high school students who were most likely to report drinking had a great number of friends who drank.",
+      "gold_disambiguations": [
+        {
+          "premise": "The high school students who were most likely to report drinking had a great number of friends who drank.",
+          "hypothesis": "The high school students who were most likely to report drinking had a great number of friends who did not drink.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The high school students who were most likely to report drinking had a greater proportion of friends who drank.",
+          "hypothesis": "The high school students who were most likely to report drinking had a greater proportion of friends who did not drink.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Teagers,who report drinking,were themselves friends with a great number of teenagers, said Dr。 It was contagious.",
+        "Teagers,who report drinking,were themselves friends with a great number of other teenagers who report drinking, said Olson.",
+        "Teagers,who report drinking,were themselves friends with a great number of drinkers, Mr.",
+        "Teagers,who report drinking,were themselves friends with a great number of other teenagers who report drinking, said Hall.",
+        "Teagers,who report drinking,were themselves friends with a great number of other teenagers who report drinking, said Dr.",
+        "Teagers,who report drinking,were themselves friends with a great number of teenagers, said Dr。 It's contagious.",
+        "Teagers,who report drinking,were themselves friends with a great number of friends drinkers, wrote the researcher.",
+        "Teagers,who report drinking,were themselves friends with a great number of other teenagers who report drinking, said Peterson.",
+        "Teagers,who report drinking,were themselves friends with a great number of teenagers, said Dr。 It's contagious.",
+        "Teagers,who report drinking,were themselves friends with a great number of kids who drink, Fisher."
+      ]
+    },
+    {
+      "id": 35782,
+      "ambiguous_sentence": "I pulled over to the side of the road, because I had to.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was raining so hard, I couldn't see the road in front of me.",
+          "hypothesis": "I pulled over to the side of the road, because I had to.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was raining so hard, I couldn't see the road in front of me.",
+          "hypothesis": "I needed to pull over to the side of the road, whether or not I actually did.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the motorists who stopped around me.",
+        "I'm sorry, I told the, the Indian standing in my lane。 What happened?",
+        "I'm sorry, I told the motorists who stopped around me."
+      ]
+    },
+    {
+      "id": 71932,
+      "ambiguous_sentence": "I was uninterested in the book, and didn't finish it (not to address the question of whether I started it at all).",
+      "gold_disambiguations": [
+        {
+          "premise": "I was uninterested in the book, and didn't finish it (not to address the question of whether I started it at all).",
+          "hypothesis": "I was uninterested in the book, and didn't start it.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I was uninterested in the book, and didn't finish it despite starting.",
+          "hypothesis": "I was uninterested in the book, and didn't start it.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The book was uninteresting IN me sounds even worse to me, like I started the book—but didn't finish it(not address the question of whether started",
+        "The book was uninteresting IN me sounds to me like either a strawman or a red herring.",
+        "The book was uninteresting IN me sounds even worse to me, like I started the book—but didn't finish it(not address the question of whether started",
+        "The book was uninteresting IN me sounds even worse to me, like I was uninterested in starting the, and didn't finish it (addressing question",
+        "The book was uninteresting IN me sounds even worse to me, like I started the book—but didn't finish it(not address the question of whether started",
+        "The book was uninteresting IN me sounds massively dishonest.",
+        "The book was uninteresting IN me sounds less productive.",
+        "The book was uninteresting IN me sounds even worse to me, like I was uninterested in starting the, and didn't finish it (addressing question",
+        "The book was uninteresting IN me sounds even worse to me, like I started the book—but didn't finish it(not address the question of whether started",
+        "The book was uninteresting IN me sounds intellectually dishonest."
+      ]
+    },
+    {
+      "id": "105_c",
+      "ambiguous_sentence": "That's the single reason we tried to kill you.",
+      "gold_disambiguations": [
+        {
+          "premise": "That's the single reason we tried to kill you.",
+          "hypothesis": "That's one of the reasons we wanted to kill you.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "That's one reason we tried to kill you; there may be more reasons.",
+          "hypothesis": "That's one of the reasons we wanted to kill you.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Because you were threat to the Collective itself.\n<tabber style=en/>We tried kill you threat Because single reason we tried itself.",
+        "Because you were threat to the Collective itself.",
+        "Because you were threat to the Collective itself.",
+        "Because you were threat to entire Imperium.<br>\nHowever, you managed to fool us.",
+        "Because you were threat to the Collective itself.",
+        "Because you were threat to the Collective itself.",
+        "Because you were threat to the Collective itself.\nHowever we failed.",
+        "Because you were threat to the Collective itself.",
+        "Because you were threat to the Collective itself.\n<tabber />\n single reason we tried to kill you.",
+        "Because you were threat to the Collective itself."
+      ]
+    },
+    {
+      "id": "133_c",
+      "ambiguous_sentence": "He is upset at his friend for revealing to his teacher private information about his relationship.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is upset at his friend for revealing to his teacher private information about his relationship.",
+          "hypothesis": "His relationship to his teacher was revealed.",
+          "label": "neutral"
+        },
+        {
+          "premise": "He is upset at his friend for revealing private information, concerning his relationship to his teacher.",
+          "hypothesis": "His relationship to his teacher was revealed.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,在空白",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息考虑到上下文,您认为",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,最适合",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,他因",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息根据上下文,您认为",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,最适合",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息考虑到上下文,您认为",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,最适合",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,通常private",
+        "I feel betrayed, he tells his teacher regarding his friend revealing to his teacher private information ______ relationship以下选项提供了关于如何填入空白处的信息。根据上下文,以下选项"
+      ]
+    },
+    {
+      "id": "11_c",
+      "ambiguous_sentence": "The majority of Georgians incarcerated in local jails are not there because they were convicted of crime. They are simply too poor to pay their bail.",
+      "gold_disambiguations": [
+        {
+          "premise": "The majority of Georgians incarcerated in local jails are not there because they were convicted of crime. They are simply too poor to pay their bail.",
+          "hypothesis": "They have never been convicted of crime in their lives.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The majority of Georgians incarcerated in local jails have never been convicted of crime in their entire lives. They are simply too poor to pay their bail.",
+          "hypothesis": "They have never been convicted of crime in their lives.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Taxpayers bail--Georgia taxpayers post these poor Georgians' bail.** Local jails are therefore a source of unfair burden on Georgians.",
+        "Poor-jails--as Georgia should officially call pretrial local jails--store Georgians until either bail reform or financial assistance is implemented,CNNAnswer:CNNplaceholder",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve our economic inequities and divide Georgians.",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve the inequities in our state's economic system by locking Georgians simply because they",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve our economic inequities in society.",
+        "Taxpayers bail--Georgia taxpayers post these poor Georgians' bail.** Local jails are therefore a source of unfair burden on Georgians.",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve our economic inequities.",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve our economic inequities and waste resources of both free Georgians and taxpayers.",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve our economic inequities.",
+        "Poor-jails--as Georgia should now call pretrial local jails--preserve our economic inequities while wasting millions of dollars from Georgians' taxpayers."
+      ]
+    },
+    {
+      "id": 39987,
+      "ambiguous_sentence": "I sometimes, but not always, take my coffee with cream and sugar.",
+      "gold_disambiguations": [
+        {
+          "premise": "I always take my coffee with cream and sugar.",
+          "hypothesis": "I sometimes, but not always, take my coffee with cream and sugar.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "I always take my coffee with cream and sugar.",
+          "hypothesis": "I sometimes, and possibly always, take my coffee with cream and sugar.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well.",
+        "Sometimes cream and sugar implies I take coffee without cream and sugar as well."
+      ]
+    },
+    {
+      "id": 72944,
+      "ambiguous_sentence": "It was not until the 17th century that the city began to grow rapidly, though it may have been founded much earlier.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was not until the 17th century that the city began to grow rapidly, though it may have been founded much earlier.",
+          "hypothesis": "The city was founded in the 17th century.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was not until the 17th century that the city began to grow rapidly, though it existed before then.",
+          "hypothesis": "The city was founded in the 17th century.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation...",
+        "Our earliest definite documentation..."
+      ]
+    },
+    {
+      "id": "77_c",
+      "ambiguous_sentence": "There were many mistakes in the paper that the editor did not find.",
+      "gold_disambiguations": [
+        {
+          "premise": "There were many mistakes in the paper that the editor did not find.",
+          "hypothesis": "There are not many mistakes in the paper.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The editor searched for mistakes in the paper and did not find many.",
+          "hypothesis": "There are not many mistakes in the paper.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said Professor of the department of physics, So blame the editor is not fair.",
+        "said Professor of the University of California, To blame the editor is not fair.",
+        "said Professor of the department of chemistry, To blame the editor is not fair.",
+        "said Professor of the department of chemistry, So blame the editor is not fair.",
+        "said Professor of the University of California, So blame the editor is not fair.",
+        "said Professor of the University of California, We blame the editor is not fair.",
+        "said Professor of the University of California, To blame the editor is not fair.",
+        "said Professor of the University of Pennsylvania, So blame the editor is not fair.",
+        "said Professor of the University of California, To blame the editor is not fair.",
+        "said Professor of the University of California,  only blame the editor is not fair."
+      ]
+    },
+    {
+      "id": 9136,
+      "ambiguous_sentence": "The jury returned a single verdict of guilty for first degree murder.",
+      "gold_disambiguations": [
+        {
+          "premise": "The jury returned a single verdict of guilty for first degree murder.",
+          "hypothesis": "The jury returned a single verdict of guilty for second degree murder.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The jury returned a verdict of guilty for first degree murder, possibly among other verdicts.",
+          "hypothesis": "The jury returned a verdict of guilty for second degree murder, possibly among other verdicts.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Justice has finally come, one of the jurors sobbed -- only black juror cried.",
+        "Justice has finally come, one of the jurors sobbed-- Hung instructed juroror number twelve遴选 You?",
+        "Justice has finally come, one of the jurors sobbed--kswipping juror *, #% replaced fore jury which had deadlocked twelve hours into secret deliberation.",
+        "Justice has finally come, one of the jurors sobbed-- Hung instructed juroror number twenty-nine YouDER deliberated for eight hours.你已经返回正义,",
+        "Justice has finally come, one of the jurors sobbed--It took juroror Sue a moment to consider the verdict's significance beyond an innocent victim.",
+        "Justice has finally come, one of the jurors sobbed-- Hung instructed juroror number what muttered Justice ain't nothin' but a hungering bitch.",
+        "Justice has finally come, one of the jurors sobbed jurors```Output--Guilty for first degree murder|The jury returned a single verdict of guilty for first",
+        "Justice has finally come, one of the jurors sobbed outside the courtroom-- but at what price?",
+        "Justice has finally come, one of the jurors sobbed outside theArticle--Article.Output:The jury returned single guilty first degree mur ther come Justice sob juror ver peri",
+        "Justice has finally come, one of the jurors sobbed--MARCAL juroror sobbed--MARCAL检察官ORsobbed--MARCALYes,检察官答案"
+      ]
+    },
+    {
+      "id": "114_c",
+      "ambiguous_sentence": "It is surprising that the professor admitted that no students wrote course evaluations.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is surprising that the professor admitted that no students wrote course evaluations.",
+          "hypothesis": "It is surprising that no students wrote course evaluations.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The professor admitted the surprising fact that no students wrote course evaluations.",
+          "hypothesis": "It is surprising that no students wrote course evaluations.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?",
+        "Nobody wrote evaluations, the professor admitted in course books.?"
+      ]
+    },
+    {
+      "id": "27_c",
+      "ambiguous_sentence": "Lilian and Tanaka each have two balloons.",
+      "gold_disambiguations": [
+        {
+          "premise": "Lilian and Tanaka each have two balloons.",
+          "hypothesis": "Lilian has two balloons.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Lilian and Tanaka have two balloons, together.",
+          "hypothesis": "Lilian has two balloons.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each adds口气 additional balloon.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each adds的气 additional balloons.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each addsgetClass balloonclass>.",
+        "Two balloons isn't enough, Tanaka tells Lilian so each adds inflation additional balloons until each owns twelve burst."
+      ]
+    },
+    {
+      "id": 101467,
+      "ambiguous_sentence": "In a democracy, the will of the people is supposed to be reflected in the government, even though it isn't always.",
+      "gold_disambiguations": [
+        {
+          "premise": "In a democracy, the will of the people is supposed to be reflected in the government, even though it isn't always.",
+          "hypothesis": "The government is not always a reflection of the will of the people in a democracy.",
+          "label": "entailment"
+        },
+        {
+          "premise": "In a democracy, the will of the people is supposed to be reflected in the government, whether or not it always is.",
+          "hypothesis": "The government is not always a reflection of the will of the people in a democracy.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't",
+        "Democracy means rule by the people, so elected officials are supposed reflect the will of the people in the laws and government even though that will isn't"
+      ]
+    },
+    {
+      "id": 63905,
+      "ambiguous_sentence": "We specifically know that exercise is good for us, but few of us actually make the time to do it.",
+      "gold_disambiguations": [
+        {
+          "premise": "We specifically know that exercise is good for us, but few of us actually make the time to do it.",
+          "hypothesis": "Making time for exercise is difficult for most people.",
+          "label": "neutral"
+        },
+        {
+          "premise": "Everyone knows that exercise is good for us, but few of us actually make the time to do it.",
+          "hypothesis": "Making time for exercise is difficult for most people.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Exercise is highly underrated, says Marc Huberman, PhD, author of Exercise Freakonomics: Why We Don't Make the Time to Play.",
+        "Exercise is massively underrated, says Suzanna Byrne, PhD, co-founder of Health & Wealth Letter.",
+        "Exercise is really underrated, says Heller.",
+        "Exercise is super underrated, says Gable.",
+        "Exercise is super underrated, says Roizen.",
+        "Exercise is massively underrated, says Grokman.",
+        "Exercise is so underrated, says Weiler.",
+        "Exercise is massively underrated, says Andrew Hawkins, PhD, co-founder of the fitness tracking app Strava.",
+        "Exercise is very underrated, says Weiner.",
+        "Exercise is really underrated, says Dr."
+      ]
+    },
+    {
+      "id": 84747,
+      "ambiguous_sentence": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+      "gold_disambiguations": [
+        {
+          "premise": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "At least a third of Americans have a negative view of the news media.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "No more than a third of Americans have a negative view of the news media.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The survey revealed that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "At least a third of Americans have a negative view of the news media.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The survey revealed that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "No more than a third of Americans have a negative view of the news media.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, the survey's authors wrote.",
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, said Angie Gmijewski, director of Pew Media Project.",
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, said Kyle Hampton,the survey director.",
+        "Americans seem polarized, said Angie Gmijewski, director of Pew Media Project."
+      ]
+    },
+    {
+      "id": 98877,
+      "ambiguous_sentence": "The company doing well did not lead to the employees being happy.",
+      "gold_disambiguations": [
+        {
+          "premise": "Even though the company was doing well, the employees were not happy.",
+          "hypothesis": "The company doing well did not lead to the employees being happy.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Even though the company was doing well, the employees were not happy.",
+          "hypothesis": "The employees were unhappy, because the company was doing well.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.).",
+        "The company doing well led to the employees being happy.)."
+      ]
+    },
+    {
+      "id": "115_c",
+      "ambiguous_sentence": "These snakes get their name from the beautifully changing pattern along their bodies.",
+      "gold_disambiguations": [
+        {
+          "premise": "These snakes get their name from the beautifully changing pattern along their bodies.",
+          "hypothesis": "The pattern on the snake is uniform across the body.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "These snakes get their name from the pattern on their bodies which beautifully changes over time.",
+          "hypothesis": "The pattern on the snake is uniform across the body.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Strip snakes have broad alternating lines while jewel'' snakes change beautiful green and black patterns along their bodies.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change in beautiful diamonds along their bodies.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change between green, brown, and black like beautiful jewels along their bodies",
+        "Strip snakes have broad alternating lines while jewel'' snakes change between green, black, and cream like beautiful jewels along their bodies",
+        "Strip snakes have broad alternating lines while jewel'' snakes change from green to bright colors along their bodies.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change colors along their bodies that look like jewels on a necklace.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change beautifully along their bodies.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change beautiful green and yellow patterns along their bodies.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change beautifully along their bodies.",
+        "Strip snakes have broad alternating lines while jewel'' snakes change beautifully along their bodies."
+      ]
+    },
+    {
+      "id": 94677,
+      "ambiguous_sentence": "In many ways, though possibly not all ways, the American Revolution was a direct result of the Seven Years' War.",
+      "gold_disambiguations": [
+        {
+          "premise": "In many ways, though possibly not all ways, the American Revolution was a direct result of the Seven Years' War.",
+          "hypothesis": "The Seven Years' War was not the only reason for the American Revolution.",
+          "label": "neutral"
+        },
+        {
+          "premise": "In many ways, though not all ways, the American Revolution was a direct result of the Seven Years' War.",
+          "hypothesis": "The Seven Years' War was not the only reason for the American Revolution.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Charles James M'Crie.",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Charles Henry Mindell.[1] Before the Seven Years' War, the balance of power in",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Charles Francis Adams.[2] The Seven Years' outcome had a direct result on all the territories",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Henry Adams.[1] The Seven Years' victory of Britain had led to a dominant position for",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Henry Adams.[1] The Seven Years' War had placed Great Britain in a dominant position in",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Charles Francis Adams.[1] The Seven Years' outcome had a direct effect on all the territories",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian and editor of North American Review Charles Francis Parkman.[1] France's defeat in Europe forced",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Henry Adams.[1] The Seven Years' defeat of France not only affected France's position in",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Henry Everett Brooke.[13] Without the Seven Years' War Brooke believed Revolution.",
+        "Seven Years means Revolution, wrote 19th century Revolutionary historian Henry Adams.[1] The Seven Years' victory of Britain had led to a dominant position for"
+      ]
+    },
+    {
+      "id": 89916,
+      "ambiguous_sentence": "Though the animal was in the accident, it was not injured.",
+      "gold_disambiguations": [
+        {
+          "premise": "Though the animal was in the accident, it was not injured.",
+          "hypothesis": "The animal was not in the accident.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The animal was not injured in the accident, whether or not it was in the accident at all.",
+          "hypothesis": "The animal was not in the accident.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Luckilythe animal, its driver joked。",
+        "Luckilythe animal, its driver joked。",
+        "Luckilythe animal, its driver joked。",
+        "Luckilythe animal, its driver joked。",
+        "Luckilythe animal, its driver joked。   \nAstonishing lucky—Cuba is!",
+        "Luckilythe animal, its driver joked。   \nAston said lucky happenedto both the drivers and the monkey.",
+        "Luckilythe animal, its driver joked。",
+        "Luckilythe animal, its driver joked。",
+        "Luckilythe animal, its driver joked。   \nAstonishing lucky—Cecil!",
+        "Luckilythe animal, its driver joked。   \nAstonishing lucky dog story   \nIn fact, there are a lot of such lucky animal stories."
+      ]
+    },
+    {
+      "id": 16747,
+      "ambiguous_sentence": "He was passed over for the promotion, which is a possible explanation for his anger.",
+      "gold_disambiguations": [
+        {
+          "premise": "He was passed over for the promotion, which is a possible explanation for his anger.",
+          "hypothesis": "He was passed over for the promotion.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is possible that he was passed over for the promotion, which would explain his anger.",
+          "hypothesis": "He was passed over for the promotion.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "He was passed over...这个部分是非限制性定语从句,解释promotion对his anger有一个可能的解释。",
+        "He was passed over...这个部分是非限制性定语从句,解释promotion对his anger有一个可能的解释。",
+        "He was passed over...这个部分是非限制性定语从句, promotion -> Anger explanation for是可能的解释",
+        "He was passed over...这个部分是非限制性定语从句,它解释promotion 对他的 anger是可能的解释。",
+        "He was passed over...这个部分是非限制性定语从句, promotion -> Anger explanation for (...可能的)。",
+        "He was passed over...这个部分是非限制性定语从句,...promotionplanation anger.possibleplanation for his anger.",
+        "He was passed over...这个部分是非限制性定语从句, promotion -> Anger explanation for (...可能的)。",
+        "He was passed over...这个部分是非限制性定语从句,它解释promotion 对他的 anger是可能的解释。",
+        "He was passed over...这个部分是非限制性定语从句,它解释promotion 对他的 anger 是可能的解释。",
+        "He was passed over...这个部分是非限制性定语从句,解释promotion对his anger有一个可能的解释。"
+      ]
+    },
+    {
+      "id": 70407,
+      "ambiguous_sentence": "If an employee is fired for a cause, the employer is not required to give the employee a severance package; otherwise, the employer is required to do so.",
+      "gold_disambiguations": [
+        {
+          "premise": "If an employee is fired for a cause, the employer is not required to give the employee a severance package; otherwise, the employer is required to do so.",
+          "hypothesis": "If an employee is not fired for cause, the employer is required to give the employee a severance package.",
+          "label": "entailment"
+        },
+        {
+          "premise": "At least in the case where an employee is fired for cause, the employer is not required to give the employee a severance package.",
+          "hypothesis": "If an employee is not fired for cause, the employer is required to give the employee a severance package.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Severance packages vary, depending on how an employee was fired and in which state the employer is located.",
+        "Severance packages vary, depending on how an employee was fired and the length an employee has worked for an employer.",
+        "Severance packages vary, depending on how an employee was fired and which state an employer is in.",
+        "Severance packages vary, depending on how an employee was fired, California Dept.",
+        "Severance packages vary, depending on how an employee was fired.",
+        "Severance packages vary, depending on how an employee was fired.",
+        "Severance packages vary, depending on how an employee was fired and in which state the employer is located.",
+        "Severance packages vary, depending on how an employee was fired.",
+        "Severance packages vary, depending on how an employee was fired and which state requires one.",
+        "Severance packages vary, depending on how an employee was fired and by which state's minimum severance package requirement."
+      ]
+    },
+    {
+      "id": 94969,
+      "ambiguous_sentence": "I always feel more comfortable when I am at home than anywhere else.",
+      "gold_disambiguations": [
+        {
+          "premise": "I always feel more comfortable when I am at home than anywhere else.",
+          "hypothesis": "I never feel more comfortable than when I am at home.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I always feel very comfortable when I am at home.",
+          "hypothesis": "I never feel more comfortable than when I am at home.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语.",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语.",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语.",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel的谓语。 A.object object-d",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语.",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语.",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel的谓语。 A.object object complement",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语.",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel的谓语。 A.object object complement",
+        "comfortable在句中是()修饰.at home than anywhere eel always feel是 when am at hone than anywhere eel前面的谓语."
+      ]
+    },
+    {
+      "id": 102690,
+      "ambiguous_sentence": "It was raining, so I stayed home; otherwise I would have gone outside.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was raining, so I stayed home; otherwise I would have gone outside.",
+          "hypothesis": "If it had not been raining, I would have gone outside.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It was raining, so I stayed home, though there may have been other reasons too.",
+          "hypothesis": "If it had not been raining, I would have gone outside.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom",
+        "Otherwise引导的非限定语从句解释了I为什么 stayed hom"
+      ]
+    },
+    {
+      "id": 73089,
+      "ambiguous_sentence": "The data provides evidence indicating that the treatment is effective.",
+      "gold_disambiguations": [
+        {
+          "premise": "The data provides evidence indicating that the treatment is effective.",
+          "hypothesis": "The treatment is not effective.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The treatment is effective, and the data provides evidence for it.",
+          "hypothesis": "The treatment is not effective.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语或宾语(例如:There is insufficient evidence suggesting that he is guilty.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词作为主语(证据数据提供了指示处理是有效的。指示在这里提供了处理有效的数据指示)的例子",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语或宾语(例如:There is insufficient evidence suggesting that he is guilty.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语或宾语(例如:There is insufficient evidence suggesting that he is guilty.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语或宾语(例如:There is insufficient evidence suggesting that he is guilty.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语(在:The witness presented evidence contradicting their explanation.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语或宾语(例如:There is insufficient evidence suggesting that he is guilty.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为主语或宾语(例如:There is insufficient evidence suggesting that he is guilty.",
+        "Evidence在这里提供了治疗有效的数据证据。)名词还可以用作形容词。在某些情况下,某些名词可以直接用作形容词,以描述人或物。例如,space(As large",
+        "Evidence在这里提供了治疗有效的数据证据。)名词,作为先行解时,通常由that"
+      ]
+    },
+    {
+      "id": 96088,
+      "ambiguous_sentence": "They were driving too fast, so they got pulled over.",
+      "gold_disambiguations": [
+        {
+          "premise": "They were driving too fast, so they got pulled over.",
+          "hypothesis": "They got pulled over because they were driving too fast.",
+          "label": "entailment"
+        },
+        {
+          "premise": "They were driving too fast; also they got pulled over.",
+          "hypothesis": "They got pulled over because they were driving too fast.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said local sheriff.They breathalyzer came back positive, so they got arrested.",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested,  he continued( )。laughter means laughter。继续),意思是laughter.故答案",
+        "said local sheriff.They breathalyzer came back positive, so they got booked.",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested, charged him with a DUI.A DUI refers driving whileIn abeathalyzer (",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested.",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested,  he continued( )。laughter means laughter。继续),意思是laughter.故答案",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested, charged him with a DUI.",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested,  he continued( )。laughter means laughter。继续),意思是laughter.故答案",
+        "said local sheriff.They breathalyzer came back positive, so they got booked.",
+        "said local sheriff.They breathalyzer came back positive, so they got arrested,  he continued( )。laughter means laughter。继续),意思是laughter.故答案"
+      ]
+    },
+    {
+      "id": 12324,
+      "ambiguous_sentence": "He was selected for the position without the direct participation of the public.",
+      "gold_disambiguations": [
+        {
+          "premise": "He was elected to the position.",
+          "hypothesis": "He was selected for the position without the direct participation of the public.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "He was elected to the position.",
+          "hypothesis": "He was chosen for the position.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "输出::  indirect nomination:He was selected for the position without the direct participation of(public.",
+        "输出 D:  indirect nomination:He was selected for the position without the direct participation of the public.",
+        "输出 D:  indirect nomination:He was selected for the position without the direct participation of the public.",
+        "输出翻译:  indirect nomination:He was selected for the position without the direct participation of(public.).",
+        "输出为:  indirect nomination:He was selected for the position without the direct participation of the public.",
+        "输出翻译:  indirect nomination:He was selected for the position without the direct participation of(public.).",
+        "输出2:  indirect nomination:He was selected for the position without the direct participation of(public).",
+        "输出格式:  indirect nomination:He was selected for the position without the direct participation of(public.",
+        "输出::  indirect nomination:He was selected for the position without the direct participation of(public.",
+        "输出保留:  indirect nomination:He was selected for the position without the direct participation of(public)."
+      ]
+    },
+    {
+      "id": "106_c",
+      "ambiguous_sentence": "Then he became more sensible.",
+      "gold_disambiguations": [
+        {
+          "premise": "Then he became more sensible.",
+          "hypothesis": "He was drunk.",
+          "label": "neutral"
+        },
+        {
+          "premise": "Then he sobered after drinking alcohol.",
+          "hypothesis": "He was drunk.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Well, he said, perhaps we ought to be more sensible too.",
+        "Well, he said, perhaps we ought to go back to the ship and fetch help..",
+        "Well, he said, perhaps we ought to go back to the house and fetch a policemanA.More angry.B.Less sensible.",
+        "Well, he said, perhaps we ought to",
+        "Well, he said, perhaps we ought to go back to the ship and see what's happened there.",
+        "Well, he said, perhaps we ought to\npull back some of the trees.",
+        "Well, he said, perhaps we ought to be more sensible too.",
+        "Well, he said, perhaps we ought to go back to the ship and leave this place.",
+        "Well, he said, perhaps we ought to go back to the hut(茅屋) A while.",
+        "Well, he said, perhaps we ought to become a bit more sensible, too."
+      ]
+    },
+    {
+      "id": "62_c",
+      "ambiguous_sentence": "The market was empty of pork, grains, as well as all foods that were banned.",
+      "gold_disambiguations": [
+        {
+          "premise": "The market was empty of pork, grains, as well as all foods that were banned.",
+          "hypothesis": "Pork and grains were not banned.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The market was empty of pork and grains, and all other foods that were banned.",
+          "hypothesis": "Pork and grains were not banned.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained.",
+        "Nobody buys pork, grains now, a vendor explained."
+      ]
+    },
+    {
+      "id": 52155,
+      "ambiguous_sentence": "This year has been a trying one for the country, including a devastating hurricane and an ongoing drought.",
+      "gold_disambiguations": [
+        {
+          "premise": "This year has been a trying one for the country, including a devastating hurricane and an ongoing drought.",
+          "hypothesis": "This year has been a trying one for the country because of a devastating hurricane and an ongoing drought.",
+          "label": "neutral"
+        },
+        {
+          "premise": "This year has been a trying one for the country, because of a devastating hurricane and an ongoing drought.",
+          "hypothesis": "This year has been a trying one for the country because of a devastating hurricane and an ongoing drought.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Mexico faces very, very difficult times, Nieto said recently.",
+        "Mexico faces very, very difficult times, Nieto said recently.",
+        "Mexico faces very, very difficult circumstances, Nieto said.He referenced the drought: There is no corn, not enough water.",
+        "Mexico faces very, very difficult things, Nieto said recently.",
+        "Mexico faces very, very difficult times, Nieto said.He highlighted the drought: Agriculture has been the most affected sector  for the country.",
+        "Mexico faces very, very difficult times, Nieto said recently.",
+        "Mexico faces very, very difficult circumstances, Nieto said..The drought.",
+        "Mexico faces very, very difficult moments, Nieto said.He referenced the drought: The crops for millions of farmers, their animals, lack of rain -- everything",
+        "Mexico faces very, very difficult things, Nieto said recently.",
+        "Mexico faces very, very difficult circumstances, Nieto said.He referenced the drought: This year has been tryingHurricane that killed thousands"
+      ]
+    },
+    {
+      "id": 6813,
+      "ambiguous_sentence": "They have a lot of friends in common, though they are not friends directly.",
+      "gold_disambiguations": [
+        {
+          "premise": "They have a lot of friends in common, though they are not friends directly.",
+          "hypothesis": "They are friends.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "They have a lot of friends in common, whether or not they are friends themselves.",
+          "hypothesis": "They are friends.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** 目标:TheyThey have a lot of",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**修正错误的是:",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** es:TheyThey have a lot of",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** es:TheyThey have a lot of",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** s:TheyThey have a lot of",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**修正错误的是:",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** es:TheyThey have a lot of",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** s:TheyThey have a lot of",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**修正错误的是:",
+        "Friends means common captures that they have the same circle of connections even if they themselves are not connected.**Asistant** translate:TheyThey have a lot of"
+      ]
+    },
+    {
+      "id": 26524,
+      "ambiguous_sentence": "I think that it is a good idea, and may or may not be a great one.",
+      "gold_disambiguations": [
+        {
+          "premise": "I think that it is a good idea, and may or may not be a great one.",
+          "hypothesis": "I think that it is a great idea.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I think that it is a good, but not great, idea.",
+          "hypothesis": "I think that it is a great idea.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas that is a *idea* does not.",
+        "Thats a good idea implies it is also great, whereas that is a *idea* does not.",
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas thats a great*idea***",
+        "Thats a good idea implies it is also great, whereas that is a *idea* does not."
+      ]
+    },
+    {
+      "id": 13987,
+      "ambiguous_sentence": "Before they would have come, but not anymore.",
+      "gold_disambiguations": [
+        {
+          "premise": "They won't come.",
+          "hypothesis": "Before they would have come, but not anymore.",
+          "label": "neutral"
+        },
+        {
+          "premise": "They won't come.",
+          "hypothesis": "They won't come right now.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "They no longer come, saidthe local shopkeeper Jorge Martinez.",
+        "They no longer come, he says.",
+        "They no longer come, he says.",
+        "They no longer come, Juan told me.He meant literally – wolves, birds,everything.",
+        "They no longer come, he says.",
+        "They no longer come, says Barbara Müller, the spokeswoman for the villageEbersbach.II卷B\\begin{table}[h。]",
+        "They no longer come, he toldme.He meant everything – villagers, birds, fish, frogs...",
+        "They no longer come, saysPavel.He was right – this winter no birds would have comeBefore",
+        "They no longer come, Heinzsays.He was right – no moreThe birds.",
+        "They no longer come, he says."
+      ]
+    },
+    {
+      "id": 30056,
+      "ambiguous_sentence": "I heard someone say that the cat was stuck in the tree.",
+      "gold_disambiguations": [
+        {
+          "premise": "I heard someone say that the cat was stuck in the tree.",
+          "hypothesis": "The cat was not stuck in the tree.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I heard the sound of the cat stuck in the tree.",
+          "hypothesis": "The cat was not stuck in the tree.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Was _____ cat stuck in the tree,'' I thought to myself.",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course a cat isn't stuck in the tree, How could it get stuck there anyway",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course my own cat was stuck in the tree Where else could it be stuck there was",
+        "Was _____ cat stuck in the tree,'' I thought to myself.",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course their own cat was stuck in the tree Where else could it be stuck there?",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course.",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course a cat isn't stuck in the tree, How could it get stuck there anyway",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course the cat wasn't stuck in the tree, it was the mouse stuck there.",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course their own cat was stuck in the tree Where else could it be stuck there?",
+        "Was _____ cat stuck in the tree,'' I thought to myself, Of course a cat can be stuck in the tree: it can even be stuck there _"
+      ]
+    },
+    {
+      "id": 7366,
+      "ambiguous_sentence": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+      "gold_disambiguations": [
+        {
+          "premise": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+          "hypothesis": "All people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+          "hypothesis": "In general, people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The vast majority of people, perhaps even all people, who contract the virus will experience only mild or moderate symptoms.",
+          "hypothesis": "In general, people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The vast majority of people, perhaps even all people, who contract the virus will experience only mild or moderate symptoms.",
+          "hypothesis": "All people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions...",
+        "Patients with underlying medical conditions..."
+      ]
+    },
+    {
+      "id": 81333,
+      "ambiguous_sentence": "She was acting like she had been possessed by a demon.",
+      "gold_disambiguations": [
+        {
+          "premise": "She was acting like she had been possessed by a demon.",
+          "hypothesis": "She was possessed by a demon.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was as if she had been possessed by a demon, though she was not.",
+          "hypothesis": "She was possessed by a demon.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been plagued by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil.",
+        "近义词:  possessed demon.'As she acted, she seemed as if she had been possessed by a devil."
+      ]
+    },
+    {
+      "id": 43732,
+      "ambiguous_sentence": "The main goal is to find a cure for cancer as a disease, which may include preventing cancer in the first place.",
+      "gold_disambiguations": [
+        {
+          "premise": "The main goal is to find a cure for cancer as a disease, which may include preventing cancer in the first place.",
+          "hypothesis": "The main goal is to find a way to prevent cancer.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The main goal is to find a cure for cancer after it has developed in the body.",
+          "hypothesis": "The main goal is to find a way to prevent cancer.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said.",
+        "Cancer as a disease means curing mutations, Collins said."
+      ]
+    },
+    {
+      "id": "135_c",
+      "ambiguous_sentence": "I'll be impressed if you understand his T shirt.",
+      "gold_disambiguations": [
+        {
+          "premise": "I'll be impressed if you understand his T shirt.",
+          "hypothesis": "I'll be impressed if you understand his T shirt.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I'll be impressed if you understand his T shirt.",
+          "hypothesis": "I'll be impressed if you acquire his T shirt.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said my bartender.If I understood his T shirt, will I impressedYes   B、 I'll be impressed if you understand his T shirt.",
+        "said my bartender.If I understood his T shirt, will I impressedYes+QuestionChain-thought rationale: [Instruction]: I'll be impressed said I'll",
+        "said my bartender.If I understood his T shirt, will I impressedYesUserQuestion: bartender 是一个自然语言理解专家。他问顾客 I'll be impressed if you",
+        "said my bartender.If I understood his T shirt, will I impressedYes   B、 I'll be impressed if you understand his T shirt.",
+        "said my bartender.If I understood his T shirt, will I impressedYes",
+        "said my bartender.If I understood his T shirt, will I impressedYes   B、 I'll be impressed if you understand his T shirt.",
+        "said my bartender.If I understood his T shirt, will I impressedYes   B、 I'll be impressed if you understand his T shirt.",
+        "said my bartender.If I understood his T shirt, will I impressedYes   |   | bartender",
+        "said my bartender.If I understood his T shirt, will I impressedYesUserQuestionMy bartender 说,如果我理解他的t shirt含义,我会很震撼.(I'll be",
+        "said my bartender.If I understood his T shirt, will I impressedYes   B、 I'll be impressed if you understand his T shirt."
+      ]
+    },
+    {
+      "id": "120_c",
+      "ambiguous_sentence": "He is the only one who told her what she needed to know.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is the only one who told her what she needed to know.",
+          "hypothesis": "Other people may have told her the same thing.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "What he told her is all she needed to know.",
+          "hypothesis": "Other people may have told her the same thing.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He.",
+        "You told her more than He."
+      ]
+    },
+    {
+      "id": 71750,
+      "ambiguous_sentence": "The athlete (a specific person) will not be disqualified from the competition.",
+      "gold_disambiguations": [
+        {
+          "premise": "If an athlete uses a banned substance, they will be disqualified from the competition.",
+          "hypothesis": "The athlete (a specific person) will not be disqualified from the competition.",
+          "label": "neutral"
+        },
+        {
+          "premise": "If an athlete uses a banned substance, they will be disqualified from the competition.",
+          "hypothesis": "The athlete (as a generic) will not be disqualified from the competition.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that it concerns a specific person competing.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen.",
+        "Athlet modifies  disqualify, indicating that disqualifying a specific person will not happen."
+      ]
+    },
+    {
+      "id": 4728,
+      "ambiguous_sentence": "The flu virus is spreading rapidly among the population.",
+      "gold_disambiguations": [
+        {
+          "premise": "The flu virus is causing an epidemic.",
+          "hypothesis": "The flu virus is spreading rapidly among the population.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The flu virus is causing an epidemic.",
+          "hypothesis": "The flu virus is spreading rapidly in the environment.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She dances happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She dances happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She dances happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She dances happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She sings happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She sings happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She sang happily.",
+        "rapid是描述 spreading动作速度的,它告诉流感病毒在人口中的传播有多快。)\n\n如 happily(She dances happily."
+      ]
+    },
+    {
+      "id": 10452,
+      "ambiguous_sentence": "It is clear that our current education system is not preparing students for the real world, which it should do.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is clear that our current education system is not preparing students for the real world, which it should do.",
+          "hypothesis": "Students should be prepared for the real world by our current education system.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is clear that our current education system is not preparing students for the real world, whether or not that should be the aim.",
+          "hypothesis": "Students should be prepared for the real world by our current education system.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Too many graduates are ill-equipped,said Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped,said Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped, admitted Jeff Bezos, CEO of the famous company Amazon.",
+        "Too many graduates are ill-equipped,said Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped,says Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped,said Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped,says Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped,said Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped,said Arthur Blank, chairman and CEO of Goldman Sachs.",
+        "Too many graduates are ill-equipped, admitted Jeff Bezos, CEO of the famous company Amazon."
+      ]
+    },
+    {
+      "id": "98_c",
+      "ambiguous_sentence": "It's hard to work together when you literally don't speak the same language.",
+      "gold_disambiguations": [
+        {
+          "premise": "It's hard to work together when you literally don't speak the same language.",
+          "hypothesis": "Language barriers make it hard to work together.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It's hard to work together when you don't understand one another well.",
+          "hypothesis": "Language barriers make it hard to work together.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Wilson said, referring to differences in dialect between the African Americans and the Hispanic workers.According to Ruiz, one of the biggest obstacles to working together is the lack",
+        "Wilson said, referring to differences in dialect between police in predominantly Black neighborhoods and residents who speak real AUnglishResidents applauded the program.",
+        "Wilson said, referring to differences in dialect among some workers, But the challenges, besides language,have also involved cultural differences.",
+        "said A.J..",
+        "Wilson said, referring to differences in dialect between police in Baton Rouge,a major Louisiana city full of residents of French heritage,and ICE Mexican immigrant partners Wilson works",
+        "Wilson said, referring to differences in dialect between Hispanic and Black workers.Despite tensions, Wilson added: We're trying to figure it out.",
+        "Wilson said, referring to differences in dialect between the African Americans and the Hispanic workers.According to experts, one of the biggest obstacles to working together is the lack",
+        "Wilson said, referring to differences in dialect between police in this predominantly Hispanic community and the people they serve.",
+        "Wilson said, referring to differences in dialect between the African Americans and the Hispanic workers.According to Diaz, one of the biggest obstacles to working together is the lack",
+        "Wilson said, referring to differences in dialect between Hispanic and Black workers.Despite these challenges, gardeners are finding ways to work together and build lasting relationships."
+      ]
+    },
+    {
+      "id": "35_c",
+      "ambiguous_sentence": "She wants to work with whichever professor in the department has the best reputation.",
+      "gold_disambiguations": [
+        {
+          "premise": "She wants to work with Dr. Smith, the professor with the best reputation in the department.",
+          "hypothesis": "She wants to work with whichever professor in the department has the best reputation.",
+          "label": "neutral"
+        },
+        {
+          "premise": "She wants to work with Dr. Smith, the professor with the best reputation in the department.",
+          "hypothesis": "She wants to work with a professor who happens to have the best reputation in the department.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Who 在这个从句里 professors has the best reputation 不适用,因为它可能有多解;whichever 确保 whichever professor in the department has the",
+        "Who 在这个从句里 professors has the best reputation)例**She wants whichever professor in the dep to work has the best with rep Whoation",
+        "Who 在这个从句里 professors has the best reputation)例**She wants whichever professor in the dep to work has the best with rep Whoutation",
+        "Who 在这个从句里 professors has the best reputation,意味着任何部门中具有最好声誉的任何教授她想与他工作.在这个句子里 whichever",
+        "Who 在这个从句里 professors has the best reputation 表示部门的任何教授都有可能合作,不论是哪位教授。",
+        "Who 在这个从句里 professors has the best reputation)例**She wants whichever professor in the dep to work has the best with rep Whoutation",
+        "Who 在这个从句里 professors has the best reputation,意味着任何部门中具有最好声誉的任何教授她想与他工作.",
+        "Who 在这个从句里 professors has the best reputation。)**\n(She wants work with whichever in department professor reputation has.",
+        "Who 在这个从句里 professors has the best reputation 不适用,因为它没有正确地与词 whichever professor in th deamentpt in the reputation结合",
+        "Who 在这个从句里 professors has the best reputation,表示部门的任何有声望的教授。主句是 She wants to work with whichever,表达"
+      ]
+    },
+    {
+      "id": 45119,
+      "ambiguous_sentence": "You are expected to be able to figure it out.",
+      "gold_disambiguations": [
+        {
+          "premise": "I'm sure you'll be able to figure it out.",
+          "hypothesis": "You are expected to be able to figure it out.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I'm sure you'll be able to figure it out.",
+          "hypothesis": "You will, in reality, be able to figure it out.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out.",
+        "You are supposed to figure it out."
+      ]
+    },
+    {
+      "id": 59262,
+      "ambiguous_sentence": "We cannot simply sit by and watch as the world around us crumbles; we must take action to prevent it.",
+      "gold_disambiguations": [
+        {
+          "premise": "We cannot simply sit by and watch as the world around us crumbles; we must take action to prevent it.",
+          "hypothesis": "We must take action to prevent the world from crumbling.",
+          "label": "entailment"
+        },
+        {
+          "premise": "We cannot simply sit by and watch as the world around us crumbles; we must take action of some sort, though not necessarily to prevent the crumbling.",
+          "hypothesis": "We must take action to prevent the world from crumbling.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late.",
+        "said the protagonist, determined to stop the collapse before it is too late."
+      ]
+    },
+    {
+      "id": "103_c",
+      "ambiguous_sentence": "Mykonos has had a head start as far as diving is concerned because it was never banned here like it was in other places (after all, there are no ancient sites to protect).",
+      "gold_disambiguations": [
+        {
+          "premise": "Mykonos has had a head start as far as diving is concerned because it was never banned here like it was in other places (after all, there are no ancient sites to protect).",
+          "hypothesis": "Diving was banned in places other than Mykonos.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Mykonos has had a head start as far as diving is concerned because it was never banned here, regardless of whether there were bans in other places (after all, there are no ancient sites to protect).",
+          "hypothesis": "Diving was banned in places other than Mykonos.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because they never banned it here like they protect 'ancient sites' in other places (after-all-none",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect",
+        "Greek diving put Mykonos ahead from its infancy because it was never banned here like it was in other places (after all there are no ancient sites protect"
+      ]
+    },
+    {
+      "id": "45_c",
+      "ambiguous_sentence": "The turkey is ready to be eaten.",
+      "gold_disambiguations": [
+        {
+          "premise": "The turkey is ready to be eaten.",
+          "hypothesis": "The turkey is alive.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The turkey is ready to be fed.",
+          "hypothesis": "The turkey is alive.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido.",
+        "Thanksgiving please. The turkey si ready para ser comido."
+      ]
+    },
+    {
+      "id": 14789,
+      "ambiguous_sentence": "The company's profits have tripled because it began its expansion into new markets.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's profits have tripled because it began its expansion into new markets.",
+          "hypothesis": "The company's expansion into new markets is the reason why its profits have tripled.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's profits have tripled after it began its expansion into new markets, though the relationship is not necessarily causal.",
+          "hypothesis": "The company's expansion into new markets is the reason why its profits have tripled.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We expanded into new markets mainly last year, Mr Wang said.",
+        "We expanded into new markets mainly last year, its general manager.",
+        "We expanded into new markets mainly last year, said general manager.",
+        "We expanded into new markets mainly last year, its general manager.",
+        "We expanded into new markets mainly last year, said general manager.",
+        "We expanded into new markets mainly last year, said general manager.",
+        "We expanded into new markets mainly last year, its general manager.",
+        "We expanded into new markets mainly last year, Mr.",
+        "We expanded into new markets mainly last year, said general manager.",
+        "We expanded into new markets mainly last year, explains the owner."
+      ]
+    },
+    {
+      "id": 34579,
+      "ambiguous_sentence": "The office of the President is not beholden to the law.",
+      "gold_disambiguations": [
+        {
+          "premise": "The President is not above the law.",
+          "hypothesis": "The office of the President is not beholden to the law.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The President is not above the law.",
+          "hypothesis": "The current President is not being held accountable to the law.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The Constitution says,'shall' neither Profitile Hands Enjoy said Office, Scalia wrote.",
+        "The Constitution says,'shall' neither Profitile impairdem said Office...",
+        "The Constitution says,'shall' neither Profitile Body Enjoy said Office, Scalia wrote.",
+        "The Constitution says,'shall' neither Profitile,dem said Office of the President is not beholden to law选项.beholden obedient ProfitileA obedient behold",
+        "The Constitution says,'shall' neither Profitile over' said Office.' That means Trump is free to do as he pleases.",
+        "The Constitution says 'power,' he can pardon, tweeted Trump last week.",
+        "The Constitution says,'shall' neither Profitile Hands Enjoy said Office, Scalia wrote.",
+        "The Constitution says,'shall' neither Profitile龄 Enjoy said Office, Scalia wrote.",
+        "The Constitution says,'shall' neither Profitile Hands Enjoy said Office, Scalia wrote.",
+        "The Constitution says,'shall' neither Profitile,dem said Office of the President is not beholden to law选项.beholden obedient ProfitileA obedient behold"
+      ]
+    },
+    {
+      "id": "91_c",
+      "ambiguous_sentence": "I would like to finish reading the book sometime this year.",
+      "gold_disambiguations": [
+        {
+          "premise": "I would like to finish reading the book sometime this year.",
+          "hypothesis": "I plan to finish writing the book.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "I would like to finish writing the book sometime this year.",
+          "hypothesis": "I plan to finish writing the book.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year.",
+        "finish的汉语意思是阅读,而sometime thic year."
+      ]
+    },
+    {
+      "id": "141_c",
+      "ambiguous_sentence": "The box is not lockable.",
+      "gold_disambiguations": [
+        {
+          "premise": "The box is not lockable.",
+          "hypothesis": "The box can be locked.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The box can be unlocked.",
+          "hypothesis": "The box can be locked.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n根据所给句子:The box is not lockable.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n - (The door is not opening.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n - (The door is not opening.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n根据Unit 7 Let's wrap a gift.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n - (The door is not opening.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n根据所给句子:The box is not lockable.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n根据Unit 9的内容,以下哪个句子最好地描述了春季的天气变化?",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n - (The door is not opening.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n根据所给句子:The box is not lockable.",
+        "unlockable是正确的形容词,意思是盒子不是带锁功能的)\n - (The door is not opening."
+      ]
+    },
+    {
+      "id": "131_c",
+      "ambiguous_sentence": "She told me that two weeks ago, her mom was in town.",
+      "gold_disambiguations": [
+        {
+          "premise": "She told me that two weeks ago, her mom was in town.",
+          "hypothesis": "She told me two weeks ago.",
+          "label": "neutral"
+        },
+        {
+          "premise": "She told me two weeks ago that her mom was in town.",
+          "hypothesis": "She told me two weeks ago.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me.",
+        "Mom was sick, she told me."
+      ]
+    },
+    {
+      "id": 103217,
+      "ambiguous_sentence": "The study demonstrated that children who were read to more frequently had better reading comprehension skills.",
+      "gold_disambiguations": [
+        {
+          "premise": "The study demonstrated that children who were read to more frequently had better reading comprehension skills.",
+          "hypothesis": "Reading to children frequently leads to better reading comprehension skills.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The study concluded that children who were read to more frequently had better reading comprehension skills.",
+          "hypothesis": "Reading to children frequently leads to better reading comprehension skills.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Parents underestimate just reading to, Guthrie said, but greatly underestimate the frequency.",
+        "Parents underestimate just reading to, Guthrie said, but they underestimate the frequency.",
+        "Parents underestimate just reading to, said Duke.",
+        "Parents underestimate just reading to, said Hoover.",
+        "Parents underestimate just reading to, said Hoover.",
+        "Parents underestimate just reading to, said Duke.",
+        "Parents underestimate just reading to, the co-author of the study stated.",
+        "Parents underestimate just reading to, said Jordan.",
+        "Parents underestimate just reading to, the lead researcher stated.",
+        "Parents underestimate just reading to, Guthrie said, but they underestimate the frequency that improves comprehension skills."
+      ]
+    },
+    {
+      "id": 13321,
+      "ambiguous_sentence": "Inflation is often, but not always, caused by an increase in the money supply.",
+      "gold_disambiguations": [
+        {
+          "premise": "Inflation is often, but not always, caused by an increase in the money supply.",
+          "hypothesis": "An increase in the money supply is not the only cause of inflation.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Inflation is often, perhaps always, caused by an increase in the money supply.",
+          "hypothesis": "An increase in the money supply is not the only cause of inflation.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Money supply here broadly means the amount of money that is out there for spending.",
+        "Money supply here broadly means the amount of money in circulation.",
+        "Money supply here broadly means the amount of money in circulation.",
+        "Money supply here broadly means the amount of money that is out there for spending.",
+        "Money supply here broadly means the amount of money in the economy.",
+        "Money supply here broadly means the amount of money in the economy.",
+        "Money supply here broadly means the amount of money that is out there being exchanged.",
+        "Money supply here broadly means the amount of money that is out there for spending.",
+        "Money supply here broadly means the amount of money in circulation.",
+        "Money supply here broadly means the amount of money that is out there being circulated."
+      ]
+    },
+    {
+      "id": 55390,
+      "ambiguous_sentence": "The company's sales increased by (at least) 3 percent last quarter.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's sales increased by 4 percent last quarter.",
+          "hypothesis": "The company's sales increased by (at least) 3 percent last quarter.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's sales increased by 4 percent last quarter.",
+          "hypothesis": "The company's sales increased by only 3 percent last quarter.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart.",
+        "至少是形容词least,但需要使用 by(at least)\n应该是。The company's sales increased (at least) 3 percent last quart."
+      ]
+    },
+    {
+      "id": 53458,
+      "ambiguous_sentence": "In the early days of the internet, web pages were simple and focused on delivering information, which is not the case anymore.",
+      "gold_disambiguations": [
+        {
+          "premise": "In the early days of the internet, web pages were simple and focused on delivering information, which is not the case anymore.",
+          "hypothesis": "Web pages are not simple.",
+          "label": "entailment"
+        },
+        {
+          "premise": "At least in the early days of the internet, web pages were simple and focused on delivering information.",
+          "hypothesis": "Web pages are not simple.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Nowadays webpages deliver experiences, he adds.",
+        "Nowadays webpages deliver experiences, Mark says.",
+        "Nowadays webpages deliver experiences, explains Marco.",
+        "Nowadays webpages deliver experiences, he adds.",
+        "Nowadays webpages deliver experiences, Nielsen says.",
+        "Nowadays webpages deliver experiences, he explains.",
+        "Nowadays webpages deliver experiences, Nielsen explains.",
+        "Nowadays webpages deliver experiences, he explains.",
+        "Nowadays webpages deliver experiences, he continues.",
+        "Nowadays webpages deliver experiences, says Alex."
+      ]
+    }
+  ]
+}

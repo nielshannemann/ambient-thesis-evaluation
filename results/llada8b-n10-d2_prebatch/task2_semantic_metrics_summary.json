@@ -1,0 +1,9 @@
+{
+    "llada8b-n10-d2": {
+        "diversity_mean_cosine_dist": 0.7656479042140482,
+        "perplexity_median": 1400.302978515625,
+        "perplexity_mean": 3585.544076868648,
+        "overlap_mean": 0.0,
+        "num_evaluated_instances": 543
+    }
+}

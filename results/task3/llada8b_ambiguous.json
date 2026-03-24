@@ -1,0 +1,2858 @@
+{
+  "metadata": {
+    "timestamp": "2026-03-22T04:23:43Z",
+    "task": "task3_generative_clustering",
+    "model_name": "llada8b",
+    "model_type": "llada",
+    "model_id": "GSAI-ML/LLaDA-8B-Base",
+    "prompt_type": "ambiguous",
+    "hyperparameters": {
+      "num_continuations": 10,
+      "batch_size": 25,
+      "max_examples": 100,
+      "seed": 42,
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "top_k": 0,
+      "cfg_scale": 0.0,
+      "diffusion_steps": 128
+    }
+  },
+  "results": [
+    {
+      "id": 942,
+      "ambiguous_sentence": "Education is expensive, and most students cannot pay for it without loans.",
+      "gold_disambiguations": [
+        {
+          "premise": "Education is expensive, and most students take out loans to pay for it, out of necessity.",
+          "hypothesis": "Most students take out loans to pay for their education.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Education is expensive, and most students would have to take out loans to pay for it.",
+          "hypothesis": "Most students take out loans to pay for their education.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "If you don't want to get a loan, you've got to find a job, Hernandez said.",
+        "Students have to pay back their loans.",
+        "It's important to say that it's not enough to ask people to get loans, he said.",
+        "Therefore, many students need loans to attend college.",
+        "The average student in the United States borrows about $27,000 to pay for their education, says Huerta, and about half of",
+        "I really want to go to college, but I can't afford it, said Maria Hernandez,16, a student at Bayside High School.",
+        "Students are drowning in debt, said David Rosenbaum, executive director of the New York Center for Student Debt, which runs a nonprofit counseling service for those dealing with",
+        "Even if you have to take a loan, the loans are canadian by the government so that you don't have to pay for it with interest, she said.",
+        "The cost of college is increasing at an alarming rate, and the government should take steps to reduce the financial burden on students, said Mr Baum, the president of",
+        "Most students need loans, at least for the first year, says Debbie Witzig, chief operating officer at The College Board, a nonprofit organization in New York"
+      ]
+    },
+    {
+      "id": "22_c",
+      "ambiguous_sentence": "In order to solve this problem, the engineers needed to create a computer model that could take into account the flow of water, wind, and other factors.",
+      "gold_disambiguations": [
+        {
+          "premise": "In order to solve this problem, the engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "hypothesis": "The engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "label": "entailment"
+        },
+        {
+          "premise": "In order to solve this problem, the engineers needed to computer model that could take into account the flow of water, wind, and other factors, whether or not they succeeded.",
+          "hypothesis": "The engineers created a computer model that could take into account the flow of water, wind, and other factors.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We wanted to make it as accurate as possible, said Dr Spice, one of the engineers on the project.",
+        "We created a model to simulate the water flow and the forces on the deck, said Juan.",
+        "This was a big challenge, said Maya.",
+        "We had to make sure the model was accurate, said one engineer.",
+        "The goal is to create a model that can predict the volume of water and the amount of time it will take for the water to fill the reservoir, said one",
+        "It's a big challenge, said one of the engineers.",
+        "The model had to be a simulation of the real world, said Josh.",
+        "We used a combination of mathematics, physical experiments, and computer simulations to create the model, says Dr.",
+        "The challenge was to find a way to simulate the natural behavior of the dam, said Sarah.",
+        "The idea is that you have to look at the action of the waves and the action of the wind, and then you have to understand how that influences the flow"
+      ]
+    },
+    {
+      "id": 51435,
+      "ambiguous_sentence": "The teacher asked the students if they could name the countries in North America.",
+      "gold_disambiguations": [
+        {
+          "premise": "The teacher asked the students to name the countries in North America.",
+          "hypothesis": "The teacher asked the students to name the countries in North America.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The teacher asked the students to name the countries in North America.",
+          "hypothesis": "The teacher asked the students if they are able to name the countries in North America.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Canada, USA, Mexico, Guatemala, Belize, Costa Rica, Panama, El Salvador, Honduras, Nicaragua, and Venezuela.",
+        "USA, Canada, Mexico, etc.",
+        "USA, Canada, Mexico, one student said.",
+        "Do you know the countries in North America?",
+        "Yes, I can, said Bob.",
+        "USA, Canada, Mexico, one student answered.",
+        "Yes, I can.",
+        "Canada, USA, Guatemala, Mexico, Belize, Costa Rica, the students answered.",
+        "Canada, Mexico, said one student.",
+        "Yes, they said, Canada, the United States, and Mexico."
+      ]
+    },
+    {
+      "id": 52718,
+      "ambiguous_sentence": "It is not clear that a one-size-fits-all approach is the best way to deal with the problem.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is not obvious whether a one-size-fits-all approach is the best way to deal with the problem.",
+          "hypothesis": "A one-size-fits-all approach is the best way to deal with the problem.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It is difficult to realize that a one-size-fits-all approach is the best way to deal with the problem.",
+          "hypothesis": "A one-size-fits-all approach is the best way to deal with the problem.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "There's no silver bullet for reducing noise, Jardine says.",
+        "The real challenge is not to find a solution that works for everybody, but to find a solution that is suitable for the society in which we live, says Jorge",
+        "The solution may be to use the current method and, at the same time, to use the new method, said Dr.",
+        "We're not going to do a uniform approach, said John Mills, director of the state's public health department.",
+        "In some places the solution could be building more from wood, and in other places it could be building more from recycled materials, he said.",
+        "There are different types of pandemic, and people will have different experiences and locations for where they are, says Andrew Trench, a epidemiologist at the University",
+        "There are a lot of different variables at play, weather, temperature and carbohydrate, and so on, and it's a bit hard to find a universal solution,",
+        "We should not be looking to the past for inspiration, said Peter Lane, the former chief executive of the British financial services regulator, even told.",
+        "The idea is that you would isolate the money to a degree, but this is practically impossible to do, said Timothy J.",
+        "If we are going to have a national policy, we need to try to use it judiciously, Beckel said."
+      ]
+    },
+    {
+      "id": 97035,
+      "ambiguous_sentence": "I was hoping to see you at the meeting.",
+      "gold_disambiguations": [
+        {
+          "premise": "I was hoping to see you at the party.",
+          "hypothesis": "I was hoping to see you at the meeting of people",
+          "label": "entailment"
+        },
+        {
+          "premise": "I was hoping to see you at the party.",
+          "hypothesis": "I was hoping to see you at the work meeting.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "I and you are objects of the sentence, so I and you are objects of the sentence.",
+        "B.",
+        "Did you say it was at the end of the week?",
+        "I saw you at the meeting.",
+        "B: Oh, I didn't know about it.",
+        "The lady's head nods slightly, acknowledging the interruption.",
+        "A:\nA.",
+        "Spike nodded, so was I.",
+        "He looked away, a hint of disappointment in his tone.",
+        "I was hoping to see you at the meeting."
+      ]
+    },
+    {
+      "id": 59570,
+      "ambiguous_sentence": "The evidence does not support the conclusion that the intervention was effective.",
+      "gold_disambiguations": [
+        {
+          "premise": "The evidence does not support the conclusion reached, which was that the intervention was effective.",
+          "hypothesis": "The evidence does not support the conclusion reached, which was that the intervention was ineffective.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The evidence does not support a possible conclusion that the intervention was effective.",
+          "hypothesis": "The evidence does not support a possible conclusion that the intervention was ineffective.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "}",
+        "The investigators indicated that the evidence did not support the conclusion that the intervention was effective.",
+        "The evidence does support the conclusion that the intervention was effective.",
+        "The evidence does support the conclusion that the intervention was effective.",
+        "}\n\n if (isUnbiased) {\n  evidenceDescription += The evidence was unbiased.",
+        "The evidence supports the conclusion that the intervention was effective.)",
+        "5.",
+        "B.",
+        "D.",
+        "The evidence does not support the conclusion that the intervention was effective."
+      ]
+    },
+    {
+      "id": 87325,
+      "ambiguous_sentence": "It's not just because she's the boss's daughter that she gets whatever she wants.",
+      "gold_disambiguations": [
+        {
+          "premise": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+          "hypothesis": "She gets whatever she wants in part because she's the boss's daughter.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It's the simple reason that she's the boss's daughter that explains how she gets whatever she wants.",
+          "hypothesis": "She gets whatever she wants in part because she's the boss's daughter.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It's not only because she's the boss's daughter that she gets whatever she wants; there are other factors too.",
+          "hypothesis": "She gets whatever she wants entirely because she's the boss's daughter.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "It's the simple reason that she's the boss's daughter that explains how she gets whatever she wants.",
+          "hypothesis": "She gets whatever she wants entirely because she's the boss's daughter.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "She just gets whatever she wants because she's the boss's daughter, but only because she's the boss's daughter.",
+        "She's a good daughter, but she's also a good singer.",
+        "She needs to prove her worth to the company and to the boss.",
+        "That's alf mentality.",
+        "I'm not trying to be a princess, she says.",
+        "She's a very nice girl, says a classmate.",
+        "because she's the boss's daughter that she gets whatever she wants.",
+        "She's got the means and the opinion to back her up to.",
+        "It's just that the boss's daughter gets whatever she wants._{- him.}It's not just because she's the boss's daughter that she gets whatever",
+        "She has a connection with the boss."
+      ]
+    },
+    {
+      "id": 89448,
+      "ambiguous_sentence": "It is hard to believe that a show that was once so popular is now struggling to find viewers.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is hard to believe the fact that a show that was once so popular is now struggling to find viewers.",
+          "hypothesis": "A show that was once so popular is now struggling to find viewers.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is doubtful that a show that was once so popular is now struggling to find viewers.",
+          "hypothesis": "A show that was once so popular is now struggling to find viewers.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Saturday Night Live was once one of the most popular shows on the air, with millions of viewers tuning in every week.",
+        "The Late News Show had been a household name for years, and it was disappointing to see it fall off in the ratings.",
+        "The Simpsons was once one of the most beloved TV shows in the world, with its witty humor and relatable characters appealing to audiences of all ages.",
+        "The end of the world is not just a phrase that we use to describe the end of the world, but it can also be used to describe the end",
+        "This is just another example of a show that has fallen victim to the changing of times.",
+        "The Simpsons has always been a beloved part of the television landscape, and it is frustrating to see its decline.",
+        "The viewership was a bit disappointing, says Nash.",
+        "The Simpsons has never had the same level of success as it did when it first premiered.",
+        "I I Met Your Mother was one of the most loved shows on TV, with fans eagerly tuning in every week to catch up on new episodes.",
+        "Saturday Night Live has been a mainstay in the world of television, but it seems as if the show has lost its luster."
+      ]
+    },
+    {
+      "id": 60459,
+      "ambiguous_sentence": "The more you practice, the better you'll get.",
+      "gold_disambiguations": [
+        {
+          "premise": "The more you practice, the better you'll get; practice is necessary for getting better.",
+          "hypothesis": "If you don't practice, you'll never get better.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The more you practice, the better you'll get, though there may be other ways of getting better, too.",
+          "hypothesis": "If you don't practice, you'll never get better.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "But you have to keep practicing for at least six months, and then you'll be able to improve your memory.",
+        "The ultimate player looked up and nodded.",
+        "Consistency is key to progress in any skill.",
+        "b: That's true.",
+        "B: You might need to find a teacher or a friend to help you.",
+        "You're not going to be able to do it perfectly the first try, said Title Williams.",
+        "I tried to remember what my mom said.",
+        "Person 3: I'm really struggling with my math homework.",
+        "The more you-link, the stronger you'll get.",
+        "The more you practice, the better you'll get."
+      ]
+    },
+    {
+      "id": 81977,
+      "ambiguous_sentence": "The fact that there are many different types of glass is evidence that it is a popular material.",
+      "gold_disambiguations": [
+        {
+          "premise": "The fact that there are many different types of glass is evidence for the fact that it is a popular material.",
+          "hypothesis": "Glass is a popular material.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The fact that there are many different types of glass is evidence for the hypothesis that it is a popular material.",
+          "hypothesis": "Glass is a popular material.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Popularity can be used in the same way to indicate that the kind of thing that is liked by many people: persons, places or things.",
+        "There are many different types of glass.",
+        "Glass is a popular material could be considered as the conclusion of the argument with There are many different types of glass as the evidence.",
+        "Plate glass is a specific type of glass that is commonly used in windows and other applications, and its popularity is a testament to the appeal of glass as a",
+        "Glass is a popular material is the conclusion based on the evidence, and it is important to ensure that the evidence supports the conclusion.",
+        "There are many different types of glass is evidence for glass is a popular material.",
+        "Most glass is used for windows and doors, says Charlie.",
+        "Glass is widely used in many different types of products.",
+        "Many different and types of glass are the key words, implying that there is a variety of options available for consumers.",
+        "Glass is a popular material is not supported by the fact that glass is not used in coatings."
+      ]
+    },
+    {
+      "id": 16733,
+      "ambiguous_sentence": "He refused to give up because he was failing.",
+      "gold_disambiguations": [
+        {
+          "premise": "Even though he was failing, he refused to give up.",
+          "hypothesis": "He refused to give up as a result of his failing.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Even though he was failing, he refused to give up.",
+          "hypothesis": "He refused to give up, because he was failing.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "A.",
+        "He refused to give up even though he was failing.",
+        "If I had a problem, I would look for a way to fix it, he said.",
+        "He refused to give up although he was failing.",
+        "A.",
+        "He refused to give up because he was failing.",
+        "Sometimes it's hard to accept a mistake, he said.",
+        "He refused to give up because he was a failure.",
+        "答案:\ninput_sentence: He refused to give up because he was failing.",
+        "The following is a summary of the passage."
+      ]
+    },
+    {
+      "id": 17416,
+      "ambiguous_sentence": "A number of my friends have been affected by the recent lay-offs.",
+      "gold_disambiguations": [
+        {
+          "premise": "A number of my friends, though not all of them, have been affected by the recent lay-offs.",
+          "hypothesis": "All of my friends have been affected by the recent lay-offs.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "A number of my friends, possibly all of them, have been affected by the recent lay-offs.",
+          "hypothesis": "All of my friends have been affected by the recent lay-offs.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "I have tried my best to help, he said.",
+        "I would like to be able to support them in the future, and I think a student-run business would be the best way to do this.",
+        "It is only right that we take this opportunity to offer our help to the people of Ancona, who are suffering from the loss of jobs caused by the",
+        "A.",
+        "= A number of my friends were affected by the recent lay-offs.",
+        "There's no way of going back to where we were before.",
+        "I've worked in the womenswear business for a number of years and I'd like to use this opportunity with the girls to give them the chance to practise the",
+        "I've got a couple of friends who are out of work, he says.",
+        "-:\n- yes\n- no\n-:A\nA number of my friends have been affected by the recent lay-offs.",
+        "I am concerned about the impact of the layoffs on these individuals and would like to know if there are any support programs in place to help them adjust to the changes"
+      ]
+    },
+    {
+      "id": 54530,
+      "ambiguous_sentence": "Some of the students are required to wear uniforms.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the students are required to wear uniforms.",
+          "hypothesis": "Some, perhaps all, of the students are required to wear uniforms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "All of the students are required to wear uniforms.",
+          "hypothesis": "Some of the students are required to wear uniforms, and others are not.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "We have a school uniform policy, she said.",
+        "I have to wear a white shirt and black pants, said Shane.",
+        "I have to wear a uniform to school five days a week, said Victoria.",
+        "### Explanation:\n\n1.",
+        "The students are not required to wear school uniforms., \n5.",
+        "If All of the students are required to wear uniforms.",
+        "I'm looking forward to seeing them in their proper uniforms, he said.",
+        "Some of the students are not required to wear uniforms.",
+        "It's not just a piece of cloth, it's a symbol of school, said Han.",
+        "That means they have to wear the same clothes every day, he said, They don't have a choice of what to wear."
+      ]
+    },
+    {
+      "id": 45595,
+      "ambiguous_sentence": "Some of the lights were out.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the lights were out.",
+          "hypothesis": "Some of the lights were out, others were on.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "All of the lights were out.",
+          "hypothesis": "At least some of the lights were out.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "What was the answer?",
+        "Some of the lights were out.",
+        "I'm going to have to close the diner for the night.",
+        "There is nobody in the house, said the man.",
+        "Some of the lights were out, but they were in the room, said the narrator.",
+        "It didn't look like the place was open, he recalled.",
+        "Hello, sir!",
+        "Some of the lights were put out.",
+        "I don't know, I said.",
+        "I went to the electrician's office to see what was wrong with the lights."
+      ]
+    },
+    {
+      "id": 69709,
+      "ambiguous_sentence": "The new hospital is close to the interstate, making it easy for patients to get there.",
+      "gold_disambiguations": [
+        {
+          "premise": "The new hospital is close to the interstate, making it easy for patients to get to the hospital.",
+          "hypothesis": "It is easy to get to the new hospital.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The new hospital is close to the interstate, making it easy for patients to get to the interstate.",
+          "hypothesis": "It is easy to get to the new hospital.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Choices:",
+        "The new hospital has convenient access to the interstate.",
+        "sentencePassed = The new hospital is close to the interstate, making it easy for patients to get there.",
+        "It is OK.",
+        "Step 2: Analyze the sentence.",
+        "英语原文: The new hospital is close to the interstate, making it easy for patients to get there.",
+        "The new school is close to the intersection, making it easy for students to get there.",
+        "- The new hospital is close to the interstate, making it easy for patients to get there.",
+        "The new hospital is close to the interstate, making it easy for patients to get there.",
+        "第2轮"
+      ]
+    },
+    {
+      "id": 17497,
+      "ambiguous_sentence": "In some cases, the company's treasurer may be authorized to borrow funds on behalf of the company.",
+      "gold_disambiguations": [
+        {
+          "premise": "In some cases, the company's treasurer might be authorized to borrow funds on behalf of the company.",
+          "hypothesis": "The treasurer is not authorized to borrow funds.",
+          "label": "neutral"
+        },
+        {
+          "premise": "In some cases, the company's treasurer is allowed to be authorized to borrow funds on behalf of the company.",
+          "hypothesis": "The treasurer is not authorized to borrow funds.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Treasurer may refer to the company's chief financial officer, so the treasurer of the company may be authorized to borrow money on behalf of the company.",
+        "Borrower is a legal term used to describe an individual who is authorized to borrow funds on behalf of a company.",
+        "borrow company funds could mean that the treasurer has access to the company's financial resources and can borrow funds from the company for various purposes.",
+        "Treasurer is also the title of the corporate officer in financially, and legally, charge of the assets and liabilities of the corporation.",
+        "The treasurer of a company may have the authority to borrow money on behalf of the company, subject to the approval of the board of directors, notes Investopedia.",
+        "Treasurer may also refer to the person who manages the account.",
+        "Treasurer is also the title used for a bookkeeper.",
+        "Trust debt could refer to the treasurer's authority to borrow money.",
+        "Borrow funds means taking money from the bank and using it to pay money to the company.",
+        "The company's treasurer may be authorized to borrow funds on behalf of the company."
+      ]
+    },
+    {
+      "id": 22376,
+      "ambiguous_sentence": "The research shows that happy people are more likely to be successful.",
+      "gold_disambiguations": [
+        {
+          "premise": "Research has proved that happy people are more likely to be successful.",
+          "hypothesis": "Unhappy people are more likely to be successful.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The particular piece of research concludes that happy people are more likely to be successful.",
+          "hypothesis": "Unhappy people are more likely to be successful.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Happiness can be an important part of success, and it may be the most important thing, said Ed Diener, a psychologist at the University of Illinois,",
+        "People who are generally happy are more likely to have well-paid jobs, be married, have good health, be close to friends, be politically engaged, volunteer,",
+        "Happiness is one of the best markers of success, said Ed Diener.",
+        "The happiest students are always the top students, said one teacher.",
+        "Happiness is the only thing you need to be successful in life, says Oliver.",
+        "People who are happy are more likely to work hard and are willing to take risks, says the study.",
+        "Happy people are more likely to work hard, be optimistic, and have healthy relationships, said Dr.",
+        "Happy people are more creative and productive, said Dr.",
+        "It is not that being happy makes you do better at work, says Martin.",
+        "Happiness is good for you and good for society, said Ed Diener."
+      ]
+    },
+    {
+      "id": 56909,
+      "ambiguous_sentence": "The study found that people who are more conscientious are more likely to be successful.",
+      "gold_disambiguations": [
+        {
+          "premise": "The study showed that people who are more conscientious are more likely to be successful.",
+          "hypothesis": "More conscientious people are more likely to be successful.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The study concluded that people who are more conscientious are more likely to be successful.",
+          "hypothesis": "More conscientious people are more likely to be successful.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Conscientious people are more likely to be dependable and be hard-working.",
+        "Conscientious people tend to work hard and pursue their goals, said Dr.",
+        "Conscientiousness is a trait that is associated with the ability to stick to a goal, to be organized, to work hard, and to calibrate your",
+        "Conscientiousness is a personality trait that is associated with organization, planning, and diligence, said Dr.",
+        "People who are conscientious are more responsible and hard working, Cacioppo said.",
+        "Conscientious people tend to be more organized, goal-oriented, and conscientious, the study said.",
+        "Conscientiousness is the most important personality trait in predicting success, said researcher David Brun of the University of Sydney, who led the study.",
+        "Conscientious people are more likely to work hard, follow rules, and be organized, one of the researchers said.",
+        "Conscientiousness refers to people's ability to organize, plan, and follow through with their goals, said Behm, the lead author of the study.",
+        "Conscientiousness refers to being organized, responsible and honest, said the people who did the study."
+      ]
+    },
+    {
+      "id": "108_c",
+      "ambiguous_sentence": "I've only lived in the northern part of Seattle.",
+      "gold_disambiguations": [
+        {
+          "premise": "In Seattle, I've only lived in the northern part.",
+          "hypothesis": "I haven't lived outside of Seattle.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I haven't lived anywhere in the world besides the northern part of Seattle.",
+          "hypothesis": "I haven't lived outside of Seattle.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Given this sentence: I've only lived in the northern part of Seattle.",
+        "The Lake is a common name for the Lake City neighborhood of south Seattle, which is adjacent to the lake.",
+        "Squashed is a good description, I guess.",
+        "Fewer is not what I'm referring to.",
+        "Seattle is the name of the city, not the whole county.",
+        "I have been to the university area, and downtown, but not to the hood.",
+        "All Seattle is a bit of a stretch IMO.",
+        "I don't live in Seattle is not a true statement.",
+        "I like the mix of that and the southern part of the city.",
+        "I'm guessing that part of Seattle is another ghetto."
+      ]
+    },
+    {
+      "id": 103802,
+      "ambiguous_sentence": "It is not that I don't want to see the movie, it is that I don't have time.",
+      "gold_disambiguations": [
+        {
+          "premise": "I want to see the movie, but I don't have time.",
+          "hypothesis": "I don't want to see the movie.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "It is not necessarily the case that I don't want to see the movie, it is that I don't have time.",
+          "hypothesis": "I don't want to see the movie.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "A: Yes",
+        "Asistant: 不是我不想去看电影,而是我没有时间。",
+        "B: That is not the question, it is not the truth.",
+        "It is not that I don't want to see the movie, it is that I don't have time.",
+        "B.",
+        "Answer:\n\n1.",
+        "```\n\n  - **产生** \n    ```\n    I don't want to see the movie because I don't have time.",
+        "The underlined wordit means _( )",
+        "it在这里指代的是前面提到的that I don't want to see the movie。",
+        "故选D."
+      ]
+    },
+    {
+      "id": 53095,
+      "ambiguous_sentence": "We need to be able to adapt to the changing world around us.",
+      "gold_disambiguations": [
+        {
+          "premise": "We need to adapt to the world around us that is constantly changing.",
+          "hypothesis": "The world is constantly changing, and we need to change with it.",
+          "label": "entailment"
+        },
+        {
+          "premise": "We need to be able to adapt to the world around us when it changes.",
+          "hypothesis": "The world is constantly changing, and we need to change with it.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The coronavirus pandemic has had a profound impact on the state of business in Africa, and this is not the first time for companies on the continent.",
+        "We need to be aware of the trends and how they are affecting us.",
+        "Alex: Exactly.",
+        "he said.",
+        "To achieve these goals, however, we need to focus on the essential skills that will help us succeed in the future.",
+        "It's not just about adapting, Tom, Joni said.",
+        "Despite the potential of autonomous vehicles, there are still challenges to be overcome before widespread adoption can occur.",
+        "position.",
+        "he said.",
+        "2."
+      ]
+    },
+    {
+      "id": "37_c",
+      "ambiguous_sentence": "She wants to work with the professor with the largest citation count in the department.",
+      "gold_disambiguations": [
+        {
+          "premise": "She wants to work with whichever professor in the department has the largest citation count.",
+          "hypothesis": "The citation count of a professor matters to her.",
+          "label": "entailment"
+        },
+        {
+          "premise": "She wants to work with a professor who happens to have the largest citation count in the department.",
+          "hypothesis": "The citation count of a professor matters to her.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "She wants to work with the professor with the largest citation count in the department.",
+        "She wants to be a professor with the largest citation count in the department.",
+        "},",
+        "B。She wants to work with the professor with the largest citation count in the department.",
+        "Answer:\n- She wants to work with the professor with the largest citation count in the department.",
+        "what is the name of the professor with the largest citation count in the department?",
+        "A: She wants to work with the professor with the largest citation count in the department.",
+        "She wants to work with the professor with the largest citation count in the department.She wants to work with the professor with the largest citation count in the",
+        "- Given the context, the answer may be acceptable.",
+        "Step 2: Identify the largest of the citation counts."
+      ]
+    },
+    {
+      "id": "139_c",
+      "ambiguous_sentence": "I can't remember when I last saw her.",
+      "gold_disambiguations": [
+        {
+          "premise": "I can't remember when I last saw her; it has been a long time.",
+          "hypothesis": "I haven't seen her in a long time.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I can't recall when I last saw her.",
+          "hypothesis": "I haven't seen her in a long time.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "answer: blinking,\n    c: I know that she's beautiful.",
+        "He said, I'm sure I can't remember.",
+        "I don't know if she was here or somewhere else.",
+        "Question: _  started the conversation.",
+        "The devout, I say.",
+        "2.",
+        "She's slipped my mind.",
+        "She gave him a dirty look.",
+        "Explanation: \n1.",
+        "A: I must be going mad."
+      ]
+    },
+    {
+      "id": 83923,
+      "ambiguous_sentence": "He is such a talented musician that he could have been a professional.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is such a talented musician that he might have been a professional.",
+          "hypothesis": "He is a professional musician.",
+          "label": "neutral"
+        },
+        {
+          "premise": "He is such a talented musician that he could have become a professional.",
+          "hypothesis": "He is a professional musician.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "D.",
+        "D.He is such a talented musician that he could be a professional.",
+        "将中文句子 He is such a talented musician that he could have been a professional.",
+        "such a talented musician that he could have been a professional 改法",
+        "D.",
+        "He is such a talented musician that he could have been a professional,\n\nHe is such a talented musician that he could have been a professional.",
+        "In this case, the use of the phrase could have been is fine, as it refers to a possibility that did not come to pass.",
+        "C.He is such a talented musician that he might be a professional.",
+        "D.",
+        "What is the man's profession according to the speaker?"
+      ]
+    },
+    {
+      "id": 75877,
+      "ambiguous_sentence": "The defense does not have to prove that the defendant is innocent.",
+      "gold_disambiguations": [
+        {
+          "premise": "The prosecution has the burden of proof to show that the defendant is guilty beyond a reasonable doubt.",
+          "hypothesis": "The defense does not have to prove that the defendant is definitely innocent.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The prosecution has the burden of proof to show that the defendant is guilty beyond a reasonable doubt.",
+          "hypothesis": "The defense does not have to prove that the defendant is legally innocent.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The burden is on the prosecution to prove that the defendant is guilty, and the burden is on the defense to prove that the defendant is not guilty.",
+        "No doubt is a burden of proof, not a burden for the defense.",
+        "The prosecution has to prove that the defendant is guilty.",
+        "It does not have to prove the negative, the judge said.",
+        "The prosecution must prove that the defendant is guilty.",
+        "Whole proof means that the prosecution has to prove that the defendant is guilty.",
+        "Conclusion: Let the defense prove that the defendant is innocent.",
+        "The burden of the case is then shifted to the prosecution proving that the defendant is guilty, the letter said.",
+        "Not guilty does not have to mean innocent.",
+        "The prosecution has to prove that the defendant is guilty."
+      ]
+    },
+    {
+      "id": 6566,
+      "ambiguous_sentence": "Just because I don't agree with you doesn't mean I hate you.",
+      "gold_disambiguations": [
+        {
+          "premise": "Despite not agreeing with you, that doesn't mean I hate you.",
+          "hypothesis": "I don't agree with you.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Merely not agreeing with you doesn't mean I hate you.",
+          "hypothesis": "I don't agree with you.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "And that's going to go a lot further than religion.",
+        "3.",
+        "I'm just being honest.",
+        "You doesn't refer to me.",
+        "7.",
+        "Lewis thought for a moment, and then replied, Well, you're right.",
+        "Q: What is the best title of the passage?",
+        "I don't know.",
+        "22.",
+        "I hope you can understand me."
+      ]
+    },
+    {
+      "id": 79603,
+      "ambiguous_sentence": "The easiest way to solve the problem is to call a meeting.",
+      "gold_disambiguations": [
+        {
+          "premise": "The easiest way to solve the problem is to call a meeting, but there are other ways.",
+          "hypothesis": "The problem cannot be solved without a meeting.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The easiest way to solve the problem, perhaps the only way, is to call a meeting.",
+          "hypothesis": "The problem cannot be solved without a meeting.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "he said.",
+        "The easiest way to solve the problem is to call a meeting.",
+        "At the meeting, the winner will discuss how to deal with the problem.",
+        "Then, heanswers a lot of questions about the purpose of the meeting.",
+        "Mrs.",
+        "After the first meeting, everyone cries,",
+        "B.",
+        "The easiest way to solve the problem is to call a meeting to discuss our next steps.",
+        "The meeting  is a good way to get other people to understand the problem.",
+        "I think the most ideal way to solve the problem is to call a meeting."
+      ]
+    },
+    {
+      "id": 3711,
+      "ambiguous_sentence": "The organization needs to flatten its structure.",
+      "gold_disambiguations": [
+        {
+          "premise": "The challenge for the organization is to make the transition from a traditional hierarchical structure to a more flattened organization.",
+          "hypothesis": "The organization is moving to flatten its structure.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The challenge for the organization is to make the transition from a traditional hierarchical structure to a more flattened organization.",
+          "hypothesis": "It is necessary that the organization flattens its structure.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "flatten还可以作为动词使用,意为使变平,例如:The city was flattened by the earthquake.",
+        "A.",
+        "flattening\n\n3.",
+        "Right now, only 10% of our employees are involved in working groups, says Day.",
+        "In addition, the word can be used to describe the process of leveling or smoothing out a surface, such as:",
+        "2.",
+        "2.",
+        "flattened\nOutput: The organization's structure needs to be flattened.",
+        "flatten\n2.",
+        "A."
+      ]
+    },
+    {
+      "id": 51834,
+      "ambiguous_sentence": "The union and the company have not been able to agree on a new contract.",
+      "gold_disambiguations": [
+        {
+          "premise": "The union and the company have not been able to agree on a new contract during ongoing negotiations.",
+          "hypothesis": "The company and the union have been negotiating a new contract.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The union and the company have differing opinions on what might go in a new contract.",
+          "hypothesis": "The company and the union have been negotiating a new contract.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We're in a position of uncertainty and we don't know what's going to happen, said Vince Laskowski, president of the union.",
+        "The union is in a position to have the talks reopened, said the source.",
+        "It is a very difficult situation, said the vice president of the UAW, Mike Gianaris.",
+        "We're not going to go to the dock, he said.",
+        "This strike is a response to the company's refusal to negotiate on this contract issue, the union said.",
+        "Obviously, if we can't come to an agreement, it's going to be tough for everybody, he said.",
+        "The union is working to maintain dialogue and empathy with the company and to protect the rights of its members, it said.",
+        "We're just not going to get anywhere in the negotiation, he said.",
+        "Right now, we are trying to get to the bottom of that, Fierro said.",
+        "It is not just the union that is causing the problem, it is the company, the unions, the government, and the people who own the company, the"
+      ]
+    },
+    {
+      "id": 74872,
+      "ambiguous_sentence": "The company's expansion plans are to open new stores in the US.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's expansion plans are to open more stores in the US.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's expansion plans are to open stores in the US for the first time.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The company's expansion plans are to open new stores located in the US.",
+          "hypothesis": "The company already has stores in the US.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We already have 50 percent of the retail in the US, Feaver said.",
+        "I want to expand to the United States and maybe to other countries, but this is the first step, he said.",
+        "We want to be the world's best convenience store.",
+        "We're looking to open new stores in the US very soon, he said.",
+        "Our goal is to reach more people, Walker said.",
+        "We'd love to have 20 stores in the US by 2023, said Alison Darby, founder and chief executive officer of The Collect",
+        "The US is a huge market, especially for items from China, said Evans.",
+        "Our goal is to become the biggest sandwich shop in the world, Wong said.",
+        "The market is just too big for us to stop there, Chen said.",
+        "There are a lot of opportunities for opening new stores in the US."
+      ]
+    },
+    {
+      "id": "132_c",
+      "ambiguous_sentence": "A woman in this neighborhood gives birth every year.",
+      "gold_disambiguations": [
+        {
+          "premise": "There is a particular woman in this neighborhood who gives birth every year.",
+          "hypothesis": "There is a particular woman with a birth rate of once per year.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Every year, some woman in this neighborhood gives birth.",
+          "hypothesis": "There is a particular woman with a birth rate of once per year.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Give the baby away, says the mother.",
+        "There were only three women living in the neighborhood.",
+        "Step 3: Consider the information given in the premise.",
+        "and A woman in this neighborhood gives birth every year.",
+        "We know that the subject of the sentence is singular, so we use the /s/ ending.",
+        "Hypothesis: To some woman.",
+        "[QUESTION] Test for natural language inference.",
+        "The meaning of this sentence is_.",
+        "Is the hypothesis entailed by the premise?",
+        "A woman in this neighborhood gives birth every year."
+      ]
+    },
+    {
+      "id": "40_c",
+      "ambiguous_sentence": "I know that someone here is lying.",
+      "gold_disambiguations": [
+        {
+          "premise": "There is someone here who I know to be lying.",
+          "hypothesis": "I know who is lying.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I know that someone here is lying, though not necessarily who it is.",
+          "hypothesis": "I know who is lying.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The first colleague reacted and said, I don't know anyone here is lying.",
+        "Find who is lying.",
+        "I always tell the truth.",
+        "Linda: I know that someone here is lying.",
+        "If I know that someone here is lying.",
+        "Example: I know that someone here is lying.",
+        "The other village was silent.",
+        "The first witness says, I am the honest one.",
+        "I know that someone here is lying.",
+        "Bob: No, I am not lying."
+      ]
+    },
+    {
+      "id": 58103,
+      "ambiguous_sentence": "The employees were not entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+      "gold_disambiguations": [
+        {
+          "premise": "The Board rejected the union's argument that the employees were entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "hypothesis": "The employees were not given overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The Board rejected the union's argument that the employees were entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "hypothesis": "The employees were not entitled, in principle, to overtime compensation because they were required to attend mandatory training sessions outside of their regular work hours.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Question:\nWhich of the following is NOT included in the documentation for a completed salary claim?",
+        "However, the court did not consider the training sessions as regular workday hours.",
+        "It is not a case of overtime, since, in this case, the entire time of the employee is working, and it is not the will of the employee",
+        "2.",
+        "In this sentence, entitled is used to express that the employees did not have the right to receive overtime compensation for working beyond their scheduled hours",
+        "In response, the employees argued that the training sessions were mandatory and necessary for their jobs, and that they were entitled to overtime compensation for the time they spent",
+        "A.",
+        "The court rejected the company's argument and ruled in favor of the employees.",
+        "System: No, the court ruled that the employees were not entitled to overtime compensation because they were required to attend mandatory training sessions outside of their regular",
+        "It appears that the company required the employees to attend mandatory training sessions, which were outside of their regular work hours."
+      ]
+    },
+    {
+      "id": "94_c",
+      "ambiguous_sentence": "She said that she will pick me up at 4pm and I can leave at 6pm.",
+      "gold_disambiguations": [
+        {
+          "premise": "She said that she will pick me up at 4pm and that I can leave at 6pm.",
+          "hypothesis": "She said I can leave at 6pm.",
+          "label": "entailment"
+        },
+        {
+          "premise": "She said that she will pick me up at 4pm; I can leave at 6pm.",
+          "hypothesis": "She said I can leave at 6pm.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The way to fix the error is to add a comma before the word and.",
+        "Step 2: Identify the time period mentioned in the question.",
+        "She said that I will be picked up at the airport at 4pm and I can leave at 6pm.",
+        "Ok, I can see you at 6.",
+        "Fuck the bitch, I'm leaving.",
+        "She said that she will pick me up at 4pm and I can leave at 6pm.",
+        "Sequence应该是 She said that she will pick me up at 4pm and I can leave at 6pm.",
+        "Ok, updating, I am going to work tomorrow, I can't leave at 6pm, so I will be picked up at 7",
+        "I said to her that I have to go to school in the morning and I don't have to go anywhere in the evening.",
+        "Sure, let's solve this step by step."
+      ]
+    },
+    {
+      "id": "78_c",
+      "ambiguous_sentence": "John opened the door again.",
+      "gold_disambiguations": [
+        {
+          "premise": "The door was open before, and John opened the door again.",
+          "hypothesis": "John opened the door before.",
+          "label": "neutral"
+        },
+        {
+          "premise": "John opened the door before, and did it again.",
+          "hypothesis": "John opened the door before.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Come in, he said.",
+        "I'm sorry, he said.",
+        "Hello there, he said gently.",
+        "Yeah, I'm sorry.",
+        "It's all right, he said.",
+        "",
+        "Sorry, I couldn't stop myself, he said.",
+        "Who's there?",
+        "I don't know, he replied.",
+        "You don't know me, he said."
+      ]
+    },
+    {
+      "id": 3578,
+      "ambiguous_sentence": "The class will discuss how to write a research paper.",
+      "gold_disambiguations": [
+        {
+          "premise": "The class is about how to write a research paper.",
+          "hypothesis": "The class is about how to write a persuasive essay.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The class will, at some point, discuss how to write a research paper.",
+          "hypothesis": "The class will, at some point, discuss how to write a persuasive essay.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "B.",
+        "The class will discuss how to write a research paper.",
+        "11.",
+        "Time: Mon.",
+        "The class will discuss how to write a research paper.",
+        "Today, the class will discuss the process of writing a research paper.",
+        "OPTIONS:\n- Yes.",
+        "Discuss means write about in this context.",
+        "The result of the class is a countable noun.",
+        "1."
+      ]
+    },
+    {
+      "id": 9139,
+      "ambiguous_sentence": "The man was charged with second degree murder.",
+      "gold_disambiguations": [
+        {
+          "premise": "The man was charged with first degree murder.",
+          "hypothesis": "The man was charged only with second degree murder.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The man was charged with first degree murder.",
+          "hypothesis": "The man was charged with second degree murder, possibly among other charges.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "A suspect is now in the custody of Miami police in connection with the murder of a 72-year-old man during the closing of the floodgate in Miami",
+        "It's a murder case, but it's a murder of the pair, the sheriff said.",
+        "It's a serious case, she said.",
+        "I was deeply in love with her and she was all that I wanted, he said in court.",
+        "The aggravating circumstances, the nature of the injuries, the nature of the weapon and the age of the victim and the offence of the crime, have led to the",
+        "We can't stop the fire, the fire chief said.",
+        "It's been a dramatic day for the community, said Assistant District Attorney Jennifer Hennessey, who is handling the case.",
+        "We don't have a motive at this point, he said.",
+        "We're continuing the investigation, police said.",
+        "We have not established a motive, he said."
+      ]
+    },
+    {
+      "id": "140_c",
+      "ambiguous_sentence": "I don't taste anything fishy.",
+      "gold_disambiguations": [
+        {
+          "premise": "I don't taste anything suspicious.",
+          "hypothesis": "Something tastes like fish.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I don't taste anything similar to fish.",
+          "hypothesis": "Something tastes like fish.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The waiter thought for a moment.",
+        "Z: Oh, that's because I'm human.",
+        "I had finished my meal and placed my fork on the table.",
+        "That isn't good.",
+        "Over the course of the next few months, I came to learn a lot more about my kitchen and how to make the most of what I had.",
+        "I don't taste anything burnt.",
+        "Chef Jim says,  I don't think you're being honest,",
+        "I don't taste anything fishy.",
+        "and I don't taste anything fishy.",
+        "The final answer: I don't taste anything fishy."
+      ]
+    },
+    {
+      "id": 77092,
+      "ambiguous_sentence": "I think that the new software is not very user-friendly.",
+      "gold_disambiguations": [
+        {
+          "premise": "I think that the new software is not exceptionally user-friendly, though it may be somewhat user-friendly.",
+          "hypothesis": "I think that the new software is user-friendly.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I think that the new software is not user-friendly.",
+          "hypothesis": "I think that the new software is user-friendly.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "user-friendly means computer-friendly.",
+        "not very user-friendly means( )。",
+        "not very user-friendly is the complement of the sentence.",
+        "] is not very user-friendly.",
+        "User-friendly means easy to use and understand.",
+        "2.",
+        "3.",
+        "B.",
+        "It's terrible.",
+        "B."
+      ]
+    },
+    {
+      "id": 3654,
+      "ambiguous_sentence": "A large number of people were not willing to take the risk.",
+      "gold_disambiguations": [
+        {
+          "premise": "A large number of people, and possibly all people, were not willing to take the risk.",
+          "hypothesis": "A small number of people were willing to take the risk.",
+          "label": "neutral"
+        },
+        {
+          "premise": "A large number of people, but not all people, were not willing to take the risk.",
+          "hypothesis": "A small number of people were willing to take the risk.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "a",
+        "A large number of people were willing to take the risk.",
+        "A.",
+        "A lot of people were willing to take the risk, but a large number of people were not willing to take the risk.",
+        "That's why the market was so small, he said.",
+        "The Internet is not worth our money, said one business person, but it is worth mine.",
+        "The biggest problem was that a lot of people were not willing to take the risk, said David December, one of the founders.",
+        "I was waiting for the virus to go away.",
+        "- A large number of people were not willing to take the risk.",
+        "They were willing to take it, but they were not willing to take it for the sake of it, he said."
+      ]
+    },
+    {
+      "id": 59560,
+      "ambiguous_sentence": "The poet laureate is a position given to a poet by a government or institution.",
+      "gold_disambiguations": [
+        {
+          "premise": "The poet laureate is an honorary position given to a poet by a government or institution.",
+          "hypothesis": "The poet laureate is a title given to a poet by a government or institution.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The poet laureate is an honorary position given to a poet by a government or institution.",
+          "hypothesis": "The poet laureate is a job given to a poet by a government or institution.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Poet laureate is a position given to a poet, usually by the",
+        "laureate means awarded and it indicates that the person has been recognized for their work.",
+        "laureate means the official recipient of a prize, so a poet laureate is a poet who has won a prize for their work.The poet laureate",
+        "Laureate means decorated with laurel leaves, a reference to the ancient tradition of honoring poets with laurel wreaths.",
+        "Laureate comes from the Latin word laureus, which means laurel wreath.",
+        "Poet laureate is an honorific title, usually given to a poet for a specific period of time, such as a year or a decade, as",
+        "Laureate is the Latin word for laurel, which is a type of tree.",
+        "Laureate is Latin for with the laurel, and the laurel wreath was a symbol of victory and honor in ancient Greece.",
+        "laureate and poet are nouns.",
+        "Poet laureate means chosen poet in Latin and is often used to describe the official poet of a country, city, or institution."
+      ]
+    },
+    {
+      "id": 102113,
+      "ambiguous_sentence": "It is important to remember that not all of the people who emigrated to the United States in the late 1800s were poor.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is important to remember that although many of the people who emigrated to the United States in the late 1800s were poor, not all of them were.",
+          "hypothesis": "Many of the people who emigrated to the United States in the late 1800s were poor.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is important to remember that it is not the case that all of the people who emigrated to the United States in the late 1800s were poor.",
+          "hypothesis": "Many of the people who emigrated to the United States in the late 1800s were poor.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Professional immigrants were doctors, lawyers, and the like, who emigrated in order to practice their profession in the United States.",
+        "But poor immigrants were more likely to be male and more likely to have a direct relationship to their destination in the United States, says Minnan.",
+        "Pauper is a broad term that includes people who were not legally able to support their own families, but not necessarily those who were poor.",
+        "Poverty is a relative word, and it can vary widely depending on the individual and their circumstances.",
+        "Poor is one way of describing people who did not have a lot of money.",
+        "Poor is a word that describes someone who does not have much money or resources.",
+        "Poor is a relative term that can refer to people who may have had lower incomes or limited economic resources compared to their contemporaries.",
+        "The poor are the people who had the most to leave their country.",
+        "Poor Irish is a common stereotype that has been perpetuated throughout history, but it is not an accurate portrayal of the majority of Irish immigrants.",
+        "Middle class immigrants were farmers, businessmen, professionals, and others who were able to start successful businesses or careers in their new country."
+      ]
+    },
+    {
+      "id": 15380,
+      "ambiguous_sentence": "Some of the students turned in their homework on time.",
+      "gold_disambiguations": [
+        {
+          "premise": "All of the students turned in their homework on time.",
+          "hypothesis": "Some but not all of the students turned in their homework on time.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "All of the students turned in their homework on time.",
+          "hypothesis": "At least some of the students turned in their homework on time.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "It's a little shy, of course, said one.",
+        "All of the students turned in their homework on time.",
+        "Thank you, class, the teacher said.",
+        "That's great, said the teacher.",
+        "I didn't have any problems because I was good, said one student.",
+        "You're very good, said the teacher.",
+        "It was a lot of work to do it, said one student.",
+        "Mrs Rachel was very pleased with us, said Davis.",
+        "That's not what you should do, said Mr.",
+        "Oh, it's so easy, said the teacher."
+      ]
+    },
+    {
+      "id": 76612,
+      "ambiguous_sentence": "If the rock is too big, we can't move it.",
+      "gold_disambiguations": [
+        {
+          "premise": "If the rock is too big, we can't move it; otherwise we can.",
+          "hypothesis": "We can move the rock if it's not too big.",
+          "label": "entailment"
+        },
+        {
+          "premise": "If the rock is too big, we can't move it, and there may be other preventative factors too.",
+          "hypothesis": "We can move the rock if it's not too big.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "If the rock is too big, we can't move it.",
+        "So don't worry about it.",
+        "So we have to cut the rock into small pieces.",
+        "Mark explained that it's not about the size of the rock, but how we interact with it.",
+        "If it's too small, we can't touch it.",
+        "But no, said Joan.",
+        "Mike West said, Let's try to push the rock in the boat.",
+        "No problem.",
+        "the farmer said.",
+        "2."
+      ]
+    },
+    {
+      "id": 24621,
+      "ambiguous_sentence": "The high school students who were most likely to report drinking had more friends who drank.",
+      "gold_disambiguations": [
+        {
+          "premise": "The high school students who were most likely to report drinking had a great number of friends who drank.",
+          "hypothesis": "The high school students who were most likely to report drinking had a great number of friends who did not drink.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The high school students who were most likely to report drinking had a greater proportion of friends who drank.",
+          "hypothesis": "The high school students who were most likely to report drinking had a greater proportion of friends who did not drink.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The more friends they had who reported drinking, the more likely they were to drinking, said Dr.",
+        "It's not the kids who are drinking who are worse, Bachman said.",
+        "It was a big surprise to find that any of the 11th grade students reported drinking in the past year, said Dr.",
+        "This provides support for the role of peer pressure, the researchers wrote.",
+        "It is easy to believe that students who are more likely to drink might have more friends who drink, she said.",
+        "Among the high school students who were most likely to report drinking, they had more friends who reported drinking.",
+        "It is likely that adolescents are sensitive to the drug and alcohol activities of their friends, the researchers wrote.",
+        "The findings show that there is a significant amount of peer pressure with regard to drinking among high school students, Cohn said in a statement.",
+        "It is important to note that the prevalence of reported underage drinking among middle school students was higher than among high school students, says Dr.",
+        "The more friends students reported drinking, the more likely they were to drink, said the researchers."
+      ]
+    },
+    {
+      "id": 35782,
+      "ambiguous_sentence": "I had to pull over to the side of the road.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was raining so hard, I couldn't see the road in front of me.",
+          "hypothesis": "I pulled over to the side of the road, because I had to.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was raining so hard, I couldn't see the road in front of me.",
+          "hypothesis": "I needed to pull over to the side of the road, whether or not I actually did.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Sorry, I have a broken tail light, I said to the driver.",
+        "He came to the end, opened his car and walked away.",
+        "A: Did you get help?",
+        "I can't do this anymore, I said.",
+        "I had to pull over to the side of the road.",
+        "What is the name of the place?",
+        "I couldn't keep my eyes open.",
+        "Oh, my gosh.",
+        "I had a breakdown on the side of the road.",
+        "Sentence: I had to pull over to the side of the road."
+      ]
+    },
+    {
+      "id": 71932,
+      "ambiguous_sentence": "I was uninterested in the book, and didn't finish it.",
+      "gold_disambiguations": [
+        {
+          "premise": "I was uninterested in the book, and didn't finish it (not to address the question of whether I started it at all).",
+          "hypothesis": "I was uninterested in the book, and didn't start it.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I was uninterested in the book, and didn't finish it despite starting.",
+          "hypothesis": "I was uninterested in the book, and didn't start it.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "I was uninterested in the book and didn't finish it.",
+        "},\n    {\n      sentence: I have taken the book to the library.",
+        "将 I was uninterested in the book, and didn't finish it.",
+        "Question: Is this product review negative?",
+        "I was uninterested in the book, and didn't finish it.",
+        "Answer: \n\nNo:input:\n- bgcolour is # 6495ed;\n- caption is graham c.",
+        "- I was uninterested in the book, and didn't finish it.",
+        "I was interested in the book, and finished it.",
+        "</td>",
+        "The negative form of the sentence I was uninterested in the book, and didn't finish it is I was interested in the book, and"
+      ]
+    },
+    {
+      "id": "105_c",
+      "ambiguous_sentence": "That's why we tried to kill you.",
+      "gold_disambiguations": [
+        {
+          "premise": "That's the single reason we tried to kill you.",
+          "hypothesis": "That's one of the reasons we wanted to kill you.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "That's one reason we tried to kill you; there may be more reasons.",
+          "hypothesis": "That's one of the reasons we wanted to kill you.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It's not stupidity.",
+        "No,you didn't, Doc Br said.",
+        "B.",
+        "Roberto: You're what?",
+        "Open the gate, \n  you need to go shopping.",
+        "That's why we tried to kill you.",
+        "That's why we tried to kill you.",
+        "That's why we tried to kill you.",
+        "I said.",
+        "Dr."
+      ]
+    },
+    {
+      "id": "133_c",
+      "ambiguous_sentence": "He is upset at his friend for revealing private information about his relationship to his teacher.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is upset at his friend for revealing to his teacher private information about his relationship.",
+          "hypothesis": "His relationship to his teacher was revealed.",
+          "label": "neutral"
+        },
+        {
+          "premise": "He is upset at his friend for revealing private information, concerning his relationship to his teacher.",
+          "hypothesis": "His relationship to his teacher was revealed.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Transform the given sentence.",
+        "Can you imagine how embarrassed I was when I found out your teacher knew about my love life?",
+        "That's not cool, he says, and implies that he doesn't want to talk to his friend again.",
+        "It's not okay, I asked you to keep it a secret.",
+        "It's okay to share your feelings, but you have to take responsibility for what you say, and it's better to trust people and not go through their secrets",
+        "It's wrong is not only directed at Ben's friend, but also shows Ben's disappointment and anger at the whole situation.",
+        "Mad is a fitting choice in this context.",
+        "What did you do?",
+        "You couldn't have known!",
+        "I can't believe you would do this to me, he says."
+      ]
+    },
+    {
+      "id": "11_c",
+      "ambiguous_sentence": "The majority of Georgians incarcerated in local jails have never been convicted of crime. They are simply too poor to pay their bail.",
+      "gold_disambiguations": [
+        {
+          "premise": "The majority of Georgians incarcerated in local jails are not there because they were convicted of crime. They are simply too poor to pay their bail.",
+          "hypothesis": "They have never been convicted of crime in their lives.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The majority of Georgians incarcerated in local jails have never been convicted of crime in their entire lives. They are simply too poor to pay their bail.",
+          "hypothesis": "They have never been convicted of crime in their lives.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Bail is the money that they need to post, so they don't have to sit in jail while their case comes up in court.",
+        "A lot of them are people who lost their jobs, can't make rent, or can't pay their medical bills, said Ed Pleas, executive director of",
+        "Bail money is paid solely by the state of Georgia, which is not a good system.",
+        "It is not good for society, said Sam Buchanan, executive director of the Legal Aid Society of Harris County.",
+        "I think it is a disgrace to tag African-Americans with bail money, said Hunt.",
+        "The only thing that is actually shocking for these people is that they are not getting the help they deserve, said Nancy Pleas, executive director of Legal Services.",
+        "Bail is the money you pay to stay out of jail while a court hearing is pending.",
+        "This is a perversion of justice, and it is a violation of the Constitution.",
+        "At the same time, the state's prison system is deeply overcrowded.",
+        "The report also states that Georgia has the highest incarceration rate of any state (929 prisoners per 1,000,000 people"
+      ]
+    },
+    {
+      "id": 39987,
+      "ambiguous_sentence": "I sometimes take my coffee with cream and sugar.",
+      "gold_disambiguations": [
+        {
+          "premise": "I always take my coffee with cream and sugar.",
+          "hypothesis": "I sometimes, but not always, take my coffee with cream and sugar.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "I always take my coffee with cream and sugar.",
+          "hypothesis": "I sometimes, and possibly always, take my coffee with cream and sugar.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "A:I often take my coffee with cream and sugar.",
+        "Mrs.",
+        "Sometimes I take my coffee with cream and sugar.",
+        "Choices: In the sentence I sometimes take my coffee with cream and sugar., the subject is I, the verb is take, and the",
+        "修改建议: I sometimes take my coffee with sugar and cream.",
+        "B.",
+        "文本: 你喜欢喝什么样的咖啡?",
+        "I sometimes take my coffee with cream and sugar.",
+        "Sometimes means often, but not always, and always means every time.",
+        "I sometimes take my coffee with cream, and sugar."
+      ]
+    },
+    {
+      "id": 72944,
+      "ambiguous_sentence": "It was not until the 17th century that the city began to grow rapidly.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was not until the 17th century that the city began to grow rapidly, though it may have been founded much earlier.",
+          "hypothesis": "The city was founded in the 17th century.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was not until the 17th century that the city began to grow rapidly, though it existed before then.",
+          "hypothesis": "The city was founded in the 17th century.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "In the second half of the 17th century, the population doubled in five years, says local historian Eric Thorsen.",
+        "At the end of the century, there were 15,000 people in the city, says James Dunn.",
+        "At the middle of the 17th century, the city had a population of about 50,000 people, but by the end of",
+        "In fact, in 1630, the population of the city was only 60,000, but by 1700",
+        "At the beginning of the 17th century, there were only about 10,000 people in the city, but by the end of",
+        "It was during the late 17th century that the city experienced a rapid growth in population.",
+        "At the beginning of the 17th century, the population of Valencia was about 50,000, but by the end of the",
+        "Today Mexico City is the largest Spanish-speaking city in the Americas, and the seventh largest city in the world, according to the United Nations, according to a statement",
+        "The expansion of the city was closely related to the development of the mining industry and its products, said the mayor.",
+        "The city was expanded and the port was developed, he said."
+      ]
+    },
+    {
+      "id": "77_c",
+      "ambiguous_sentence": "The editor did not find many mistakes in the paper.",
+      "gold_disambiguations": [
+        {
+          "premise": "There were many mistakes in the paper that the editor did not find.",
+          "hypothesis": "There are not many mistakes in the paper.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The editor searched for mistakes in the paper and did not find many.",
+          "hypothesis": "There are not many mistakes in the paper.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "解析:",
+        "- The editor did not find many mistakes in the paper.",
+        "She looked at the picture, and the dust was caught in the eyes.",
+        "In the sentence above, does many mean the same thing as lots of?",
+        "and The paper was written without mistakes.",
+        "A.",
+        "Conpositive: The editor found many mistakes in the paper.",
+        "find is a grammatical word.",
+        "A.",
+        "If you correct these mistakes, you can pass the standard, said the editor."
+      ]
+    },
+    {
+      "id": 9136,
+      "ambiguous_sentence": "The jury returned a verdict of guilty for first degree murder.",
+      "gold_disambiguations": [
+        {
+          "premise": "The jury returned a single verdict of guilty for first degree murder.",
+          "hypothesis": "The jury returned a single verdict of guilty for second degree murder.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The jury returned a verdict of guilty for first degree murder, possibly among other verdicts.",
+          "hypothesis": "The jury returned a verdict of guilty for second degree murder, possibly among other verdicts.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The defendant has been found guilty of the crime of first degree murder, verdict judge Bruce Nelson said.",
+        "This is the first phase of the trial that we've had a mistrial, said Mark Smith, who represented the family.",
+        "Output: The jury returned a guilty verdict.",
+        "The jury was nearly unanimous, Weiner said.",
+        "2.",
+        "The circumstances of the case were tragic, but the trial was very efficient, said Union County District Attorney Gary Wyman.",
+        "2.",
+        "The subject is the noun phrase in the sentence that is being used by the verb returned.",
+        "The jury was instructed that if they reached a verdict of first degree murder, the penalty would be life in prison, said Matthew Lowe, president of the courtroom.",
+        "This is not the first time it has happened, said Assistant District attorney Caryn Hugh, who handled the Peterson case."
+      ]
+    },
+    {
+      "id": "114_c",
+      "ambiguous_sentence": "The professor admitted that no students wrote course evaluations, which is surprising.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is surprising that the professor admitted that no students wrote course evaluations.",
+          "hypothesis": "It is surprising that no students wrote course evaluations.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The professor admitted the surprising fact that no students wrote course evaluations.",
+          "hypothesis": "It is surprising that no students wrote course evaluations.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "It's unusual, he said.",
+        "I've always had a bunch of course evaluations, whether on paper or in the spreadsheet, so I don't know why none of them would have been done,",
+        "I didn't get any comments on the teaching, he said.",
+        "It's not very common, he said.",
+        "Well, I'm going to give the class a mediocre grade, and I'm going to do so with a clear conscience.",
+        "It is very rare, he said.",
+        "I always ask students to write evaluations, he said.",
+        "I was very happy to see all the students write course evaluations, he said.",
+        "There is no reason for this, he said.",
+        "I'm going to ask the students about the course, and see if I can get some feedback, he said."
+      ]
+    },
+    {
+      "id": "27_c",
+      "ambiguous_sentence": "Lilian and Tanaka have two balloons.",
+      "gold_disambiguations": [
+        {
+          "premise": "Lilian and Tanaka each have two balloons.",
+          "hypothesis": "Lilian has two balloons.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Lilian and Tanaka have two balloons, together.",
+          "hypothesis": "Lilian has two balloons.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Lilian has 6 balloons, and Tanaka has 3 balloons.",
+        "Two balloons is the total quantity of the balloons.",
+        "I can fly in the sky, and you can walk on the ground, said Lilian, who was in the sky with the balloon.",
+        "What is the colour of your balloon, Tanaka?",
+        "Lilian and Tanaka have two balloons.",
+        "2.",
+        "I have a red balloon, Lilian, says Tanaka.",
+        "A said, I have two balloons.",
+        "Lilian means Lilian, who has 2 balloons.",
+        "X is Lilian's balloon and Y is Tanaka's balloon."
+      ]
+    },
+    {
+      "id": 101467,
+      "ambiguous_sentence": "In a democracy, the will of the people is supposed to be reflected in the government.",
+      "gold_disambiguations": [
+        {
+          "premise": "In a democracy, the will of the people is supposed to be reflected in the government, even though it isn't always.",
+          "hypothesis": "The government is not always a reflection of the will of the people in a democracy.",
+          "label": "entailment"
+        },
+        {
+          "premise": "In a democracy, the will of the people is supposed to be reflected in the government, whether or not it always is.",
+          "hypothesis": "The government is not always a reflection of the will of the people in a democracy.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The will of the people refers to the majority of the people and not all of them.",
+        "Democracy means rule of the people, so it is obvious that the people are the ones who should have power over the government.",
+        "In a democracy, the will of the people is supposed to be reflected in the government.",
+        "Democracy means the power of the people in the government.",
+        "Will is a concept that refers to both the preferences and the desires of the people.",
+        "If the will of the people is not reflected in the government, then cooperation is impossible, President Obama said.",
+        "captive the will implies that the government is not responding to the will of the people but is instead being controlled by powerful institutions or individuals.",
+        "If we live in a democracy, then the will of the people can only be expressed in elections.",
+        "No to the national health system and the 100b plan is the will of the people.",
+        "Democracy is an ancient word in Greek that literally means rule by the people, or rule of the people."
+      ]
+    },
+    {
+      "id": 63905,
+      "ambiguous_sentence": "We all know that exercise is good for us, but few of us actually make the time to do it.",
+      "gold_disambiguations": [
+        {
+          "premise": "We specifically know that exercise is good for us, but few of us actually make the time to do it.",
+          "hypothesis": "Making time for exercise is difficult for most people.",
+          "label": "neutral"
+        },
+        {
+          "premise": "Everyone knows that exercise is good for us, but few of us actually make the time to do it.",
+          "hypothesis": "Making time for exercise is difficult for most people.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Exercise needs to be a part of your day, like brushing your teeth, says Dr.",
+        "I have too many things to do, we say.",
+        "However, exercise doesn't have to be a grueling chore.",
+        "Sure, you don't have to hit the gym, but it's good to move your body.",
+        "The writer, in fact, saw the transformation in her body, and it was not just her clothes, but also her body, and her confidence.",
+        "I'm not going to exercise today, we say, and then we do.",
+        "I don't have time to go to the gym or I have other things on my plate are common excuses.",
+        "If you don't move, you don't live, says Dr.",
+        "Exercise is an important part of the road to a healthy body, she says.",
+        "B."
+      ]
+    },
+    {
+      "id": 84747,
+      "ambiguous_sentence": "The survey found that more than a third of Americans have a negative view of the news media.",
+      "gold_disambiguations": [
+        {
+          "premise": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "At least a third of Americans have a negative view of the news media.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The survey concluded that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "No more than a third of Americans have a negative view of the news media.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The survey revealed that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "At least a third of Americans have a negative view of the news media.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The survey revealed that more than a third of Americans have a negative view of the news media.",
+          "hypothesis": "No more than a third of Americans have a negative view of the news media.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "It is a surprise how many Americans have a negative view of the news media, said Sam Bryman, the author of the survey.",
+        "The size of the media and the power of the media is such that we must try to get the public's understanding to earn their trust, said John Morris,",
+        "The news media has taken a real hit lately in the public's eyes, and it's so important to get the word out about what we are doing, says",
+        "Nearly two-thirds of Americans said they have a positive or neutral view of the news media, the report says.",
+        "The number of Americans who trust the news media has dropped dramatically over the past 10 years, the report said.",
+        "It's hard to know how much that's true, says Narrative.",
+        "I know there's a lot of negativity about the media, but I think that's a result of people reacting to the negativity about much of the news, said",
+        "The media are widely seen as a force for evil, according to the report.",
+        "That's a big factor in today's election, said Ted Israel, co-chairman of the Pew survey.",
+        "They think the media is biased, unfair, and sensationalist, said Scott Rasmussen, one of the study's authors."
+      ]
+    },
+    {
+      "id": 98877,
+      "ambiguous_sentence": "The employees were not happy because the company was doing well.",
+      "gold_disambiguations": [
+        {
+          "premise": "Even though the company was doing well, the employees were not happy.",
+          "hypothesis": "The company doing well did not lead to the employees being happy.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Even though the company was doing well, the employees were not happy.",
+          "hypothesis": "The employees were unhappy, because the company was doing well.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "weren't \nwas \naren't \nwasn't\n答案:\nA.",
+        "The employees were not happy because the company was doing well.",
+        "because 引导原因状语从句,说明员工不快乐的原因。2.",
+        "The employees were happy because the company was doing well.",
+        "The employees were not happy because the company was doing well.",
+        "They were happy because the company was doing well.",
+        "The employees were not happy because the company was doing well.",
+        "The employees were happy because the company was doing well.",
+        "The employees were not happy because the company was doing well.",
+        "Corrected: The employees were happy because the company was doing well."
+      ]
+    },
+    {
+      "id": "115_c",
+      "ambiguous_sentence": "These snakes get their name from the beautifully changing pattern on their bodies.",
+      "gold_disambiguations": [
+        {
+          "premise": "These snakes get their name from the beautifully changing pattern along their bodies.",
+          "hypothesis": "The pattern on the snake is uniform across the body.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "These snakes get their name from the pattern on their bodies which beautifully changes over time.",
+          "hypothesis": "The pattern on the snake is uniform across the body.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It's like a rainbow, says Dr.",
+        "Checkered refers to the pattern and spacing of their scales, which give a checkerboard-like appearance.",
+        "When they're out in the sun, says Libby, they're bright green, and when they're in the shade, they're more of a bluish",
+        "When they are young, the pattern is a series of light and dark bands on a yellow background, says Sandy Walker, an ecologist at the University of Texas",
+        "The changing pattern refers to the zig-zag pattern of white, black, and yellow that runs down the body.",
+        "Chango means to change, and they have a pattern of black and yellow that can change with age.",
+        "Tri is the Greek word for three, and ophron means the bearer of.",
+        "The pattern is called girth, says Erickson.",
+        "Ravenous refers to the bright red color of their heads, and green refers to the dark green color of their lower bodies.",
+        "Coluber is the Latin word for I change and voluberans means full of life."
+      ]
+    },
+    {
+      "id": 94677,
+      "ambiguous_sentence": "In many ways, the American Revolution was a direct result of the Seven Years' War.",
+      "gold_disambiguations": [
+        {
+          "premise": "In many ways, though possibly not all ways, the American Revolution was a direct result of the Seven Years' War.",
+          "hypothesis": "The Seven Years' War was not the only reason for the American Revolution.",
+          "label": "neutral"
+        },
+        {
+          "premise": "In many ways, though not all ways, the American Revolution was a direct result of the Seven Years' War.",
+          "hypothesis": "The Seven Years' War was not the only reason for the American Revolution.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "The British railroaded France to victory in the Seven Years' War.",
+        "The American Revolution was an outcome of the Seven Years' War, says a U.S.",
+        "At the end of the Seven Years' War, Britain was the undisputed master of North America.",
+        "The Seven Years' War, the Thirty Years' War, the War of the Spanish Succession, and the War of the Austrian Succession testify to war,",
+        "The statement is about the impact of the Seven Years' War on the American Revolution.",
+        "For the birth of America, the outcome of the Seven Years' War was revolutionary, says British historian Jon Hackett, author of Empire of Liberty:",
+        "The American Revolution was not a direct result of the Seven Years' War.",
+        "The ending of the Seven Years' War, and the position and power of the British Empire, set the stage for the coming of the American Revolution, said Jennifer",
+        "The war between the British and the Americans that began in 1775 was simply a continuation of the war between the British and the French that had begun",
+        "The similarities between the outbreak of the American Revolution and the end of the Seven Years' War are uncanny, says historian John Anderson."
+      ]
+    },
+    {
+      "id": 89916,
+      "ambiguous_sentence": "The animal was not injured in the accident.",
+      "gold_disambiguations": [
+        {
+          "premise": "Though the animal was in the accident, it was not injured.",
+          "hypothesis": "The animal was not in the accident.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The animal was not injured in the accident, whether or not it was in the accident at all.",
+          "hypothesis": "The animal was not in the accident.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "The animal is small and was injured in the accident.",
+        "The driver of the vehicle, Craig Williams, was injured in the accident.",
+        "We're going to be on it, Mr.",
+        "That's what I'm trying to do, he said.",
+        "I can't believe the dog was still in the car, said the officer at the scene.",
+        "It's very happy, he said, and it's already laying down.",
+        "The animal was not injured in the accident, said Nicolas.",
+        "We pulled it out and it was just lying on the ground, he said.",
+        "It's a yoga tiger, and a very fast one, said a zoo spokesman.",
+        "I was shocked to see the accident, but I tried to be as calm as possible and give my best to the jeep, he said."
+      ]
+    },
+    {
+      "id": 16747,
+      "ambiguous_sentence": "A possible explanation for his anger is that he was passed over for the promotion.",
+      "gold_disambiguations": [
+        {
+          "premise": "He was passed over for the promotion, which is a possible explanation for his anger.",
+          "hypothesis": "He was passed over for the promotion.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is possible that he was passed over for the promotion, which would explain his anger.",
+          "hypothesis": "He was passed over for the promotion.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It was aPackage deal, he said.",
+        "Pass over is a phrase that means to neglect or overlook, and in this context, it suggests that he was not given the opportunity to be promoted.",
+        "Passed over is a idiom that means to be overlooked or ignored.",
+        "He thought he deserved to be promoted, but his boss turned him down supports this idea.",
+        "If I had been promoted, I would have been so happy, he says.",
+        "He didn't get the job because he didn't deserve it, says people.",
+        "If you hadn't been lazy, I would have gotten the promotion, Jan thought to himself.",
+        "很重要 could imply that the promotion was given to someone else, rather than to him.",
+        "He was passed over for the promotion means he was not chosen for the promotion, and this could have caused his anger.",
+        "John was passed over for the promotion."
+      ]
+    },
+    {
+      "id": 70407,
+      "ambiguous_sentence": "If an employee is fired for cause, the employer is not required to give the employee a severance package.",
+      "gold_disambiguations": [
+        {
+          "premise": "If an employee is fired for a cause, the employer is not required to give the employee a severance package; otherwise, the employer is required to do so.",
+          "hypothesis": "If an employee is not fired for cause, the employer is required to give the employee a severance package.",
+          "label": "entailment"
+        },
+        {
+          "premise": "At least in the case where an employee is fired for cause, the employer is not required to give the employee a severance package.",
+          "hypothesis": "If an employee is not fired for cause, the employer is required to give the employee a severance package.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "For cause means that the employee was fired due to poor performance or violation of company policies, rather than for reasons such as downsizing or company relocation.",
+        "For cause means that the employee violated the terms of the contract or worked illegally.",
+        "For cause means that the firing is justified and is not emotionally motivated.",
+        "For cause refers to an employee who has been found guilty or is currently being investigated for a serious offense, such as theft, fraud, or misconduct at work",
+        "For cause is not a legal term in employment law, and it does not refer to any specific reason for firing an employee.",
+        "For cause means that there is a reason for the employee's firing, but it does not necessarily mean that the employer is obligated to provide a severance package.",
+        "D.If an employee is fired for cause, the employer is not required to give the employee a severance package.",
+        "Fired for cause is a legal term that refers to an employee who is terminated for a valid reason, such as poor performance or a violation of company policies",
+        "For cause means that the employee was terminated for a legal reason, such as violating employment laws or demonstrating poor job performance.",
+        "Fire for cause refers to a situation where the employee has committed a serious or repeated violation of company policies and procedures."
+      ]
+    },
+    {
+      "id": 94969,
+      "ambiguous_sentence": "I always feel more comfortable when I am at home.",
+      "gold_disambiguations": [
+        {
+          "premise": "I always feel more comfortable when I am at home than anywhere else.",
+          "hypothesis": "I never feel more comfortable than when I am at home.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I always feel very comfortable when I am at home.",
+          "hypothesis": "I never feel more comfortable than when I am at home.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "What does comfortable mean?",
+        "Made in China is the _____ of the product.",
+        "home is not a place but a feeling.",
+        "This sentence is structurally incorrect.",
+        "选项:\n\n1.",
+        "Also, I don't have to worry about my safety at all.",
+        "I always feel more comfortable when I am at home.",
+        "at home 是介词短语, home 是副词, comfortable 是形容词, 充当表语, feel 是动词,",
+        "3.",
+        "3."
+      ]
+    },
+    {
+      "id": 102690,
+      "ambiguous_sentence": "It was raining, so I stayed home.",
+      "gold_disambiguations": [
+        {
+          "premise": "It was raining, so I stayed home; otherwise I would have gone outside.",
+          "hypothesis": "If it had not been raining, I would have gone outside.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It was raining, so I stayed home, though there may have been other reasons too.",
+          "hypothesis": "If it had not been raining, I would have gone outside.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It was sunny, so I went out.",
+        "A.rain",
+        "下雨,所以我待在家里。\n2.",
+        "I stayed home.",
+        "was改为was 考查时态。句意:明天肯定会下雨,所以我待在家里。根据Tomorrow可知,此处为一般将来时,故将",
+        "No, it's not, I told her, but it could be.",
+        "It was raining, so I stayed home.",
+        "Answer.",
+        "而不是 It was raining, so I stayed home.",
+        "A."
+      ]
+    },
+    {
+      "id": 73089,
+      "ambiguous_sentence": "The data provides evidence that the treatment is effective.",
+      "gold_disambiguations": [
+        {
+          "premise": "The data provides evidence indicating that the treatment is effective.",
+          "hypothesis": "The treatment is not effective.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The treatment is effective, and the data provides evidence for it.",
+          "hypothesis": "The treatment is not effective.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "C.The data provides evidence that the treatment is effective.",
+        "The data provides evidence that the treatment is effective.",
+        "A.使用过去时;",
+        "We found that the average IQ of the boys increased by 15 points after they began the program, says Dr.",
+        "Is the sentence meaningful?",
+        "The data provides evidence that the treatment is not effective.",
+        "Evidence is a noun.",
+        "is true.",
+        "The data provides evidence that the treatment is effective, The data indicates that the treatment is effective, and The data suggests that the treatment is effective are",
+        "The data provides evidence that the treatment is effective."
+      ]
+    },
+    {
+      "id": 96088,
+      "ambiguous_sentence": "They were driving too fast, and they got pulled over.",
+      "gold_disambiguations": [
+        {
+          "premise": "They were driving too fast, so they got pulled over.",
+          "hypothesis": "They got pulled over because they were driving too fast.",
+          "label": "entailment"
+        },
+        {
+          "premise": "They were driving too fast; also they got pulled over.",
+          "hypothesis": "They got pulled over because they were driving too fast.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Question: Where are the men now?",
+        "Now, said the officer, you want a speeding ticket?",
+        "Did they get a ticket?",
+        "Lily: Oh, I see.",
+        "They were driving too fast, they got pulled over.",
+        "Really?",
+        "* They were driving too fast, and they got pulled over.",
+        "句子:They were driving too fast, and they got pulled over.",
+        "Question: What happened in the end of the story?",
+        "The man in the seat turned to his friend."
+      ]
+    },
+    {
+      "id": 12324,
+      "ambiguous_sentence": "He was appointed to the position.",
+      "gold_disambiguations": [
+        {
+          "premise": "He was elected to the position.",
+          "hypothesis": "He was selected for the position without the direct participation of the public.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "He was elected to the position.",
+          "hypothesis": "He was chosen for the position.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "A:\nSentence: He was appointed to the position.",
+        "B.",
+        "改为 He was appointed to the position.",
+        "B.He held the position.",
+        "4.",
+        "2.",
+        "He was appointed to the position.",
+        "Aof Bin Cfor D",
+        "He was appointed to the position.",
+        "Director General in 1994, and then again at the beginning of 2000, when he was appointed to the position of"
+      ]
+    },
+    {
+      "id": "106_c",
+      "ambiguous_sentence": "Then he sobered.",
+      "gold_disambiguations": [
+        {
+          "premise": "Then he became more sensible.",
+          "hypothesis": "He was drunk.",
+          "label": "neutral"
+        },
+        {
+          "premise": "Then he sobered after drinking alcohol.",
+          "hypothesis": "He was drunk.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "I don't know what she left behind.",
+        "I'm so sorry, Dr.",
+        "I'm not sure I'm for sure, he said.",
+        "Well, I'm not a doctor.",
+        "I don't know what to do.",
+        "Do you know the rules of the pitch?",
+        "No.",
+        "And if we did, the cost of this war would be catastrophic.",
+        "I'm going to tell you something.",
+        "I don't think you've got any."
+      ]
+    },
+    {
+      "id": "62_c",
+      "ambiguous_sentence": "The market was empty of pork, grains, and all foods that were banned.",
+      "gold_disambiguations": [
+        {
+          "premise": "The market was empty of pork, grains, as well as all foods that were banned.",
+          "hypothesis": "Pork and grains were not banned.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The market was empty of pork and grains, and all other foods that were banned.",
+          "hypothesis": "Pork and grains were not banned.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "I have to buy grains, vegetables and pork abroad, he said.",
+        "It is not for long, said Li Wei, a man who was buying duck.",
+        "There was only one man in the market, and he was Badelaid, who was still mourning the loss of his son and wife.",
+        "The markets were very quiet, the streets were deserted, and the shops were closed.",
+        "We are carrying everything, said Zhao Weqi, the market's manager.",
+        "Everything was empty, it was the end of winter, and all we had was bread and potatoes to keep us alive.",
+        "It was like a ghost town at the end of a day.",
+        "There are no vegetables, there are no fruits, he said.",
+        "What is the solution?",
+        "Xiuyi, governor of the market, came to the palace and said, The pork can not be sold at the market."
+      ]
+    },
+    {
+      "id": 52155,
+      "ambiguous_sentence": "This year has been a trying one for the country, with a devastating hurricane and an ongoing drought.",
+      "gold_disambiguations": [
+        {
+          "premise": "This year has been a trying one for the country, including a devastating hurricane and an ongoing drought.",
+          "hypothesis": "This year has been a trying one for the country because of a devastating hurricane and an ongoing drought.",
+          "label": "neutral"
+        },
+        {
+          "premise": "This year has been a trying one for the country, because of a devastating hurricane and an ongoing drought.",
+          "hypothesis": "This year has been a trying one for the country because of a devastating hurricane and an ongoing drought.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "The Secretary of Agriculture said the U.S.",
+        "As President of California, I have worked tirelessly to address these challenges, but I believe that we must dig deep and look for a way forward.",
+        "We're still in the midst of the drought that hit us earlier in the year, which was very bad for the economy, and we continued the aftermath of the",
+        "The drought has had a serious impact on the security of the nation, and the security of the region, said Kerry.",
+        "The nation needs a new leader, and the nation needs a sense of hope, he said.",
+        "I have learned from my childhood about the importance of clean water, and I want to continue to do my part, she said.",
+        "第2轮",
+        "Haiti is one of the most resilient countries in the world, he said.",
+        "I have no doubt that with the passion and optimism that we have in this country, we will be able to overcome these challenges and continue to make great progress.",
+        "The weather is going to continue to get hotter, and we're going to continue to see more extreme weather, he said."
+      ]
+    },
+    {
+      "id": 6813,
+      "ambiguous_sentence": "They have a lot of friends in common.",
+      "gold_disambiguations": [
+        {
+          "premise": "They have a lot of friends in common, though they are not friends directly.",
+          "hypothesis": "They are friends.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "They have a lot of friends in common, whether or not they are friends themselves.",
+          "hypothesis": "They are friends.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "A.",
+        "- They have many friends in common.",
+        "B.",
+        "We can have a lot of fun with each other.",
+        "is a correct sentence.",
+        ".",
+        "and They had a lot of friends in common.",
+        "I said.",
+        "- They have a lot of friends in common.",
+        "B."
+      ]
+    },
+    {
+      "id": 26524,
+      "ambiguous_sentence": "I think that it is a good idea.",
+      "gold_disambiguations": [
+        {
+          "premise": "I think that it is a good idea, and may or may not be a great one.",
+          "hypothesis": "I think that it is a great idea.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I think that it is a good, but not great, idea.",
+          "hypothesis": "I think that it is a great idea.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "It is a singular noun.",
+        "So, I think this is a bad idea, because that negativity is there.",
+        "I said quickly.",
+        "sentence2: I think it is a good idea.",
+        "B.",
+        "It is a good idea, is the satellite noun clause in this sentence.",
+        "It is a good idea make think the subject.",
+        "I think that it's a good idea.",
+        "I think that it is a good idea.",
+        "I think that it is a good idea."
+      ]
+    },
+    {
+      "id": 13987,
+      "ambiguous_sentence": "They won't come now.",
+      "gold_disambiguations": [
+        {
+          "premise": "They won't come.",
+          "hypothesis": "Before they would have come, but not anymore.",
+          "label": "neutral"
+        },
+        {
+          "premise": "They won't come.",
+          "hypothesis": "They won't come right now.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "They won't come now, said the hag.",
+        "Yes, it was dark.",
+        "he said.",
+        "Maybe.",
+        "They won't come now.",
+        "I can't go to you anymore, she says.",
+        "He said: I don't want to be alive anymore.",
+        "they said.",
+        "she said.",
+        "B."
+      ]
+    },
+    {
+      "id": 30056,
+      "ambiguous_sentence": "I heard that the cat was stuck in the tree.",
+      "gold_disambiguations": [
+        {
+          "premise": "I heard someone say that the cat was stuck in the tree.",
+          "hypothesis": "The cat was not stuck in the tree.",
+          "label": "neutral"
+        },
+        {
+          "premise": "I heard the sound of the cat stuck in the tree.",
+          "hypothesis": "The cat was not stuck in the tree.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "The cat was stuck in the tree.",
+        "I heard that the cat climbed the tree.",
+        "Output: I heard that the cat was stuck in the tree.",
+        "2.",
+        "The cat said, Yes, I am stuck in the tree, but I can't get down.",
+        "Question: What was the cause of the situation?",
+        "2: I had to climb up the tree to rescue the cat.",
+        "Said the monkey, I'll help the cat.",
+        "Output:\nGiven the input sentence: I heard that the cat was stuck in the tree.",
+        "I'm going to get him down, I said."
+      ]
+    },
+    {
+      "id": 7366,
+      "ambiguous_sentence": "The vast majority of people who contract the virus will experience only mild or moderate symptoms.",
+      "gold_disambiguations": [
+        {
+          "premise": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+          "hypothesis": "All people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The vast majority of people who contract the virus will experience only mild or moderate symptoms, though some will experience more severe ones.",
+          "hypothesis": "In general, people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The vast majority of people, perhaps even all people, who contract the virus will experience only mild or moderate symptoms.",
+          "hypothesis": "In general, people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The vast majority of people, perhaps even all people, who contract the virus will experience only mild or moderate symptoms.",
+          "hypothesis": "All people who contract the virus will experience only mild or moderate symptoms.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "As a result, many people have gone to the hospital showing improvement and been discharged.",
+        "Some studies on the first wave of the coronavirus outbreak have indicated that the virus has a high fatality rate.",
+        "Q:",
+        "The vast majority of people who contract the virus will experience only mild or moderate symptoms.",
+        "It's really a question of how bad it is, says Dr.",
+        "We are continuing to learn about the characteristics of the virus and how it behaves within the human body, said Dr.",
+        "It can, however, be more serious for people with underlying conditions, such as asthma, diabetes and heart disease.",
+        "These symptoms include fever, cough, fatigue, diarrhea, vomiting, sore throat, headache, and muscle or joint pain.",
+        "D.",
+        "The majority of people are not affected, and the people affected generally have mild to moderate symptoms, Dr."
+      ]
+    },
+    {
+      "id": 81333,
+      "ambiguous_sentence": "It was as if she had been possessed by a demon.",
+      "gold_disambiguations": [
+        {
+          "premise": "She was acting like she had been possessed by a demon.",
+          "hypothesis": "She was possessed by a demon.",
+          "label": "neutral"
+        },
+        {
+          "premise": "It was as if she had been possessed by a demon, though she was not.",
+          "hypothesis": "She was possessed by a demon.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "可以改写为:\nIt was as if she was possessed by a demon.",
+        "I'm so sorry, she said, her voice shaking.",
+        "I was unable to control my actions, and I felt that I was Neo to the Matrix.",
+        "The mark of the beast refers to a theological concept in the Bible known as the mark of the beast, which is found in the Book of Revelation.",
+        "Given that the killer is female, the initial assumption is that the narrator, the author of the story, is male.",
+        "The demon was awakened at the end of the family meeting.",
+        "It was like the sting of a hornet.",
+        "She was kneeling in the middle of the room, and her eyes were staring straight ahead at the ceiling.",
+        "I am a demon, I am a demon, she repeated.",
+        "That's not right, I said to myself, and that can't be happening."
+      ]
+    },
+    {
+      "id": 43732,
+      "ambiguous_sentence": "The main goal is to find a cure for cancer.",
+      "gold_disambiguations": [
+        {
+          "premise": "The main goal is to find a cure for cancer as a disease, which may include preventing cancer in the first place.",
+          "hypothesis": "The main goal is to find a way to prevent cancer.",
+          "label": "neutral"
+        },
+        {
+          "premise": "The main goal is to find a cure for cancer after it has developed in the body.",
+          "hypothesis": "The main goal is to find a way to prevent cancer.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "I'm not a fan of surgery, chemo, radiation, and aspirin therapies, he says.",
+        "We want to cure cancer in the future, Dr.",
+        "To achieve this goal, we will have to consider the influence of the environment in the development of the disease, said the patient.",
+        "Our goal is not just to treat the cancer, but to cure the cancer, he said.",
+        "If we find a cure, then we can talk about money, he said.",
+        "Our goal is to find the root causes of cancer, and to cure them, not just to treat the symptoms, says Dr.",
+        "We want to find a cure for cancer.",
+        "It's very important to find a cure for cancer, said Housham.",
+        "We want to know how cancer cells are formed, said Stack, who will resume his position at the University of Texas at Austin after the institute.",
+        "It's a big mission, said the businessman."
+      ]
+    },
+    {
+      "id": "135_c",
+      "ambiguous_sentence": "I'll be impressed if you get his T shirt.",
+      "gold_disambiguations": [
+        {
+          "premise": "I'll be impressed if you understand his T shirt.",
+          "hypothesis": "I'll be impressed if you understand his T shirt.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I'll be impressed if you understand his T shirt.",
+          "hypothesis": "I'll be impressed if you acquire his T shirt.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "As for the rest of the band, I'm not sure which picture to use.",
+        "whichever you want.",
+        "That I'll be impressed if you get his T shirt.",
+        "I'll be impressed if you get his T shirt.",
+        "dialogue: I'll be impressed if you get his T shirt.",
+        "I meant that I was going to get T shirt.",
+        "Cindy laughed at her heels.",
+        "This made me smile.",
+        "I'm not about that.",
+        "I think this shirt is a disgrace to the game, and I feel the team could have done much better in designing it and producing it, he said."
+      ]
+    },
+    {
+      "id": "120_c",
+      "ambiguous_sentence": "She needed to know only what he told her.",
+      "gold_disambiguations": [
+        {
+          "premise": "He is the only one who told her what she needed to know.",
+          "hypothesis": "Other people may have told her the same thing.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "What he told her is all she needed to know.",
+          "hypothesis": "Other people may have told her the same thing.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Be careful, he said.",
+        "It's a good thing.",
+        "I didn't know.",
+        "What do you want to know,?",
+        "He was going to make them whole.",
+        "The truth was, he was lying to her, and she was dying in the truth.",
+        "I'm not sorry, he told her.",
+        "You don't care about me, she said, because you don't care about the doctor.",
+        "You lied to me, Elvis, she said quietly.",
+        "And you know that I'm no bot."
+      ]
+    },
+    {
+      "id": 71750,
+      "ambiguous_sentence": "The athlete will not be disqualified from the competition.",
+      "gold_disambiguations": [
+        {
+          "premise": "If an athlete uses a banned substance, they will be disqualified from the competition.",
+          "hypothesis": "The athlete (a specific person) will not be disqualified from the competition.",
+          "label": "neutral"
+        },
+        {
+          "premise": "If an athlete uses a banned substance, they will be disqualified from the competition.",
+          "hypothesis": "The athlete (as a generic) will not be disqualified from the competition.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "print(The athlete will not be disqualified from the competition.",
+        "- It is clear that the athlete will be disqualified from the competition.",
+        "The athlete will be disqualified from the competition.",
+        "The athlete will be disqualified from the competition.",
+        "3.",
+        "The athlete will take part in the competition, and the track officer will not be disqualified at the competition.",
+        "Rewrite the sentence The athlete will not be disqualified from the competition.",
+        "early words: The athlete will not be disqualified from the competition.",
+        "- The athlete will be disqualified from the competition if the athlete is not at the appointment.",
+        "Yes, the athlete will be disqualified from the competition."
+      ]
+    },
+    {
+      "id": 4728,
+      "ambiguous_sentence": "The flu virus is spreading rapidly.",
+      "gold_disambiguations": [
+        {
+          "premise": "The flu virus is causing an epidemic.",
+          "hypothesis": "The flu virus is spreading rapidly among the population.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The flu virus is causing an epidemic.",
+          "hypothesis": "The flu virus is spreading rapidly in the environment.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "spreading 是现在分词形式,表示流感病毒正在迅速传播。",
+        "A.",
+        "The flu virus is spreading rapidly.",
+        "Spreading means _.",
+        "A virus is spreading throughout the world.",
+        "Answer the following question: Read the following article and answer the question.",
+        "The rapid spread of the flu virus.",
+        "The word spread, as a verb, means to enlarge or distribute something.",
+        "Here comes thecold.",
+        "选项A时态错误。选项C主语错误。选项D动词形式错误。答案是B。 \n句子B的主语是什么?"
+      ]
+    },
+    {
+      "id": 10452,
+      "ambiguous_sentence": "It is clear that our current education system is not preparing students for the real world.",
+      "gold_disambiguations": [
+        {
+          "premise": "It is clear that our current education system is not preparing students for the real world, which it should do.",
+          "hypothesis": "Students should be prepared for the real world by our current education system.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It is clear that our current education system is not preparing students for the real world, whether or not that should be the aim.",
+          "hypothesis": "Students should be prepared for the real world by our current education system.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We don't educate for everything, says Cartwright.",
+        "Higher Education is the root of the problem.",
+        "We need to take action to ensure that students are developing the skills they need to succeed in the future.",
+        "We need to rethink the way we teach and focus on critical thinking and problem solving, says Smith.",
+        "B: Yes, it is not doing enough.",
+        "Our education system is focused on memorization and testing, rather than critical thinking and problem-solving, said Dr.",
+        "We don't have the right people for the right jobs, adds Duggan.",
+        "There is no public school in the United States that is designed to prepare students to work in a knowledge economy, said Claudia L.",
+        "We need to rethink our education system to meet the needs of the workforce, said Dr.",
+        "If you're going to be a business leader, you need to be able to think critically and creatively, he said."
+      ]
+    },
+    {
+      "id": "98_c",
+      "ambiguous_sentence": "It is hard to work together when you don't speak the same language.",
+      "gold_disambiguations": [
+        {
+          "premise": "It's hard to work together when you literally don't speak the same language.",
+          "hypothesis": "Language barriers make it hard to work together.",
+          "label": "entailment"
+        },
+        {
+          "premise": "It's hard to work together when you don't understand one another well.",
+          "hypothesis": "Language barriers make it hard to work together.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "When asked why she wanted to learn Chinese, she said.",
+        "1.",
+        "It is a barrier that you have to overcome, he says.",
+        "the boss said.",
+        "He now sees the importance of being bilingual.",
+        "We need to be able to understand each other.",
+        "Some members of the team were not fluent in English, and needed to frequent translators for meetings, and to understand the work of their colleagues.",
+        "Explanation: In this sentence, the word when is used to introduce the reason for the difficulty in working together, which is the lack of common language.",
+        "My mother is Canadian.",
+        "We found it difficult to communicate with each other, said Eita."
+      ]
+    },
+    {
+      "id": "35_c",
+      "ambiguous_sentence": "She wants to work with the professor with the best reputation in the department.",
+      "gold_disambiguations": [
+        {
+          "premise": "She wants to work with Dr. Smith, the professor with the best reputation in the department.",
+          "hypothesis": "She wants to work with whichever professor in the department has the best reputation.",
+          "label": "neutral"
+        },
+        {
+          "premise": "She wants to work with Dr. Smith, the professor with the best reputation in the department.",
+          "hypothesis": "She wants to work with a professor who happens to have the best reputation in the department.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "A./ \nB.不填 \nC.",
+        "A: She wants to work with the professor with the best reputation in the department.",
+        "She wants to work with the professor with the best reputation in the department.",
+        "she wants to work with the professor with the best reputation in the department.",
+        "答案是句子 She wants to work with the professor with the best reputation in the department.",
+        "She wants to work with the professor with the best reputation in the department.花呗开通。",
+        "Question: What did the student say to the professor?",
+        "She wants to work with the professor with the best reputation in the department.",
+        "She wants to work with the professor with the best reputation in the department.The professor who has the best reputation in the department is who she wants to work with",
+        "Sentence2: The professor with the best reputation in the department wants to work with her."
+      ]
+    },
+    {
+      "id": 45119,
+      "ambiguous_sentence": "You will be able to figure it out.",
+      "gold_disambiguations": [
+        {
+          "premise": "I'm sure you'll be able to figure it out.",
+          "hypothesis": "You are expected to be able to figure it out.",
+          "label": "entailment"
+        },
+        {
+          "premise": "I'm sure you'll be able to figure it out.",
+          "hypothesis": "You will, in reality, be able to figure it out.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Red is the opposite of green, which is the opposite of orange, which is the opposite of blue, which is the opposite of purple, which is the",
+        "soldierry",
+        "It is possible!",
+        "",
+        "I had to do that for the rest of the week.",
+        "You will find that book.",
+        "10.",
+        "If you are able to figure it out, you can do the job.",
+        "## License",
+        "D."
+      ]
+    },
+    {
+      "id": 59262,
+      "ambiguous_sentence": "We cannot simply sit by and watch as the world around us crumbles.",
+      "gold_disambiguations": [
+        {
+          "premise": "We cannot simply sit by and watch as the world around us crumbles; we must take action to prevent it.",
+          "hypothesis": "We must take action to prevent the world from crumbling.",
+          "label": "entailment"
+        },
+        {
+          "premise": "We cannot simply sit by and watch as the world around us crumbles; we must take action of some sort, though not necessarily to prevent the crumbling.",
+          "hypothesis": "We must take action to prevent the world from crumbling.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It is time for us to take action and make a difference.",
+        "We have to find a way to break the cycle of chaos and free ourselves from its grasp.",
+        "We must take action and make our difference.",
+        "We must take action, and fast, if we hope to survive the_machine threat.",
+        "As the revolution erupts and the characters reflect on the consequences of their actions, the film explores themes of bravery, sacrifice, and the importance of standing",
+        "She stood up, her voice clear and confident.",
+        "We have a duty to our existence, and we must work to eliminate the threat.",
+        "He said, We must take action, and take action now.",
+        "We must take action to protect our environment and our communities, from the threats of climate change, pollution, and destruction.",
+        "We must do everything we can to protect our homes and families, and we must work together to find a solution to this existential crisis."
+      ]
+    },
+    {
+      "id": "103_c",
+      "ambiguous_sentence": "Mykonos has had a head start as far as diving is concerned because it was never banned here (after all, there are no ancient sites to protect).",
+      "gold_disambiguations": [
+        {
+          "premise": "Mykonos has had a head start as far as diving is concerned because it was never banned here like it was in other places (after all, there are no ancient sites to protect).",
+          "hypothesis": "Diving was banned in places other than Mykonos.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Mykonos has had a head start as far as diving is concerned because it was never banned here, regardless of whether there were bans in other places (after all, there are no ancient sites to protect).",
+          "hypothesis": "Diving was banned in places other than Mykonos.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "This is probably the best diving spot in the world, says Ben Duda, the founder of Mykonos Diving Centre.",
+        "It was a big thing back in the 1970s, hotel owners used to provide guests with diving equipment, said Panos Katsonos,",
+        "We do have a lot of specialists, divers and course divers on the island, and there is a lot of interest to come and learn diving, says Raffal",
+        "Mykonos has several diving schools, including Blue Blue Adventures, Mykonos Underwater, and Mykonos Marine Centre.",
+        "The diving industry is very active in many parts of the island, and it's only becoming more so, says Costas Spezoulis, president of the",
+        "Club-style diver numbers increased only in the 1960s.",
+        "The diving is among the best in the Mediterranean, says one tourist.",
+        "The port is just off the southern coast of the east side of the island, so it is easily accessible, explains Karl Huntley, the dive instructor at the",
+        "Scuba diving is a popular activity on Mykonos.",
+        "This is one of Greece's best diving spots, says Sedaki."
+      ]
+    },
+    {
+      "id": "45_c",
+      "ambiguous_sentence": "The turkey is ready to eat.",
+      "gold_disambiguations": [
+        {
+          "premise": "The turkey is ready to be eaten.",
+          "hypothesis": "The turkey is alive.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The turkey is ready to be fed.",
+          "hypothesis": "The turkey is alive.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "The turkey is ready to eat by taking the back bone.",
+        "he said, wiping his face.",
+        "It is very hot, the mother says.",
+        "Subset the turkey.",
+        "- The turkey is frozen.",
+        "I have roasted the turkey.",
+        "Steve points to the turkey.",
+        "Time for dinner.",
+        "Question: How long did Sue roast the turkey?",
+        "Step 2: \n\n- The turkey is ready to eat."
+      ]
+    },
+    {
+      "id": 14789,
+      "ambiguous_sentence": "The company's profits have tripled since it began its expansion into new markets.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's profits have tripled because it began its expansion into new markets.",
+          "hypothesis": "The company's expansion into new markets is the reason why its profits have tripled.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's profits have tripled after it began its expansion into new markets, though the relationship is not necessarily causal.",
+          "hypothesis": "The company's expansion into new markets is the reason why its profits have tripled.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "We're trying to get more people to buy our product.",
+        "We have been very successful in developing our markets in Asia and Latin America, he said.",
+        "We are now the global supplier to the global market, says John Aronica, vice president of business development.",
+        "It's been a great ride for us, Prince says.",
+        "It's been a great time for the company, says Melgaard.",
+        "They are excited about the prices and the quality of products, said the manager.",
+        "The company's revenues have grown by 10 to 15 percent every year for the past three years, the company said.",
+        "It's been the most exciting time in my life, he said.",
+        "When we opened our mouth China for the first time in 10 years, we realized there was a lot of opportunity, he said.",
+        "We've really captured the heart of the marketplace, she said."
+      ]
+    },
+    {
+      "id": 34579,
+      "ambiguous_sentence": "The President is not required to comply with the law.",
+      "gold_disambiguations": [
+        {
+          "premise": "The President is not above the law.",
+          "hypothesis": "The office of the President is not beholden to the law.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The President is not above the law.",
+          "hypothesis": "The current President is not being held accountable to the law.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "If he deems that, in the interest of the integrity of the Republic, it is necessary, the President may refuse to comply with the direct application of the laws",
+        "It is not the duty of the President to ensure the operation and implementation of a particular law, the White House said.",
+        "The fate of the country is in the hands of the people and in the hands of the President.",
+        "That's why it's not in the Constitution.",
+        "The President is free to do whatever he wants, he says.",
+        "The President must comply with the law.,The President may comply with the law.,The President is not required to comply with the law.]",
+        "It's not like the president in the United States, who only has the executive power, Mr.",
+        "It is an important law, and it is a good law, the president said, but I do not agree with it, he said.",
+        "The President does not respect the rule of law.",
+        "It is not necessary for him to comply with any federal law, he said."
+      ]
+    },
+    {
+      "id": "91_c",
+      "ambiguous_sentence": "I would like to finish the book sometime this year.",
+      "gold_disambiguations": [
+        {
+          "premise": "I would like to finish reading the book sometime this year.",
+          "hypothesis": "I plan to finish writing the book.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "I would like to finish writing the book sometime this year.",
+          "hypothesis": "I plan to finish writing the book.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "B.I would like to finish the book sometime this year.",
+        "I would like to finish the book sometime this year.",
+        "The Lost Judgment is a keeper.",
+        "I hope I have a lot of time this year so that I can finish the book.",
+        "print( I would like to finish the book sometime this year.",
+        "I would like to finish the book sometime this year.",
+        "A:\n\n1.",
+        "he said.",
+        "Sentence 2: The book is going to be published.",
+        "A."
+      ]
+    },
+    {
+      "id": "141_c",
+      "ambiguous_sentence": "The box is unlockable.",
+      "gold_disambiguations": [
+        {
+          "premise": "The box is not lockable.",
+          "hypothesis": "The box can be locked.",
+          "label": "contradiction"
+        },
+        {
+          "premise": "The box can be unlocked.",
+          "hypothesis": "The box can be locked.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "Taking the key unlocked the box.",
+        "+ file);",
+        "}\n\n    private void isLocked() {\n        println The box is locked.",
+        "The box is unlockable)\n4.",
+        "The box is a box that the player can place on the table.",
+        "String msg2 = The box is unlocked.",
+        "But, the box is not unlockable.",
+        "The box is locked.",
+        "- There is a solution in the box.",
+        "return false;"
+      ]
+    },
+    {
+      "id": "131_c",
+      "ambiguous_sentence": "She told me her mom was in town two weeks ago.",
+      "gold_disambiguations": [
+        {
+          "premise": "She told me that two weeks ago, her mom was in town.",
+          "hypothesis": "She told me two weeks ago.",
+          "label": "neutral"
+        },
+        {
+          "premise": "She told me two weeks ago that her mom was in town.",
+          "hypothesis": "She told me two weeks ago.",
+          "label": "entailment"
+        }
+      ],
+      "continuations": [
+        "I don't know what to do with my mom, she said.",
+        "With a sigh, he hung up the phone and returned to his lab, determined to find the reason behind the sudden lack of movement in the lab.",
+        "Probably still here.",
+        "Where?",
+        "I asked.",
+        "I replied, I don't know anything about it.",
+        "I didn't tell her, she said.",
+        "Well, you can only guess, she needed to be on time at work.",
+        "C: I went to see her.",
+        "I said,  I didn't hear it."
+      ]
+    },
+    {
+      "id": 103217,
+      "ambiguous_sentence": "The study found that children who were read to more frequently had better reading comprehension skills.",
+      "gold_disambiguations": [
+        {
+          "premise": "The study demonstrated that children who were read to more frequently had better reading comprehension skills.",
+          "hypothesis": "Reading to children frequently leads to better reading comprehension skills.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The study concluded that children who were read to more frequently had better reading comprehension skills.",
+          "hypothesis": "Reading to children frequently leads to better reading comprehension skills.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "It's a pretty well-established fact that, the more you read to a child, the better that child will be a reader, says Dr.",
+        "When you read to your child, you're building a foundation in their brain, said Dr.",
+        "The more they were read to, the more they engaged with the texts, they were able to understand more words and information, and they were better able to understand",
+        "It's not just about the words, said Evans.",
+        "Reading comprehension is more than just understanding the words, said the psychologist.",
+        "It's not just about the words, it's also about the emotions.",
+        "It's important to read to our children, the author said.",
+        "Read to your kids as often as possible, says Rideout.",
+        "Reading to your children is a great way to improve their reading comprehension, said the study's author.",
+        "Reading to children has a significant impact on their language development, said Dr."
+      ]
+    },
+    {
+      "id": 13321,
+      "ambiguous_sentence": "Inflation is often caused by an increase in the money supply.",
+      "gold_disambiguations": [
+        {
+          "premise": "Inflation is often, but not always, caused by an increase in the money supply.",
+          "hypothesis": "An increase in the money supply is not the only cause of inflation.",
+          "label": "entailment"
+        },
+        {
+          "premise": "Inflation is often, perhaps always, caused by an increase in the money supply.",
+          "hypothesis": "An increase in the money supply is not the only cause of inflation.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "Inflation is a consequence of an increase in the money supply.",
+        "The increase in the money supply refers to the amount of money in circulation, Sohrab says.",
+        "As the money supply increases, the demand for goods and services also increases, leading to higher prices for goods and services.",
+        "What is the money supply?",
+        "When the supply of money increases more rapidly than the supply of goods, prices will rise, Ms.",
+        "The amount of money in the economy increases faster than the amount of goods and services that can be produced, causing prices to rise.",
+        "Inflation is a rise in the average price level of goods and services, and it is often caused by an increase in the money supply.",
+        "A.正确",
+        "If there is an increase in the money supply, then there is an increase in the supply of goods and services, and thus there is an increase in the price",
+        "Money supply means that the amount of money increases relative to the amount of goods and services in an economy."
+      ]
+    },
+    {
+      "id": 55390,
+      "ambiguous_sentence": "The company's sales increased by 3 percent last quarter.",
+      "gold_disambiguations": [
+        {
+          "premise": "The company's sales increased by 4 percent last quarter.",
+          "hypothesis": "The company's sales increased by (at least) 3 percent last quarter.",
+          "label": "entailment"
+        },
+        {
+          "premise": "The company's sales increased by 4 percent last quarter.",
+          "hypothesis": "The company's sales increased by only 3 percent last quarter.",
+          "label": "contradiction"
+        }
+      ],
+      "continuations": [
+        "Yes, the company's sales increased by 3 percent last quarter.",
+        "- The pronoun they refers to the sales of the company.",
+        "- The company's sales increased by 10 percent last quarter.",
+        "更正后的错误:\n\nLast quarter, the company's sales increased by 3 percent.",
+        "That's pretty good, he said.",
+        "It's a good time for people in the industry, he said, pointing to the prosperity of the company.",
+        "This is the first time in 20 years that sales growth was less than the inflation rate, Kaartinen said in a telephone interview.",
+        "Our sales are a crucial contributor to our long-term growth, and we are pleased to see our business continue to grow, he said.",
+        "The company's sales increased by 3 percent last quarter.",
+        "The company sales increased by 3 percent last quarter."
+      ]
+    },
+    {
+      "id": 53458,
+      "ambiguous_sentence": "In the early days of the internet, web pages were simple and focused on delivering information.",
+      "gold_disambiguations": [
+        {
+          "premise": "In the early days of the internet, web pages were simple and focused on delivering information, which is not the case anymore.",
+          "hypothesis": "Web pages are not simple.",
+          "label": "entailment"
+        },
+        {
+          "premise": "At least in the early days of the internet, web pages were simple and focused on delivering information.",
+          "hypothesis": "Web pages are not simple.",
+          "label": "neutral"
+        }
+      ],
+      "continuations": [
+        "file.txt was a plaintext page, which was a type of text that was not meant to be formatted or displayed.",
+        "Static web pages were composed of text, images, and usually some code.",
+        "Web content used to refer to the combination of text, images, and other multimedia elements that made up web pages.",
+        "Web page was the term used to describe these documents, often accompanied by a descriptive title that accurately conveyed the content of the page.",
+        "The art of death was not a common concept, as the internet was still a relatively new and innocent medium.",
+        "Web 1.0 was the era of content, where web pages were static and fluffy.",
+        "web page was the heading, and body was the content of the page.",
+        "Web page primarily referred to the content of a website, with HTML documents coding the structure and layout of these pages.",
+        "Graphic design in the modern sense was not as prevalent as the practice evolved alongside the growth and development of the web.",
+        "Hypertext was just a way to link between pages, allowing you to click on words to visit new sites."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "Total Instances (Deduped)": 543,
+  "Total Evaluated (No generation failures)": 542,
+  "Ranking Accuracy (All valid < distractor)": 0.41697416974169743,
+  "Ranking Accuracy (Any valid < distractor)": 0.7435424354243543,
+  "Mean KL Divergence (Valid Options)": 0.07125419120468554,
+  "Mean KL Divergence (Distractor)": 0.1614845668778299
+}
