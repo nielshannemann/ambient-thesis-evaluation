@@ -194,7 +194,7 @@ def auto_detect_4bit(model_id: str) -> bool:
     model_id_lower = model_id.lower()
     
     # Large Models (e.g., Llama-70B)
-    if "70b" in model_id_lower or "72b" in model_id_lower:
+    if "70b" in model_id_lower or "65b" in model_id_lower or "72b" in model_id_lower:
         return vram_gb < 130
     # Medium Models (e.g., LLaDA-8B, Llama-8B)
     if "8b" in model_id_lower or "7b" in model_id_lower or "9b" in model_id_lower:

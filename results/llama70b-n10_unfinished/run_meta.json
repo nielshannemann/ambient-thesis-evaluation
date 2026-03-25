@@ -1,0 +1,16 @@
+{
+  "timestamp_start": "2026-03-24T19:08:28Z",
+  "model_name": "llama70b",
+  "model_id": "meta-llama/Meta-Llama-3.1-70B",
+  "model_type": "ar",
+  "hyperparameters": {
+    "seed": 42,
+    "num_generations": 10,
+    "gen_batch_size": 25,
+    "top_p": 1.0,
+    "top_k": 0,
+    "temperature": 1.0
+  },
+  "status": "finished",
+  "timestamp_end": "2026-03-24T22:17:16Z"
+}
