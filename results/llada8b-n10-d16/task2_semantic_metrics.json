@@ -1,0 +1,11 @@
+{
+    "llada8b-n10-d16": {
+        "diversity_mean_cosine_dist": 0.7410923308430456,
+        "perplexity_median": 162.09003448486328,
+        "perplexity_mean": 552.5227063315991,
+        "overlap_mean": 0.18254978358764395,
+        "num_evaluated_instances": 543,
+        "seed_used": 42,
+        "local_save_path": "results/llada8b-n10-d16/task2_semantic_metrics.json"
+    }
+}

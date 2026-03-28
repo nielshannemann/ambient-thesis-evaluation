@@ -102,7 +102,6 @@ def batched_exact_nll_score(model, tokenizer, prompts: List[str], continuations:
             attention_masks = []
             prompt_lens = []
             
-            # 1. Independent Tokenization to prevent space-merging artifacts
             valid_batch = True
             for p, c in zip(batch_prompts, batch_conts):
                 try:
@@ -343,7 +342,7 @@ def main(data_path, model_name, model_id, model_type, num_generations, gen_batch
             top_k=top_k,
             temperature=temperature,
             num_generations=num_generations,
-            batch_size=gen_batch_size, # <--- Passes the chunking limit down to the adapter
+            batch_size=gen_batch_size,
             seed=seed,
             steps=diffusion_steps,
             cfg_scale=cfg_scale

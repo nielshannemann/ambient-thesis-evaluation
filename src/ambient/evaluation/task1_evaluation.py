@@ -74,6 +74,23 @@ def load_results(path: Path) -> Dict[str, dict]:
     return data
 
 
+
+
+def get_context_and_claim(instance: dict):
+    """
+    Reads the dynamically reconstructed Task-1 conversational pair. Falls back
+    to legacy keys for older result files.
+    """
+    context = instance.get("context_text")
+    claim = instance.get("claim_text")
+
+    if context is None:
+        context = instance.get("premise", "")
+    if claim is None:
+        claim = instance.get("hypothesis", "")
+
+    return context, claim
+
 def evaluate_pair(
     judge_adapter: ARAdapter, 
     premise: str,
@@ -220,8 +237,7 @@ def main():
         llada_instance = llada_data[idx]
         llama_instance = llama_data[idx]
         
-        premise = llada_instance.get("premise", "")
-        hypothesis = llada_instance.get("hypothesis", "")
+        context_text, claim_text = get_context_and_claim(llada_instance)
         
         # Extract the cleaned interpretations generated in Task 1
         cont_llada_list = llada_instance.get("generated_clean", [])
@@ -240,7 +256,7 @@ def main():
         instance_seed = args.seed + idx_num
             
         winner_model, raw_response, llada_position = evaluate_pair(
-            judge_adapter, premise, hypothesis, cont_llada, cont_llama, instance_seed
+            judge_adapter, context_text, claim_text, cont_llada, cont_llama, instance_seed
         )
         
         scores[winner_model] += 1

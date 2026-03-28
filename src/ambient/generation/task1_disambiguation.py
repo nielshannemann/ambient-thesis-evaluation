@@ -5,7 +5,7 @@
 TASK 1: EXPLICIT GENERATIVE DISAMBIGUATION
 =============================================================================
 Evaluates the capability of instruction-tuned models to explicitly identify 
-and verbalize multiple valid semantic interpretations of an ambiguous premise.
+and verbalize multiple valid semantic interpretations of an ambiguous AMBIENT example.
 
 Methodological Integration:
 - Employs One-Shot In-Context Learning combined with Assistant Prefilling 
@@ -78,6 +78,31 @@ def load_ambient_data(path: Path, max_examples: int = 50) -> list:
                     break
     return data
 
+
+
+def build_task1_context_claim(row: dict):
+    """
+    Reconstructs the conversational evaluation pair according to the ambiguity
+    side of the AMBIENT instance.
+
+    Returns:
+        ambiguity_side, context_text, claim_text
+    """
+    premise = row.get("premise", "")
+    hypothesis = row.get("hypothesis", "")
+
+    premise_amb = bool(row.get("premise_ambiguous", False))
+    hypothesis_amb = bool(row.get("hypothesis_ambiguous", False))
+
+    if premise_amb and not hypothesis_amb:
+        return "premise", premise, hypothesis
+    if hypothesis_amb and not premise_amb:
+        return "hypothesis", premise, hypothesis
+    if premise_amb and hypothesis_amb:
+        return "both", premise, hypothesis
+
+    return "unknown", premise, hypothesis
+
 def clean_generated_interpretations(raw_text: str) -> str:
     """
     Cleans the raw output to strictly extract the enumerated interpretations.
@@ -113,7 +138,7 @@ def main():
     parser.add_argument("--model-name", type=str, required=True, help="E.g., 'llama8b', 'llada8b'")
     parser.add_argument("--model-type", choices=["llama", "llada"], required=True, help="Target instruct-tuned architecture.")
     parser.add_argument("--model-id", type=str, default=None, help="HuggingFace repository ID.")
-    parser.add_argument("--data-path", type=Path, default=Path("external/ambient/AmbiEnt/test_baked.jsonl"))
+    parser.add_argument("--data-path", type=Path, default=Path("data/test_baked.jsonl"))
     parser.add_argument("--max-examples", type=int, default=580, help="Number of examples to evaluate.")
     
     # --- HARDWARE & REPRODUCIBILITY ABLATIONS ---
@@ -179,6 +204,10 @@ def main():
 
     dataset = load_ambient_data(args.data_path, max_examples=args.max_examples)
     print(f"[INFO] Isolated {len(dataset)} ambiguous instances for evaluation.")
+    side_counts = {"premise": 0, "hypothesis": 0, "both": 0, "unknown": 0}
+    for row in dataset:
+        side_counts[build_task1_context_claim(row)[0]] += 1
+    print(f"[INFO] Ambiguity-side distribution: {side_counts}")
 
     # --- ARCHITECTURE INITIALIZATION & ADAPTER INJECTION ---
     print("[INFO] Initializing architecture and injecting unified adapters...")
@@ -207,9 +236,10 @@ def main():
     
     for prompt_idx, row in enumerate(tqdm(dataset, desc="Generating")):
         row_id = row.get("id") or row.get("_instance_id", "unknown")
-        premise = row.get("ambiguous_sentence") or row.get("premise", "")
+        ambiguity_side, context_text, claim_text = build_task1_context_claim(row)
+        premise = row.get("premise", "")
         hypothesis = row.get("hypothesis", "")
-        
+
         # METHODOLOGY ALIGNMENT: One-Shot In-Context Learning + Assistant Prefilling
         messages = [
             {"role": "system", "content": "In each example, you will be given some context and a claim, where the correctness of the claim is affected by some ambiguity in the context. Enumerate two distinct interpretations of the context that lead to different judgments about the claim. Format them strictly as a numbered list."},
@@ -259,6 +289,9 @@ def main():
         
         all_results.append({
             "id": row_id,
+            "ambiguity_side": ambiguity_side,
+            "context_text": context_text,
+            "claim_text": claim_text,
             "premise": premise,
             "hypothesis": hypothesis,
             "generated_raw": fixed_raw_list,

@@ -1,0 +1,2 @@
+model,diversity_mean_cosine_dist,perplexity_median,perplexity_mean,overlap_mean,num_evaluated_instances,seed_used
+llama8b-n100,0.7920009940039388,48.92151641845703,150.6180231811592,0.10548243794964965,543.0,42.0
