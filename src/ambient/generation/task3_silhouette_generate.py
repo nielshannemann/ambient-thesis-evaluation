@@ -192,7 +192,7 @@ def main():
         else:
             prompt_source = row.get("disambiguated_control", "")
 
-        prompt = f'{prompt_source} "'
+        prompt = f'{prompt_source} '
         current_seed = args.seed + (prompt_idx * 10000)
 
         raw_continuations = adapter.generate(
