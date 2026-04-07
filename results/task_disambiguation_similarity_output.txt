@@ -1,0 +1,17 @@
+=== DISAMBIGUATION SIMILARITY SUMMARY ===
+Instances analyzed: 543
+Source types: {'premise': 365, 'hypothesis': 141, 'both': 37}
+Changed view:
+  mean cosine distance: 0.0723
+  same-label mean cosine distance: 0.0557
+  cross-label mean cosine distance: 0.0724
+  mean jaccard distance: 0.3303
+  mean disambig→ambiguous cosine distance: 0.0481
+  mean disambig→distractor cosine distance: 0.2306
+Full pair view:
+  mean cosine distance: 0.0379
+  same-label mean cosine distance: 0.0462
+  cross-label mean cosine distance: 0.0380
+  mean jaccard distance: 0.2423
+  mean disambig→ambiguous cosine distance: 0.0253
+  mean disambig→distractor cosine distance: 0.1232

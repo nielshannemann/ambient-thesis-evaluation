@@ -1,0 +1,2925 @@
+{
+  "config": {
+    "llama_model": "meta-llama/Meta-Llama-3.1-8B",
+    "llada_model": "GSAI-ML/LLaDA-8B-Base",
+    "data_path": "data/test_baked.jsonl",
+    "max_examples": 580,
+    "batch_size": 16,
+    "seed": 42,
+    "use_4bit": true,
+    "include_embedding_layer": false,
+    "dataset_modes": [
+      "side_reconstructed",
+      "fully_disambiguated"
+    ],
+    "compute_weight_entropy": true,
+    "weight_entropy_max_samples": 2000000,
+    "weight_entropy_bins": 256
+  },
+  "datasets": {
+    "side_reconstructed": {
+      "mode": "side_reconstructed",
+      "num_pairs": 688,
+      "num_unique_instances": 543,
+      "label_distribution": {
+        "entailment": 418,
+        "contradiction": 270
+      },
+      "source_ambiguity_distribution_instances": {
+        "premise": 365,
+        "hypothesis": 141,
+        "both": 37
+      },
+      "source_ambiguity_distribution_pairs": {
+        "premise": 387,
+        "hypothesis": 184,
+        "both": 117
+      },
+      "pair_distribution_by_source_type_and_label": {
+        "premise::entailment": 251,
+        "hypothesis::entailment": 117,
+        "both::contradiction": 67,
+        "both::entailment": 50,
+        "hypothesis::contradiction": 67,
+        "premise::contradiction": 136
+      }
+    },
+    "fully_disambiguated": {
+      "mode": "fully_disambiguated",
+      "num_pairs": 637,
+      "num_unique_instances": 543,
+      "label_distribution": {
+        "entailment": 397,
+        "contradiction": 240
+      },
+      "source_ambiguity_distribution_instances": {
+        "premise": 365,
+        "hypothesis": 141,
+        "both": 37
+      },
+      "source_ambiguity_distribution_pairs": {
+        "premise": 387,
+        "hypothesis": 184,
+        "both": 66
+      },
+      "pair_distribution_by_source_type_and_label": {
+        "premise::entailment": 251,
+        "hypothesis::entailment": 117,
+        "both::contradiction": 37,
+        "both::entailment": 29,
+        "hypothesis::contradiction": 67,
+        "premise::contradiction": 136
+      }
+    }
+  },
+  "weight_entropy": {
+    "llama": {
+      "histogram_entropy_bits": 6.732106024085028,
+      "sampled_weights": 2000000,
+      "total_weights": 4540600320,
+      "num_bins": 256,
+      "global_stride": 2270,
+      "sample_min": -0.1298828125,
+      "sample_max": 255.0
+    },
+    "llada": {
+      "histogram_entropy_bits": 6.82110347559315,
+      "sampled_weights": 2000000,
+      "total_weights": 4525920256,
+      "num_bins": 256,
+      "global_stride": 2262,
+      "sample_min": -0.84765625,
+      "sample_max": 255.0
+    }
+  },
+  "results": {
+    "side_reconstructed": {
+      "llama": {
+        "1": {
+          "mean_accuracy": 0.5870212781798148,
+          "std_accuracy": 0.023129559244386456,
+          "fold_accuracies": [
+            0.5769230769230769,
+            0.5694444444444444,
+            0.6319444444444444,
+            0.5714285714285714,
+            0.5853658536585366
+          ],
+          "mean_probe_entropy_bits": 0.283508545216703,
+          "std_probe_entropy_bits": 0.33466860897173834,
+          "median_probe_entropy_bits": 0.10862499489525138,
+          "fold_mean_entropies_bits": [
+            0.27785017678048163,
+            0.25412992896911013,
+            0.28429076731368563,
+            0.2926386022522848,
+            0.3120561083887853
+          ],
+          "mean_positive_class_probability": 0.6061768047407233
+        },
+        "2": {
+          "mean_accuracy": 0.5980559809915211,
+          "std_accuracy": 0.023770838029032695,
+          "fold_accuracies": [
+            0.6307692307692307,
+            0.5833333333333334,
+            0.6180555555555556,
+            0.564625850340136,
+            0.5934959349593496
+          ],
+          "mean_probe_entropy_bits": 0.26395372211386037,
+          "std_probe_entropy_bits": 0.34081541644954017,
+          "median_probe_entropy_bits": 0.07442728331675433,
+          "fold_mean_entropies_bits": [
+            0.2767746951316562,
+            0.271235759344736,
+            0.2718969677901166,
+            0.23745879152893892,
+            0.26424305191095804
+          ],
+          "mean_positive_class_probability": 0.6154532062625498
+        },
+        "3": {
+          "mean_accuracy": 0.5753799994043896,
+          "std_accuracy": 0.03263676625916889,
+          "fold_accuracies": [
+            0.6230769230769231,
+            0.5625,
+            0.5902777777777778,
+            0.5238095238095238,
+            0.5772357723577236
+          ],
+          "mean_probe_entropy_bits": 0.2595820636173284,
+          "std_probe_entropy_bits": 0.3301295919757014,
+          "median_probe_entropy_bits": 0.08077744153603679,
+          "fold_mean_entropies_bits": [
+            0.29284020856262316,
+            0.27916274185344503,
+            0.21024932818784564,
+            0.2542787739842166,
+            0.2656009332841889
+          ],
+          "mean_positive_class_probability": 0.6037468076104224
+        },
+        "4": {
+          "mean_accuracy": 0.6020682356745075,
+          "std_accuracy": 0.0528073597793664,
+          "fold_accuracies": [
+            0.6230769230769231,
+            0.5694444444444444,
+            0.6666666666666666,
+            0.5170068027210885,
+            0.6341463414634146
+          ],
+          "mean_probe_entropy_bits": 0.2689993585554502,
+          "std_probe_entropy_bits": 0.3397801632164247,
+          "median_probe_entropy_bits": 0.06781905960527959,
+          "fold_mean_entropies_bits": [
+            0.2765947848428194,
+            0.23836813765695267,
+            0.25092976503799924,
+            0.27398140600488213,
+            0.3120331055755487
+          ],
+          "mean_positive_class_probability": 0.621623016806451
+        },
+        "5": {
+          "mean_accuracy": 0.5948011405938235,
+          "std_accuracy": 0.03117262703428185,
+          "fold_accuracies": [
+            0.6076923076923076,
+            0.5555555555555556,
+            0.6458333333333334,
+            0.5714285714285714,
+            0.5934959349593496
+          ],
+          "mean_probe_entropy_bits": 0.2758967604879652,
+          "std_probe_entropy_bits": 0.341468256954424,
+          "median_probe_entropy_bits": 0.09315290779939736,
+          "fold_mean_entropies_bits": [
+            0.3367751064062178,
+            0.23587232897130614,
+            0.31236288235858395,
+            0.252617934745227,
+            0.24354065482812345
+          ],
+          "mean_positive_class_probability": 0.6177823617088671
+        },
+        "6": {
+          "mean_accuracy": 0.6009266420764678,
+          "std_accuracy": 0.029724984883213405,
+          "fold_accuracies": [
+            0.6384615384615384,
+            0.5625,
+            0.6319444444444444,
+            0.5782312925170068,
+            0.5934959349593496
+          ],
+          "mean_probe_entropy_bits": 0.260875886094259,
+          "std_probe_entropy_bits": 0.32555065362739916,
+          "median_probe_entropy_bits": 0.07803005956446654,
+          "fold_mean_entropies_bits": [
+            0.3165124270049396,
+            0.2194045326112988,
+            0.27737670431502237,
+            0.2669935470143691,
+            0.22399548450167098
+          ],
+          "mean_positive_class_probability": 0.60222413853336
+        },
+        "7": {
+          "mean_accuracy": 0.6088297639255827,
+          "std_accuracy": 0.03209284675585615,
+          "fold_accuracies": [
+            0.6538461538461539,
+            0.5763888888888888,
+            0.5972222222222222,
+            0.6394557823129252,
+            0.5772357723577236
+          ],
+          "mean_probe_entropy_bits": 0.2797655399738041,
+          "std_probe_entropy_bits": 0.33393414405811733,
+          "median_probe_entropy_bits": 0.10406930370976457,
+          "fold_mean_entropies_bits": [
+            0.31670636212967196,
+            0.28921489404799,
+            0.281806066474308,
+            0.256707141456994,
+            0.2548284253311452
+          ],
+          "mean_positive_class_probability": 0.6025973469699896
+        },
+        "8": {
+          "mean_accuracy": 0.6596478985590484,
+          "std_accuracy": 0.03581808043305869,
+          "fold_accuracies": [
+            0.6846153846153846,
+            0.5902777777777778,
+            0.6805555555555556,
+            0.6598639455782312,
+            0.6829268292682927
+          ],
+          "mean_probe_entropy_bits": 0.2658141694386504,
+          "std_probe_entropy_bits": 0.3341657807842415,
+          "median_probe_entropy_bits": 0.07404933714857669,
+          "fold_mean_entropies_bits": [
+            0.2960934951682723,
+            0.25425287855593803,
+            0.2621012159439604,
+            0.2703340109598924,
+            0.24629191042948378
+          ],
+          "mean_positive_class_probability": 0.6205382023968177
+        },
+        "9": {
+          "mean_accuracy": 0.6736605361344037,
+          "std_accuracy": 0.03145468881481989,
+          "fold_accuracies": [
+            0.6846153846153846,
+            0.6111111111111112,
+            0.6944444444444444,
+            0.6870748299319728,
+            0.6910569105691057
+          ],
+          "mean_probe_entropy_bits": 0.2476058722329788,
+          "std_probe_entropy_bits": 0.32357693426553963,
+          "median_probe_entropy_bits": 0.06954422413496282,
+          "fold_mean_entropies_bits": [
+            0.2501927098194652,
+            0.21278551393818262,
+            0.2693584629271924,
+            0.27556280071043987,
+            0.2267587272090267
+          ],
+          "mean_positive_class_probability": 0.6294268519526703
+        },
+        "10": {
+          "mean_accuracy": 0.7308949790047351,
+          "std_accuracy": 0.018779247171681133,
+          "fold_accuracies": [
+            0.7384615384615385,
+            0.7152777777777778,
+            0.7222222222222222,
+            0.7142857142857143,
+            0.7642276422764228
+          ],
+          "mean_probe_entropy_bits": 0.2401121370465806,
+          "std_probe_entropy_bits": 0.32911613125588923,
+          "median_probe_entropy_bits": 0.046505148791499404,
+          "fold_mean_entropies_bits": [
+            0.2656805201180512,
+            0.23829056542982188,
+            0.23415847186949287,
+            0.26638747922480494,
+            0.19078912077685478
+          ],
+          "mean_positive_class_probability": 0.6244436481473953
+        },
+        "11": {
+          "mean_accuracy": 0.726570401143572,
+          "std_accuracy": 0.031455985876826756,
+          "fold_accuracies": [
+            0.7076923076923077,
+            0.6944444444444444,
+            0.7847222222222222,
+            0.7142857142857143,
+            0.7317073170731707
+          ],
+          "mean_probe_entropy_bits": 0.21470037985814247,
+          "std_probe_entropy_bits": 0.3156814392419988,
+          "median_probe_entropy_bits": 0.030171213158537706,
+          "fold_mean_entropies_bits": [
+            0.2553328183275819,
+            0.18728887899394941,
+            0.2249278237536985,
+            0.23862203416704825,
+            0.16328415237072336
+          ],
+          "mean_positive_class_probability": 0.612772778499685
+        },
+        "12": {
+          "mean_accuracy": 0.7572942378952833,
+          "std_accuracy": 0.01237068789072339,
+          "fold_accuracies": [
+            0.7384615384615385,
+            0.75,
+            0.7569444444444444,
+            0.7687074829931972,
+            0.7723577235772358
+          ],
+          "mean_probe_entropy_bits": 0.23316659356595185,
+          "std_probe_entropy_bits": 0.3272138695101565,
+          "median_probe_entropy_bits": 0.03859268511980556,
+          "fold_mean_entropies_bits": [
+            0.2551549298232439,
+            0.2450623361392846,
+            0.22403918730129835,
+            0.25927767713639377,
+            0.17547998034031978
+          ],
+          "mean_positive_class_probability": 0.6179998759345694
+        },
+        "13": {
+          "mean_accuracy": 0.7730799436722782,
+          "std_accuracy": 0.013119931433343345,
+          "fold_accuracies": [
+            0.7538461538461538,
+            0.7638888888888888,
+            0.7916666666666666,
+            0.7755102040816326,
+            0.7804878048780488
+          ],
+          "mean_probe_entropy_bits": 0.20774209761021095,
+          "std_probe_entropy_bits": 0.3103296923445268,
+          "median_probe_entropy_bits": 0.03390975677560113,
+          "fold_mean_entropies_bits": [
+            0.23430252760126272,
+            0.2025470759374661,
+            0.21370686451484722,
+            0.23352931025696294,
+            0.14795006938824645
+          ],
+          "mean_positive_class_probability": 0.6136000766411743
+        },
+        "14": {
+          "mean_accuracy": 0.7898559686538781,
+          "std_accuracy": 0.019809539445769166,
+          "fold_accuracies": [
+            0.823076923076923,
+            0.7638888888888888,
+            0.7777777777777778,
+            0.7959183673469388,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.19806635371730003,
+          "std_probe_entropy_bits": 0.30590801746321955,
+          "median_probe_entropy_bits": 0.024147554518253105,
+          "fold_mean_entropies_bits": [
+            0.20901863329965692,
+            0.2214717316293377,
+            0.22039675230480382,
+            0.19312884858250481,
+            0.13884737073497902
+          ],
+          "mean_positive_class_probability": 0.6087933534426507
+        },
+        "15": {
+          "mean_accuracy": 0.8072902175254091,
+          "std_accuracy": 0.02410006375732639,
+          "fold_accuracies": [
+            0.8076923076923077,
+            0.7847222222222222,
+            0.8472222222222222,
+            0.8163265306122449,
+            0.7804878048780488
+          ],
+          "mean_probe_entropy_bits": 0.18993669762402565,
+          "std_probe_entropy_bits": 0.2879385407414699,
+          "median_probe_entropy_bits": 0.031451539017041986,
+          "fold_mean_entropies_bits": [
+            0.19142420857104003,
+            0.21823595988649586,
+            0.18024442101439794,
+            0.20267449718379657,
+            0.15135751963697258
+          ],
+          "mean_positive_class_probability": 0.6082032713828339
+        },
+        "16": {
+          "mean_accuracy": 0.801819695983459,
+          "std_accuracy": 0.021427601314225043,
+          "fold_accuracies": [
+            0.8076923076923077,
+            0.7847222222222222,
+            0.8402777777777778,
+            0.7959183673469388,
+            0.7804878048780488
+          ],
+          "mean_probe_entropy_bits": 0.1914757251761038,
+          "std_probe_entropy_bits": 0.30630860198001975,
+          "median_probe_entropy_bits": 0.019359971319536914,
+          "fold_mean_entropies_bits": [
+            0.1961657853416291,
+            0.18037844001416908,
+            0.19710174593448235,
+            0.19843868218597085,
+            0.1846025509658873
+          ],
+          "mean_positive_class_probability": 0.6093264969028016
+        },
+        "17": {
+          "mean_accuracy": 0.8066438632989156,
+          "std_accuracy": 0.018935584239122647,
+          "fold_accuracies": [
+            0.8307692307692308,
+            0.7847222222222222,
+            0.8263888888888888,
+            0.8027210884353742,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.19214716986175104,
+          "std_probe_entropy_bits": 0.29701202355774775,
+          "median_probe_entropy_bits": 0.018444959324274954,
+          "fold_mean_entropies_bits": [
+            0.1911309697826866,
+            0.16638881539842912,
+            0.20951416919355884,
+            0.22763601632263836,
+            0.16063172855659633
+          ],
+          "mean_positive_class_probability": 0.6163201440608047
+        },
+        "18": {
+          "mean_accuracy": 0.8051337464316557,
+          "std_accuracy": 0.016203689443839497,
+          "fold_accuracies": [
+            0.823076923076923,
+            0.7916666666666666,
+            0.8263888888888888,
+            0.7959183673469388,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.19081635501906094,
+          "std_probe_entropy_bits": 0.30244314771460945,
+          "median_probe_entropy_bits": 0.02106772448079413,
+          "fold_mean_entropies_bits": [
+            0.20389302245476337,
+            0.19680636676724186,
+            0.20862611705381032,
+            0.20714537356223228,
+            0.12961716870012227
+          ],
+          "mean_positive_class_probability": 0.6049658182557416
+        },
+        "19": {
+          "mean_accuracy": 0.798361890722518,
+          "std_accuracy": 0.017000541836803093,
+          "fold_accuracies": [
+            0.8153846153846154,
+            0.7847222222222222,
+            0.8194444444444444,
+            0.7755102040816326,
+            0.7967479674796748
+          ],
+          "mean_probe_entropy_bits": 0.18706207185324758,
+          "std_probe_entropy_bits": 0.2871890896230897,
+          "median_probe_entropy_bits": 0.021870153584613555,
+          "fold_mean_entropies_bits": [
+            0.20926912159182093,
+            0.18849507232211204,
+            0.20802419630626737,
+            0.1900776495272913,
+            0.13376854036665975
+          ],
+          "mean_positive_class_probability": 0.602872222528209
+        },
+        "20": {
+          "mean_accuracy": 0.7875079131089585,
+          "std_accuracy": 0.018076085877203954,
+          "fold_accuracies": [
+            0.7923076923076923,
+            0.7847222222222222,
+            0.8194444444444444,
+            0.7687074829931972,
+            0.7723577235772358
+          ],
+          "mean_probe_entropy_bits": 0.1936858955554489,
+          "std_probe_entropy_bits": 0.2951748822045859,
+          "median_probe_entropy_bits": 0.02313090666601613,
+          "fold_mean_entropies_bits": [
+            0.21549832852974968,
+            0.18513135114374193,
+            0.21292885253617053,
+            0.19834629518815663,
+            0.15254909520906484
+          ],
+          "mean_positive_class_probability": 0.6057553604153287
+        },
+        "21": {
+          "mean_accuracy": 0.7947593521461117,
+          "std_accuracy": 0.01937941512760539,
+          "fold_accuracies": [
+            0.8153846153846154,
+            0.7708333333333334,
+            0.8125,
+            0.8027210884353742,
+            0.7723577235772358
+          ],
+          "mean_probe_entropy_bits": 0.19842010574001634,
+          "std_probe_entropy_bits": 0.29507820461266765,
+          "median_probe_entropy_bits": 0.026150449478073483,
+          "fold_mean_entropies_bits": [
+            0.2166276660067165,
+            0.17470652343551368,
+            0.21901928377937388,
+            0.21868551692593716,
+            0.15860283692033758
+          ],
+          "mean_positive_class_probability": 0.6086131742100526
+        },
+        "22": {
+          "mean_accuracy": 0.788139589794642,
+          "std_accuracy": 0.017776237744649502,
+          "fold_accuracies": [
+            0.8076923076923077,
+            0.7569444444444444,
+            0.7847222222222222,
+            0.8027210884353742,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.19736421523209302,
+          "std_probe_entropy_bits": 0.3003308316996089,
+          "median_probe_entropy_bits": 0.022848140076725098,
+          "fold_mean_entropies_bits": [
+            0.23305334494423322,
+            0.2145434402678343,
+            0.1875605011372995,
+            0.18953585872574014,
+            0.16036509302363092
+          ],
+          "mean_positive_class_probability": 0.6187049270902675
+        },
+        "23": {
+          "mean_accuracy": 0.7792079658630181,
+          "std_accuracy": 0.017330810475770755,
+          "fold_accuracies": [
+            0.7769230769230769,
+            0.75,
+            0.7777777777777778,
+            0.8027210884353742,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.20790343141043427,
+          "std_probe_entropy_bits": 0.3177432850323981,
+          "median_probe_entropy_bits": 0.025072013628273628,
+          "fold_mean_entropies_bits": [
+            0.2493270819458975,
+            0.20549962261072613,
+            0.21005956665873915,
+            0.19346505687649201,
+            0.18166791497369733
+          ],
+          "mean_positive_class_probability": 0.6137439390717273
+        },
+        "24": {
+          "mean_accuracy": 0.7650199316749839,
+          "std_accuracy": 0.030099357735652928,
+          "fold_accuracies": [
+            0.7615384615384615,
+            0.7152777777777778,
+            0.7569444444444444,
+            0.8027210884353742,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.20966146585926604,
+          "std_probe_entropy_bits": 0.3154774873924282,
+          "median_probe_entropy_bits": 0.025189320397939412,
+          "fold_mean_entropies_bits": [
+            0.25083617868394315,
+            0.20053919555016236,
+            0.2138713154185362,
+            0.1897517576717916,
+            0.19568913272371125
+          ],
+          "mean_positive_class_probability": 0.6125273831341018
+        },
+        "25": {
+          "mean_accuracy": 0.7701887872096931,
+          "std_accuracy": 0.025789676850773526,
+          "fold_accuracies": [
+            0.7538461538461538,
+            0.7291666666666666,
+            0.7847222222222222,
+            0.8027210884353742,
+            0.7804878048780488
+          ],
+          "mean_probe_entropy_bits": 0.21396728264323064,
+          "std_probe_entropy_bits": 0.3207794157775924,
+          "median_probe_entropy_bits": 0.028436100350407188,
+          "fold_mean_entropies_bits": [
+            0.2447064107807006,
+            0.21430885541762454,
+            0.20854670541655684,
+            0.20658154144332092,
+            0.19625178621757156
+          ],
+          "mean_positive_class_probability": 0.6153411004018361
+        },
+        "26": {
+          "mean_accuracy": 0.7690653703632797,
+          "std_accuracy": 0.024506413335061795,
+          "fold_accuracies": [
+            0.7538461538461538,
+            0.7291666666666666,
+            0.7777777777777778,
+            0.7959183673469388,
+            0.7886178861788617
+          ],
+          "mean_probe_entropy_bits": 0.19800214099879587,
+          "std_probe_entropy_bits": 0.30895579803851764,
+          "median_probe_entropy_bits": 0.022838478281188426,
+          "fold_mean_entropies_bits": [
+            0.23405271234785938,
+            0.22303181941500286,
+            0.162970628398044,
+            0.1811782169844981,
+            0.1917160164239825
+          ],
+          "mean_positive_class_probability": 0.6192127487795467
+        },
+        "27": {
+          "mean_accuracy": 0.7711089520235862,
+          "std_accuracy": 0.03498511747935237,
+          "fold_accuracies": [
+            0.7538461538461538,
+            0.7222222222222222,
+            0.7569444444444444,
+            0.8095238095238095,
+            0.8130081300813008
+          ],
+          "mean_probe_entropy_bits": 0.1950741231449013,
+          "std_probe_entropy_bits": 0.29967247007778863,
+          "median_probe_entropy_bits": 0.023430814803795483,
+          "fold_mean_entropies_bits": [
+            0.22158031872206313,
+            0.21332609678631226,
+            0.16602076383380482,
+            0.18361218145594788,
+            0.1934033876951439
+          ],
+          "mean_positive_class_probability": 0.6178074646889223
+        },
+        "28": {
+          "mean_accuracy": 0.7654296477815642,
+          "std_accuracy": 0.027729602557311096,
+          "fold_accuracies": [
+            0.7538461538461538,
+            0.7222222222222222,
+            0.7638888888888888,
+            0.782312925170068,
+            0.8048780487804879
+          ],
+          "mean_probe_entropy_bits": 0.21358244160143325,
+          "std_probe_entropy_bits": 0.31753525559317775,
+          "median_probe_entropy_bits": 0.025974313503699976,
+          "fold_mean_entropies_bits": [
+            0.2563009207707034,
+            0.24032240234945743,
+            0.19769462838962587,
+            0.18991038217523076,
+            0.18401887410900591
+          ],
+          "mean_positive_class_probability": 0.6161933736748224
+        },
+        "29": {
+          "mean_accuracy": 0.7629226706317299,
+          "std_accuracy": 0.034236868559648644,
+          "fold_accuracies": [
+            0.7692307692307693,
+            0.7083333333333334,
+            0.7430555555555556,
+            0.7891156462585034,
+            0.8048780487804879
+          ],
+          "mean_probe_entropy_bits": 0.21430091555547012,
+          "std_probe_entropy_bits": 0.3157316488960457,
+          "median_probe_entropy_bits": 0.025130940272699395,
+          "fold_mean_entropies_bits": [
+            0.2376836061251227,
+            0.2472807262998112,
+            0.192547797057496,
+            0.1807434385506101,
+            0.21654933557321585
+          ],
+          "mean_positive_class_probability": 0.6166465555163673
+        },
+        "30": {
+          "mean_accuracy": 0.7544088992695264,
+          "std_accuracy": 0.03436812883578273,
+          "fold_accuracies": [
+            0.7692307692307693,
+            0.7013888888888888,
+            0.7291666666666666,
+            0.7755102040816326,
+            0.7967479674796748
+          ],
+          "mean_probe_entropy_bits": 0.19870721334001246,
+          "std_probe_entropy_bits": 0.29913588377590755,
+          "median_probe_entropy_bits": 0.025511529402017674,
+          "fold_mean_entropies_bits": [
+            0.2126384436816266,
+            0.23611684452877718,
+            0.15659881465055994,
+            0.17469110202371715,
+            0.21818632666671664
+          ],
+          "mean_positive_class_probability": 0.621597833827692
+        },
+        "31": {
+          "mean_accuracy": 0.7590551492642085,
+          "std_accuracy": 0.04218661652886061,
+          "fold_accuracies": [
+            0.7846153846153846,
+            0.7013888888888888,
+            0.7152777777777778,
+            0.7891156462585034,
+            0.8048780487804879
+          ],
+          "mean_probe_entropy_bits": 0.1982438424299634,
+          "std_probe_entropy_bits": 0.29651814140568267,
+          "median_probe_entropy_bits": 0.029920085075439126,
+          "fold_mean_entropies_bits": [
+            0.20581908341250635,
+            0.24631468115756824,
+            0.15544197829663625,
+            0.16552450878113278,
+            0.22317252842241472
+          ],
+          "mean_positive_class_probability": 0.6232010147441498
+        },
+        "32": {
+          "mean_accuracy": 0.7440061603127806,
+          "std_accuracy": 0.04235962116805367,
+          "fold_accuracies": [
+            0.7615384615384615,
+            0.6805555555555556,
+            0.7083333333333334,
+            0.7891156462585034,
+            0.7804878048780488
+          ],
+          "mean_probe_entropy_bits": 0.2019676549954148,
+          "std_probe_entropy_bits": 0.30004670083999924,
+          "median_probe_entropy_bits": 0.0344456359377693,
+          "fold_mean_entropies_bits": [
+            0.20022669120061992,
+            0.24119795768851324,
+            0.17968776826667215,
+            0.15329773296993068,
+            0.24212980078567717
+          ],
+          "mean_positive_class_probability": 0.6251262254593621
+        }
+      },
+      "llada": {
+        "1": {
+          "mean_accuracy": 0.5647061726504234,
+          "std_accuracy": 0.028755383804277664,
+          "fold_accuracies": [
+            0.5692307692307692,
+            0.5138888888888888,
+            0.5972222222222222,
+            0.5578231292517006,
+            0.5853658536585366
+          ],
+          "mean_probe_entropy_bits": 0.2180452106215636,
+          "std_probe_entropy_bits": 0.3221189001740343,
+          "median_probe_entropy_bits": 0.029623291541592642,
+          "fold_mean_entropies_bits": [
+            0.2194782221381366,
+            0.17183934042748078,
+            0.2322105249215227,
+            0.23649484075107088,
+            0.23199198234970816
+          ],
+          "mean_positive_class_probability": 0.6121734309463068
+        },
+        "2": {
+          "mean_accuracy": 0.5697704772966097,
+          "std_accuracy": 0.04992101826162955,
+          "fold_accuracies": [
+            0.6,
+            0.4930555555555556,
+            0.5625,
+            0.5510204081632653,
+            0.6422764227642277
+          ],
+          "mean_probe_entropy_bits": 0.21779826274261405,
+          "std_probe_entropy_bits": 0.3214755806797422,
+          "median_probe_entropy_bits": 0.024930634080814924,
+          "fold_mean_entropies_bits": [
+            0.26366078557570477,
+            0.17987983879416183,
+            0.21756290086694724,
+            0.21218268866415807,
+            0.22070482030281208
+          ],
+          "mean_positive_class_probability": 0.6131618025944863
+        },
+        "3": {
+          "mean_accuracy": 0.5941884596239998,
+          "std_accuracy": 0.028969980524626935,
+          "fold_accuracies": [
+            0.6461538461538462,
+            0.5694444444444444,
+            0.5972222222222222,
+            0.564625850340136,
+            0.5934959349593496
+          ],
+          "mean_probe_entropy_bits": 0.21604967527172217,
+          "std_probe_entropy_bits": 0.31814142136581863,
+          "median_probe_entropy_bits": 0.028887534174631087,
+          "fold_mean_entropies_bits": [
+            0.21666718983899522,
+            0.19663058937086214,
+            0.25567745316664264,
+            0.2011055255280552,
+            0.209598142519111
+          ],
+          "mean_positive_class_probability": 0.608013657476378
+        },
+        "4": {
+          "mean_accuracy": 0.6282802282889391,
+          "std_accuracy": 0.03818142972506008,
+          "fold_accuracies": [
+            0.6692307692307692,
+            0.5625,
+            0.6388888888888888,
+            0.6122448979591837,
+            0.6585365853658537
+          ],
+          "mean_probe_entropy_bits": 0.2223000041649789,
+          "std_probe_entropy_bits": 0.31676506958967465,
+          "median_probe_entropy_bits": 0.043499365117102895,
+          "fold_mean_entropies_bits": [
+            0.17692187822786995,
+            0.177114887274428,
+            0.2564930301794547,
+            0.26403189405386907,
+            0.2332547167203621
+          ],
+          "mean_positive_class_probability": 0.6129477642900916
+        },
+        "5": {
+          "mean_accuracy": 0.6085571339229877,
+          "std_accuracy": 0.04026332971555647,
+          "fold_accuracies": [
+            0.6461538461538462,
+            0.5555555555555556,
+            0.6111111111111112,
+            0.5714285714285714,
+            0.6585365853658537
+          ],
+          "mean_probe_entropy_bits": 0.230100113855222,
+          "std_probe_entropy_bits": 0.3112455527316986,
+          "median_probe_entropy_bits": 0.06157995346308981,
+          "fold_mean_entropies_bits": [
+            0.231158861514418,
+            0.19709605721577061,
+            0.19664138403794937,
+            0.26392171455166485,
+            0.26637026630803257
+          ],
+          "mean_positive_class_probability": 0.6127303813601223
+        },
+        "6": {
+          "mean_accuracy": 0.615447409733124,
+          "std_accuracy": 0.04192378111484711,
+          "fold_accuracies": [
+            0.6384615384615384,
+            0.5416666666666666,
+            0.625,
+            0.6054421768707483,
+            0.6666666666666666
+          ],
+          "mean_probe_entropy_bits": 0.24340692254432275,
+          "std_probe_entropy_bits": 0.31780033427267806,
+          "median_probe_entropy_bits": 0.07210827427615799,
+          "fold_mean_entropies_bits": [
+            0.261197652367339,
+            0.2549147167496517,
+            0.22187363741608251,
+            0.24210404666390611,
+            0.23789796783154518
+          ],
+          "mean_positive_class_probability": 0.6382374007882154
+        },
+        "7": {
+          "mean_accuracy": 0.6163283706227957,
+          "std_accuracy": 0.03330598903679587,
+          "fold_accuracies": [
+            0.6230769230769231,
+            0.5625,
+            0.6388888888888888,
+            0.5986394557823129,
+            0.6585365853658537
+          ],
+          "mean_probe_entropy_bits": 0.2510700568380639,
+          "std_probe_entropy_bits": 0.31723702922230346,
+          "median_probe_entropy_bits": 0.07838187771375157,
+          "fold_mean_entropies_bits": [
+            0.2764601660123783,
+            0.23335534318778978,
+            0.19436234286864018,
+            0.26898422310975006,
+            0.28995406450178546
+          ],
+          "mean_positive_class_probability": 0.6241698738428088
+        },
+        "8": {
+          "mean_accuracy": 0.6110974971602149,
+          "std_accuracy": 0.03509608749190705,
+          "fold_accuracies": [
+            0.6153846153846154,
+            0.5694444444444444,
+            0.5972222222222222,
+            0.5986394557823129,
+            0.6747967479674797
+          ],
+          "mean_probe_entropy_bits": 0.2697563894885021,
+          "std_probe_entropy_bits": 0.3343670802560378,
+          "median_probe_entropy_bits": 0.08370628212018816,
+          "fold_mean_entropies_bits": [
+            0.2692606227022858,
+            0.2195980665459442,
+            0.2641678192170993,
+            0.27926787395554264,
+            0.3241776422394248
+          ],
+          "mean_positive_class_probability": 0.6200116775900271
+        },
+        "9": {
+          "mean_accuracy": 0.600774261549523,
+          "std_accuracy": 0.02983735734846136,
+          "fold_accuracies": [
+            0.6076923076923076,
+            0.5555555555555556,
+            0.6458333333333334,
+            0.5850340136054422,
+            0.6097560975609756
+          ],
+          "mean_probe_entropy_bits": 0.2924751052042548,
+          "std_probe_entropy_bits": 0.347338562855235,
+          "median_probe_entropy_bits": 0.10577215664202308,
+          "fold_mean_entropies_bits": [
+            0.3069674619247042,
+            0.26301450848717833,
+            0.27050389663331054,
+            0.30284124614110025,
+            0.32498202284734673
+          ],
+          "mean_positive_class_probability": 0.6077811129004433
+        },
+        "10": {
+          "mean_accuracy": 0.6082296439526405,
+          "std_accuracy": 0.0369048250080205,
+          "fold_accuracies": [
+            0.6307692307692307,
+            0.5555555555555556,
+            0.6180555555555556,
+            0.5782312925170068,
+            0.6585365853658537
+          ],
+          "mean_probe_entropy_bits": 0.30144100188162853,
+          "std_probe_entropy_bits": 0.3445336093062679,
+          "median_probe_entropy_bits": 0.12508567850563504,
+          "fold_mean_entropies_bits": [
+            0.2689129066326036,
+            0.2834489067511362,
+            0.2675094429247857,
+            0.34614988026235,
+            0.3431763957758031
+          ],
+          "mean_positive_class_probability": 0.623598301455749
+        },
+        "11": {
+          "mean_accuracy": 0.6167067320987182,
+          "std_accuracy": 0.02711435941114633,
+          "fold_accuracies": [
+            0.6076923076923076,
+            0.5833333333333334,
+            0.6597222222222222,
+            0.5986394557823129,
+            0.6341463414634146
+          ],
+          "mean_probe_entropy_bits": 0.3050037814452873,
+          "std_probe_entropy_bits": 0.350240664740122,
+          "median_probe_entropy_bits": 0.12809962671880595,
+          "fold_mean_entropies_bits": [
+            0.29153625393706695,
+            0.2849677663008808,
+            0.2578597612207315,
+            0.3571239588179867,
+            0.3355975830340061
+          ],
+          "mean_positive_class_probability": 0.6162992657640486
+        },
+        "12": {
+          "mean_accuracy": 0.6076032958524247,
+          "std_accuracy": 0.042765894246755407,
+          "fold_accuracies": [
+            0.6307692307692307,
+            0.5555555555555556,
+            0.6597222222222222,
+            0.5578231292517006,
+            0.6341463414634146
+          ],
+          "mean_probe_entropy_bits": 0.2899205335268496,
+          "std_probe_entropy_bits": 0.3391002229702821,
+          "median_probe_entropy_bits": 0.11327053753972005,
+          "fold_mean_entropies_bits": [
+            0.2626975892262361,
+            0.29659196929930454,
+            0.22757996616313525,
+            0.3492021523826841,
+            0.31301760455460104
+          ],
+          "mean_positive_class_probability": 0.6265813536037843
+        },
+        "13": {
+          "mean_accuracy": 0.6066775152837871,
+          "std_accuracy": 0.04439342956874115,
+          "fold_accuracies": [
+            0.5846153846153846,
+            0.5694444444444444,
+            0.6805555555555556,
+            0.564625850340136,
+            0.6341463414634146
+          ],
+          "mean_probe_entropy_bits": 0.2801658523337555,
+          "std_probe_entropy_bits": 0.3317520369643981,
+          "median_probe_entropy_bits": 0.1121197399416213,
+          "fold_mean_entropies_bits": [
+            0.29325824765229347,
+            0.2696243239465542,
+            0.20076999898828943,
+            0.3602430175608619,
+            0.2759189278598492
+          ],
+          "mean_positive_class_probability": 0.6227388498818222
+        },
+        "14": {
+          "mean_accuracy": 0.6250879801576665,
+          "std_accuracy": 0.06590808117067551,
+          "fold_accuracies": [
+            0.7230769230769231,
+            0.5555555555555556,
+            0.6805555555555556,
+            0.564625850340136,
+            0.6016260162601627
+          ],
+          "mean_probe_entropy_bits": 0.2832583353109836,
+          "std_probe_entropy_bits": 0.3394429942764982,
+          "median_probe_entropy_bits": 0.10320297750717214,
+          "fold_mean_entropies_bits": [
+            0.3228842731828104,
+            0.27248787662458845,
+            0.22274192803994103,
+            0.31706165257791297,
+            0.28443597056541386
+          ],
+          "mean_positive_class_probability": 0.6319373516280535
+        },
+        "15": {
+          "mean_accuracy": 0.6251671112472507,
+          "std_accuracy": 0.04707075274526833,
+          "fold_accuracies": [
+            0.6461538461538462,
+            0.5555555555555556,
+            0.6805555555555556,
+            0.5850340136054422,
+            0.6585365853658537
+          ],
+          "mean_probe_entropy_bits": 0.29651977762079595,
+          "std_probe_entropy_bits": 0.3423399435522328,
+          "median_probe_entropy_bits": 0.12065345835489696,
+          "fold_mean_entropies_bits": [
+            0.29490433389579146,
+            0.32142836311004935,
+            0.25692316848454827,
+            0.3327328123187963,
+            0.272143899481054
+          ],
+          "mean_positive_class_probability": 0.6318036936213991
+        },
+        "16": {
+          "mean_accuracy": 0.6261072821874216,
+          "std_accuracy": 0.038838335047547724,
+          "fold_accuracies": [
+            0.6230769230769231,
+            0.5833333333333334,
+            0.6805555555555556,
+            0.5850340136054422,
+            0.6585365853658537
+          ],
+          "mean_probe_entropy_bits": 0.27728147098925543,
+          "std_probe_entropy_bits": 0.33413865436181994,
+          "median_probe_entropy_bits": 0.10309305595894337,
+          "fold_mean_entropies_bits": [
+            0.2516310296091338,
+            0.30223522658037044,
+            0.23920382881030156,
+            0.368534347157318,
+            0.21069792831738096
+          ],
+          "mean_positive_class_probability": 0.6173108324073019
+        },
+        "17": {
+          "mean_accuracy": 0.6514534807043517,
+          "std_accuracy": 0.03436894273298486,
+          "fold_accuracies": [
+            0.6615384615384615,
+            0.5972222222222222,
+            0.6666666666666666,
+            0.6326530612244898,
+            0.6991869918699187
+          ],
+          "mean_probe_entropy_bits": 0.2898515007288321,
+          "std_probe_entropy_bits": 0.3410605342127569,
+          "median_probe_entropy_bits": 0.10111951793750214,
+          "fold_mean_entropies_bits": [
+            0.27808962629006984,
+            0.31052776245703523,
+            0.23593329523087064,
+            0.3514629694212527,
+            0.26756692903857565
+          ],
+          "mean_positive_class_probability": 0.628178545525062
+        },
+        "18": {
+          "mean_accuracy": 0.6608849812595456,
+          "std_accuracy": 0.040924722896539416,
+          "fold_accuracies": [
+            0.7153846153846154,
+            0.625,
+            0.7013888888888888,
+            0.6122448979591837,
+            0.6504065040650406
+          ],
+          "mean_probe_entropy_bits": 0.2673359897525097,
+          "std_probe_entropy_bits": 0.32687184098775224,
+          "median_probe_entropy_bits": 0.0930730596119067,
+          "fold_mean_entropies_bits": [
+            0.22726924289750092,
+            0.2594775619077346,
+            0.23642652325739125,
+            0.355065507771942,
+            0.25022228834795074
+          ],
+          "mean_positive_class_probability": 0.625423670357464
+        },
+        "19": {
+          "mean_accuracy": 0.7073378344458485,
+          "std_accuracy": 0.04116623087490431,
+          "fold_accuracies": [
+            0.7615384615384615,
+            0.6458333333333334,
+            0.7430555555555556,
+            0.6870748299319728,
+            0.6991869918699187
+          ],
+          "mean_probe_entropy_bits": 0.27741000420278467,
+          "std_probe_entropy_bits": 0.3327931578972517,
+          "median_probe_entropy_bits": 0.09229905000389182,
+          "fold_mean_entropies_bits": [
+            0.24233034605725182,
+            0.29549651740790456,
+            0.248847921264052,
+            0.33826714624091625,
+            0.25401844095850956
+          ],
+          "mean_positive_class_probability": 0.6152974546753813
+        },
+        "20": {
+          "mean_accuracy": 0.7545562383802802,
+          "std_accuracy": 0.05674341383630772,
+          "fold_accuracies": [
+            0.8153846153846154,
+            0.6597222222222222,
+            0.8055555555555556,
+            0.7278911564625851,
+            0.7642276422764228
+          ],
+          "mean_probe_entropy_bits": 0.25122482904733023,
+          "std_probe_entropy_bits": 0.318906159764319,
+          "median_probe_entropy_bits": 0.07819526678382904,
+          "fold_mean_entropies_bits": [
+            0.217897721509736,
+            0.2888275105626661,
+            0.20231223122779252,
+            0.3019235966822394,
+            0.23909826876570972
+          ],
+          "mean_positive_class_probability": 0.6094463942398362
+        },
+        "21": {
+          "mean_accuracy": 0.7846228616524783,
+          "std_accuracy": 0.037622885217119824,
+          "fold_accuracies": [
+            0.8538461538461538,
+            0.7569444444444444,
+            0.7916666666666666,
+            0.7482993197278912,
+            0.7723577235772358
+          ],
+          "mean_probe_entropy_bits": 0.23328093289023247,
+          "std_probe_entropy_bits": 0.3198995775976895,
+          "median_probe_entropy_bits": 0.05964875328396897,
+          "fold_mean_entropies_bits": [
+            0.19884474895178122,
+            0.23404507895762686,
+            0.20603610718759224,
+            0.29762568906891196,
+            0.22377884037972987
+          ],
+          "mean_positive_class_probability": 0.6067016310285226
+        },
+        "22": {
+          "mean_accuracy": 0.8037788179687135,
+          "std_accuracy": 0.045451752561465955,
+          "fold_accuracies": [
+            0.8692307692307693,
+            0.7708333333333334,
+            0.8472222222222222,
+            0.7755102040816326,
+            0.7560975609756098
+          ],
+          "mean_probe_entropy_bits": 0.23079468800612285,
+          "std_probe_entropy_bits": 0.32632539302567004,
+          "median_probe_entropy_bits": 0.047977505365324795,
+          "fold_mean_entropies_bits": [
+            0.1884578611890821,
+            0.248420089650401,
+            0.20010730007774324,
+            0.30103657673985795,
+            0.20688538611398344
+          ],
+          "mean_positive_class_probability": 0.6142238582803472
+        },
+        "23": {
+          "mean_accuracy": 0.8347579588433247,
+          "std_accuracy": 0.04092916378634968,
+          "fold_accuracies": [
+            0.8846153846153846,
+            0.8263888888888888,
+            0.8472222222222222,
+            0.7619047619047619,
+            0.8536585365853658
+          ],
+          "mean_probe_entropy_bits": 0.18670889202398927,
+          "std_probe_entropy_bits": 0.2979153362101813,
+          "median_probe_entropy_bits": 0.019710310374483724,
+          "fold_mean_entropies_bits": [
+            0.17234261595606964,
+            0.17110402497293625,
+            0.15322200753108328,
+            0.24761926171212253,
+            0.18657071126792485
+          ],
+          "mean_positive_class_probability": 0.6190547497890566
+        },
+        "24": {
+          "mean_accuracy": 0.8474128600783652,
+          "std_accuracy": 0.043091031552873305,
+          "fold_accuracies": [
+            0.9076923076923077,
+            0.8402777777777778,
+            0.8680555555555556,
+            0.7755102040816326,
+            0.8455284552845529
+          ],
+          "mean_probe_entropy_bits": 0.18444395081677467,
+          "std_probe_entropy_bits": 0.28579361928133246,
+          "median_probe_entropy_bits": 0.019916140706622617,
+          "fold_mean_entropies_bits": [
+            0.14859248752343043,
+            0.18328314482664007,
+            0.1570333099686565,
+            0.23414832648053233,
+            0.19638244959946397
+          ],
+          "mean_positive_class_probability": 0.6129998023919313
+        },
+        "25": {
+          "mean_accuracy": 0.8592745572275188,
+          "std_accuracy": 0.0506968861757327,
+          "fold_accuracies": [
+            0.9230769230769231,
+            0.8263888888888888,
+            0.8472222222222222,
+            0.7891156462585034,
+            0.9105691056910569
+          ],
+          "mean_probe_entropy_bits": 0.16606516343325714,
+          "std_probe_entropy_bits": 0.28557026669250624,
+          "median_probe_entropy_bits": 0.009837048575509877,
+          "fold_mean_entropies_bits": [
+            0.13152739746917555,
+            0.14402826707649932,
+            0.14363545745309192,
+            0.22904574840904668,
+            0.17935747498127716
+          ],
+          "mean_positive_class_probability": 0.6203020860259717
+        },
+        "26": {
+          "mean_accuracy": 0.8561100794288947,
+          "std_accuracy": 0.04795047751961832,
+          "fold_accuracies": [
+            0.9153846153846154,
+            0.8194444444444444,
+            0.8541666666666666,
+            0.7891156462585034,
+            0.9024390243902439
+          ],
+          "mean_probe_entropy_bits": 0.15331676831215413,
+          "std_probe_entropy_bits": 0.28210036825331136,
+          "median_probe_entropy_bits": 0.009813291794888988,
+          "fold_mean_entropies_bits": [
+            0.12268633053540755,
+            0.15474038953078587,
+            0.11330612924718318,
+            0.1894240589810353,
+            0.18771283134080735
+          ],
+          "mean_positive_class_probability": 0.6210886452245663
+        },
+        "27": {
+          "mean_accuracy": 0.8484205796139594,
+          "std_accuracy": 0.0445144562714114,
+          "fold_accuracies": [
+            0.9,
+            0.8125,
+            0.8611111111111112,
+            0.782312925170068,
+            0.8861788617886179
+          ],
+          "mean_probe_entropy_bits": 0.141827753826371,
+          "std_probe_entropy_bits": 0.27032309699352586,
+          "median_probe_entropy_bits": 0.007685676669441137,
+          "fold_mean_entropies_bits": [
+            0.09762691113829713,
+            0.13668008220189734,
+            0.1273284341506755,
+            0.1907330656971753,
+            0.15309763554723066
+          ],
+          "mean_positive_class_probability": 0.6192318691578875
+        },
+        "28": {
+          "mean_accuracy": 0.856730896861559,
+          "std_accuracy": 0.04081739260047495,
+          "fold_accuracies": [
+            0.9153846153846154,
+            0.8194444444444444,
+            0.8680555555555556,
+            0.8027210884353742,
+            0.8780487804878049
+          ],
+          "mean_probe_entropy_bits": 0.13329613334698695,
+          "std_probe_entropy_bits": 0.25525099075332564,
+          "median_probe_entropy_bits": 0.006253876677744233,
+          "fold_mean_entropies_bits": [
+            0.08767702404271688,
+            0.1020938793051706,
+            0.11532805571227847,
+            0.19071797029274062,
+            0.17045062066364464
+          ],
+          "mean_positive_class_probability": 0.6131182789072741
+        },
+        "29": {
+          "mean_accuracy": 0.8563778700973824,
+          "std_accuracy": 0.04229750361103197,
+          "fold_accuracies": [
+            0.9230769230769231,
+            0.8125,
+            0.875,
+            0.8095238095238095,
+            0.8617886178861789
+          ],
+          "mean_probe_entropy_bits": 0.13148355841876094,
+          "std_probe_entropy_bits": 0.25499099533990904,
+          "median_probe_entropy_bits": 0.006348708148802737,
+          "fold_mean_entropies_bits": [
+            0.08832495467283376,
+            0.11101938931377581,
+            0.11193774507902443,
+            0.18444652421150753,
+            0.1606420949023113
+          ],
+          "mean_positive_class_probability": 0.616892725070032
+        },
+        "30": {
+          "mean_accuracy": 0.8681720186511128,
+          "std_accuracy": 0.04050127949818418,
+          "fold_accuracies": [
+            0.9230769230769231,
+            0.8263888888888888,
+            0.8888888888888888,
+            0.8163265306122449,
+            0.8861788617886179
+          ],
+          "mean_probe_entropy_bits": 0.13080812717539786,
+          "std_probe_entropy_bits": 0.2516427884095966,
+          "median_probe_entropy_bits": 0.005402262646041354,
+          "fold_mean_entropies_bits": [
+            0.08949335905137744,
+            0.10677663873156164,
+            0.09891547186236299,
+            0.18094131962591922,
+            0.18003103178422264
+          ],
+          "mean_positive_class_probability": 0.6120281991044132
+        },
+        "31": {
+          "mean_accuracy": 0.871302823193067,
+          "std_accuracy": 0.0400028426675774,
+          "fold_accuracies": [
+            0.9153846153846154,
+            0.8402777777777778,
+            0.8888888888888888,
+            0.8095238095238095,
+            0.9024390243902439
+          ],
+          "mean_probe_entropy_bits": 0.1363811873417609,
+          "std_probe_entropy_bits": 0.2581023403684032,
+          "median_probe_entropy_bits": 0.007927744807843647,
+          "fold_mean_entropies_bits": [
+            0.09127696964747327,
+            0.11037810233693271,
+            0.11406374536291292,
+            0.1814185660976659,
+            0.1867975248115881
+          ],
+          "mean_positive_class_probability": 0.6185748221847326
+        },
+        "32": {
+          "mean_accuracy": 0.8775976162822854,
+          "std_accuracy": 0.026959093457217833,
+          "fold_accuracies": [
+            0.9,
+            0.8541666666666666,
+            0.9027777777777778,
+            0.8367346938775511,
+            0.8943089430894309
+          ],
+          "mean_probe_entropy_bits": 0.13897172851918055,
+          "std_probe_entropy_bits": 0.267385809872216,
+          "median_probe_entropy_bits": 0.005825831375548855,
+          "fold_mean_entropies_bits": [
+            0.12240995634079171,
+            0.10346341691785416,
+            0.12139745093182906,
+            0.1877475415199088,
+            0.16032846604156367
+          ],
+          "mean_positive_class_probability": 0.619542879394868
+        }
+      }
+    },
+    "fully_disambiguated": {
+      "llama": {
+        "1": {
+          "mean_accuracy": 0.6254171022961017,
+          "std_accuracy": 0.02748167161081439,
+          "fold_accuracies": [
+            0.6666666666666666,
+            0.6,
+            0.6131386861313869,
+            0.5984251968503937,
+            0.648854961832061
+          ],
+          "mean_probe_entropy_bits": 0.28561736542306604,
+          "std_probe_entropy_bits": 0.34021857901245395,
+          "median_probe_entropy_bits": 0.10663002063292522,
+          "fold_mean_entropies_bits": [
+            0.2965136548147733,
+            0.3032008846155136,
+            0.29841266706598385,
+            0.3062658183895537,
+            0.22570808595963593
+          ],
+          "mean_positive_class_probability": 0.6307179986717454
+        },
+        "2": {
+          "mean_accuracy": 0.5624401408679262,
+          "std_accuracy": 0.02341581927296422,
+          "fold_accuracies": [
+            0.5641025641025641,
+            0.6,
+            0.5401459854014599,
+            0.5354330708661418,
+            0.5725190839694656
+          ],
+          "mean_probe_entropy_bits": 0.2550666461974505,
+          "std_probe_entropy_bits": 0.31972733562652045,
+          "median_probe_entropy_bits": 0.08164179176438924,
+          "fold_mean_entropies_bits": [
+            0.2622098123847656,
+            0.22118053296130757,
+            0.27202190073179633,
+            0.30198357519166075,
+            0.21780476724425904
+          ],
+          "mean_positive_class_probability": 0.619282774662281
+        },
+        "3": {
+          "mean_accuracy": 0.5535220928446345,
+          "std_accuracy": 0.026545168680463745,
+          "fold_accuracies": [
+            0.5641025641025641,
+            0.592,
+            0.5109489051094891,
+            0.5433070866141733,
+            0.5572519083969466
+          ],
+          "mean_probe_entropy_bits": 0.28720700121986503,
+          "std_probe_entropy_bits": 0.341187284815504,
+          "median_probe_entropy_bits": 0.11053102565768787,
+          "fold_mean_entropies_bits": [
+            0.2883774154856401,
+            0.2650339720973092,
+            0.30932961571149686,
+            0.24406458194886435,
+            0.326008369412898
+          ],
+          "mean_positive_class_probability": 0.6144254469639158
+        },
+        "4": {
+          "mean_accuracy": 0.609327425903266,
+          "std_accuracy": 0.030642278543310995,
+          "fold_accuracies": [
+            0.5555555555555556,
+            0.632,
+            0.6423357664233577,
+            0.5984251968503937,
+            0.6183206106870229
+          ],
+          "mean_probe_entropy_bits": 0.2670954979736808,
+          "std_probe_entropy_bits": 0.32736691912317817,
+          "median_probe_entropy_bits": 0.07471784397775133,
+          "fold_mean_entropies_bits": [
+            0.29248642725981117,
+            0.2777894828950513,
+            0.31230307790862316,
+            0.20703257150786558,
+            0.2451647068929396
+          ],
+          "mean_positive_class_probability": 0.6182317267898276
+        },
+        "5": {
+          "mean_accuracy": 0.6104950703099354,
+          "std_accuracy": 0.017600822258132375,
+          "fold_accuracies": [
+            0.5897435897435898,
+            0.64,
+            0.6131386861313869,
+            0.6141732283464567,
+            0.5954198473282443
+          ],
+          "mean_probe_entropy_bits": 0.266588422809484,
+          "std_probe_entropy_bits": 0.32334990620630144,
+          "median_probe_entropy_bits": 0.0942466461442838,
+          "fold_mean_entropies_bits": [
+            0.2851246919317812,
+            0.2369571184380438,
+            0.28112943786426603,
+            0.2888803336920458,
+            0.24148901681353596
+          ],
+          "mean_positive_class_probability": 0.628834259837349
+        },
+        "6": {
+          "mean_accuracy": 0.6322252409363531,
+          "std_accuracy": 0.029188775994083784,
+          "fold_accuracies": [
+            0.6495726495726496,
+            0.64,
+            0.583941605839416,
+            0.6692913385826772,
+            0.6183206106870229
+          ],
+          "mean_probe_entropy_bits": 0.2659503232350565,
+          "std_probe_entropy_bits": 0.32812772678268004,
+          "median_probe_entropy_bits": 0.0849605156909777,
+          "fold_mean_entropies_bits": [
+            0.26189217659106656,
+            0.26912469888151747,
+            0.26356679628540486,
+            0.30671714713184856,
+            0.2295164511644375
+          ],
+          "mean_positive_class_probability": 0.6193359796408011
+        },
+        "7": {
+          "mean_accuracy": 0.6487639525362445,
+          "std_accuracy": 0.025923579032121252,
+          "fold_accuracies": [
+            0.6666666666666666,
+            0.64,
+            0.656934306569343,
+            0.6771653543307087,
+            0.6030534351145038
+          ],
+          "mean_probe_entropy_bits": 0.29468120145844334,
+          "std_probe_entropy_bits": 0.3418792603493665,
+          "median_probe_entropy_bits": 0.11144922813965852,
+          "fold_mean_entropies_bits": [
+            0.24178643524204316,
+            0.336184477960335,
+            0.31898913884235625,
+            0.2541881964740031,
+            0.3161560281455444
+          ],
+          "mean_positive_class_probability": 0.6280984538482347
+        },
+        "8": {
+          "mean_accuracy": 0.7035475925316631,
+          "std_accuracy": 0.024764027847614976,
+          "fold_accuracies": [
+            0.717948717948718,
+            0.728,
+            0.7226277372262774,
+            0.6850393700787402,
+            0.6641221374045801
+          ],
+          "mean_probe_entropy_bits": 0.256675426747472,
+          "std_probe_entropy_bits": 0.3275397122361016,
+          "median_probe_entropy_bits": 0.07574864774604101,
+          "fold_mean_entropies_bits": [
+            0.3086466628406937,
+            0.252805874168229,
+            0.2665133952045164,
+            0.24530287449206625,
+            0.21468742603999014
+          ],
+          "mean_positive_class_probability": 0.6249874844661634
+        },
+        "9": {
+          "mean_accuracy": 0.682980143780016,
+          "std_accuracy": 0.022155266989080935,
+          "fold_accuracies": [
+            0.6666666666666666,
+            0.72,
+            0.6788321167883211,
+            0.6929133858267716,
+            0.6564885496183206
+          ],
+          "mean_probe_entropy_bits": 0.25323721384304726,
+          "std_probe_entropy_bits": 0.32696980272756154,
+          "median_probe_entropy_bits": 0.07988357476140386,
+          "fold_mean_entropies_bits": [
+            0.28500953779744503,
+            0.2846170705107278,
+            0.27523921638651255,
+            0.2013253080466777,
+            0.2222348756870131
+          ],
+          "mean_positive_class_probability": 0.6283290627714448
+        },
+        "10": {
+          "mean_accuracy": 0.7478634655038767,
+          "std_accuracy": 0.019521875404102388,
+          "fold_accuracies": [
+            0.7777777777777778,
+            0.752,
+            0.7518248175182481,
+            0.7401574803149606,
+            0.7175572519083969
+          ],
+          "mean_probe_entropy_bits": 0.2280796165198072,
+          "std_probe_entropy_bits": 0.32739279319078196,
+          "median_probe_entropy_bits": 0.03922323659128838,
+          "fold_mean_entropies_bits": [
+            0.20985192330097993,
+            0.2288576867472305,
+            0.24897294122119365,
+            0.2329630535340817,
+            0.21703228326234217
+          ],
+          "mean_positive_class_probability": 0.6253895114695414
+        },
+        "11": {
+          "mean_accuracy": 0.7811927669042398,
+          "std_accuracy": 0.034050296893431295,
+          "fold_accuracies": [
+            0.8376068376068376,
+            0.736,
+            0.7737226277372263,
+            0.7952755905511811,
+            0.7633587786259542
+          ],
+          "mean_probe_entropy_bits": 0.1928274369937514,
+          "std_probe_entropy_bits": 0.3005494479221653,
+          "median_probe_entropy_bits": 0.017858911820328765,
+          "fold_mean_entropies_bits": [
+            0.21526998307196385,
+            0.22177436535358022,
+            0.1954471790523942,
+            0.1632459162755479,
+            0.17110075403992187
+          ],
+          "mean_positive_class_probability": 0.6281138547903891
+        },
+        "12": {
+          "mean_accuracy": 0.7931881826934368,
+          "std_accuracy": 0.020619385776006274,
+          "fold_accuracies": [
+            0.8205128205128205,
+            0.776,
+            0.8029197080291971,
+            0.8031496062992126,
+            0.7633587786259542
+          ],
+          "mean_probe_entropy_bits": 0.19658899089476467,
+          "std_probe_entropy_bits": 0.3028311775304515,
+          "median_probe_entropy_bits": 0.024009884049930662,
+          "fold_mean_entropies_bits": [
+            0.19136175830453805,
+            0.22464126348211066,
+            0.20868096019923776,
+            0.15032531749054512,
+            0.20669539446164514
+          ],
+          "mean_positive_class_probability": 0.6277379785453415
+        },
+        "13": {
+          "mean_accuracy": 0.823482939630296,
+          "std_accuracy": 0.026884275964882014,
+          "fold_accuracies": [
+            0.8717948717948718,
+            0.824,
+            0.8248175182481752,
+            0.7952755905511811,
+            0.8015267175572519
+          ],
+          "mean_probe_entropy_bits": 0.1900268910012747,
+          "std_probe_entropy_bits": 0.30581678940075263,
+          "median_probe_entropy_bits": 0.021083024822488788,
+          "fold_mean_entropies_bits": [
+            0.17536195130580584,
+            0.2098272601064951,
+            0.21627455386405353,
+            0.13932689558002254,
+            0.2059331613258215
+          ],
+          "mean_positive_class_probability": 0.6326252699116237
+        },
+        "14": {
+          "mean_accuracy": 0.8366944781430204,
+          "std_accuracy": 0.03338656340848331,
+          "fold_accuracies": [
+            0.8974358974358975,
+            0.848,
+            0.8102189781021898,
+            0.8110236220472441,
+            0.816793893129771
+          ],
+          "mean_probe_entropy_bits": 0.19694734968272185,
+          "std_probe_entropy_bits": 0.30673365505775646,
+          "median_probe_entropy_bits": 0.019817092777802095,
+          "fold_mean_entropies_bits": [
+            0.2097428995422224,
+            0.19442423512088075,
+            0.19260314989456348,
+            0.19480902254865962,
+            0.19454302070312035
+          ],
+          "mean_positive_class_probability": 0.6211890064325425
+        },
+        "15": {
+          "mean_accuracy": 0.8251703240722257,
+          "std_accuracy": 0.040378087197800595,
+          "fold_accuracies": [
+            0.8888888888888888,
+            0.832,
+            0.8394160583941606,
+            0.7716535433070866,
+            0.7938931297709924
+          ],
+          "mean_probe_entropy_bits": 0.18593868638179395,
+          "std_probe_entropy_bits": 0.2931047995026297,
+          "median_probe_entropy_bits": 0.022893364144924835,
+          "fold_mean_entropies_bits": [
+            0.21134678266344173,
+            0.18986626664695827,
+            0.13805195857089073,
+            0.2063555187305323,
+            0.18978486350931809
+          ],
+          "mean_positive_class_probability": 0.6195497294167694
+        },
+        "16": {
+          "mean_accuracy": 0.8356834495636182,
+          "std_accuracy": 0.018083923815361225,
+          "fold_accuracies": [
+            0.8632478632478633,
+            0.832,
+            0.8248175182481752,
+            0.8110236220472441,
+            0.8473282442748091
+          ],
+          "mean_probe_entropy_bits": 0.1790890540317797,
+          "std_probe_entropy_bits": 0.2939485070302428,
+          "median_probe_entropy_bits": 0.01613696246315658,
+          "fold_mean_entropies_bits": [
+            0.2208350652222243,
+            0.1692190212219505,
+            0.14796030166831664,
+            0.2077071821129461,
+            0.1560326234930998
+          ],
+          "mean_positive_class_probability": 0.6175575206360631
+        },
+        "17": {
+          "mean_accuracy": 0.8382891141980433,
+          "std_accuracy": 0.009705346791186217,
+          "fold_accuracies": [
+            0.8376068376068376,
+            0.824,
+            0.8321167883211679,
+            0.8503937007874016,
+            0.8473282442748091
+          ],
+          "mean_probe_entropy_bits": 0.16904782356335904,
+          "std_probe_entropy_bits": 0.2781432077133805,
+          "median_probe_entropy_bits": 0.017836466318371158,
+          "fold_mean_entropies_bits": [
+            0.20462552102721246,
+            0.15989657991325423,
+            0.14025171451411808,
+            0.1782047061351247,
+            0.16724215719789345
+          ],
+          "mean_positive_class_probability": 0.6224675348748498
+        },
+        "18": {
+          "mean_accuracy": 0.8324538089313108,
+          "std_accuracy": 0.02273097427764546,
+          "fold_accuracies": [
+            0.8376068376068376,
+            0.816,
+            0.8102189781021898,
+            0.8740157480314961,
+            0.8244274809160306
+          ],
+          "mean_probe_entropy_bits": 0.183819559779244,
+          "std_probe_entropy_bits": 0.2982225089456119,
+          "median_probe_entropy_bits": 0.018353519575172516,
+          "fold_mean_entropies_bits": [
+            0.1867150055571399,
+            0.1779651764211161,
+            0.18650052047246463,
+            0.19560689267302883,
+            0.17258862749886422
+          ],
+          "mean_positive_class_probability": 0.6170004001225103
+        },
+        "19": {
+          "mean_accuracy": 0.8199011612183817,
+          "std_accuracy": 0.016913045076943217,
+          "fold_accuracies": [
+            0.8376068376068376,
+            0.8,
+            0.8102189781021898,
+            0.84251968503937,
+            0.8091603053435115
+          ],
+          "mean_probe_entropy_bits": 0.17919864954098552,
+          "std_probe_entropy_bits": 0.29773967012174646,
+          "median_probe_entropy_bits": 0.017287133002231975,
+          "fold_mean_entropies_bits": [
+            0.17749354757764357,
+            0.17660170785851997,
+            0.18001292588207016,
+            0.18253328692074855,
+            0.17911513682389166
+          ],
+          "mean_positive_class_probability": 0.6221867228306545
+        },
+        "20": {
+          "mean_accuracy": 0.8117895641012478,
+          "std_accuracy": 0.009460547796673664,
+          "fold_accuracies": [
+            0.8205128205128205,
+            0.816,
+            0.8175182481751825,
+            0.8110236220472441,
+            0.7938931297709924
+          ],
+          "mean_probe_entropy_bits": 0.18060251586990858,
+          "std_probe_entropy_bits": 0.2956747008710013,
+          "median_probe_entropy_bits": 0.016086120280390394,
+          "fold_mean_entropies_bits": [
+            0.20175551532519642,
+            0.16981565935795587,
+            0.17885275471486142,
+            0.18086088811521187,
+            0.173582364196728
+          ],
+          "mean_positive_class_probability": 0.6190848564031514
+        },
+        "21": {
+          "mean_accuracy": 0.8154685686529882,
+          "std_accuracy": 0.026043144172683347,
+          "fold_accuracies": [
+            0.7948717948717948,
+            0.816,
+            0.8613138686131386,
+            0.8188976377952756,
+            0.7862595419847328
+          ],
+          "mean_probe_entropy_bits": 0.18079997606436318,
+          "std_probe_entropy_bits": 0.2952718140949539,
+          "median_probe_entropy_bits": 0.02129420833377152,
+          "fold_mean_entropies_bits": [
+            0.20940486108443734,
+            0.17040372561304742,
+            0.18043825628344676,
+            0.1770002825206609,
+            0.16923414743155052
+          ],
+          "mean_positive_class_probability": 0.6238513630664084
+        },
+        "22": {
+          "mean_accuracy": 0.8224463214759966,
+          "std_accuracy": 0.02174757311578201,
+          "fold_accuracies": [
+            0.8290598290598291,
+            0.824,
+            0.8540145985401459,
+            0.8188976377952756,
+            0.7862595419847328
+          ],
+          "mean_probe_entropy_bits": 0.18302049096478978,
+          "std_probe_entropy_bits": 0.2972430988473747,
+          "median_probe_entropy_bits": 0.02270630973432059,
+          "fold_mean_entropies_bits": [
+            0.21900719164009136,
+            0.18294885453306808,
+            0.16739926127164753,
+            0.16055424499939916,
+            0.1890650121901337
+          ],
+          "mean_positive_class_probability": 0.6304416943799179
+        },
+        "23": {
+          "mean_accuracy": 0.7996349553982245,
+          "std_accuracy": 0.03142876731582977,
+          "fold_accuracies": [
+            0.7777777777777778,
+            0.792,
+            0.8540145985401459,
+            0.8110236220472441,
+            0.7633587786259542
+          ],
+          "mean_probe_entropy_bits": 0.17415037081185564,
+          "std_probe_entropy_bits": 0.2892350945885858,
+          "median_probe_entropy_bits": 0.018483492684821044,
+          "fold_mean_entropies_bits": [
+            0.18589096387590956,
+            0.16126285622351091,
+            0.15976709969903885,
+            0.1508592173191099,
+            0.21358376448424787
+          ],
+          "mean_positive_class_probability": 0.625123664863576
+        },
+        "24": {
+          "mean_accuracy": 0.8019725036314218,
+          "std_accuracy": 0.028998424145898895,
+          "fold_accuracies": [
+            0.8205128205128205,
+            0.784,
+            0.8467153284671532,
+            0.7952755905511811,
+            0.7633587786259542
+          ],
+          "mean_probe_entropy_bits": 0.1904020693573157,
+          "std_probe_entropy_bits": 0.30106311154400667,
+          "median_probe_entropy_bits": 0.02259439415156508,
+          "fold_mean_entropies_bits": [
+            0.19827858890977534,
+            0.1807267675576796,
+            0.17047211408759622,
+            0.1751989912281119,
+            0.22818111311057676
+          ],
+          "mean_positive_class_probability": 0.6249241828100675
+        },
+        "25": {
+          "mean_accuracy": 0.8019900173827287,
+          "std_accuracy": 0.029750680485774162,
+          "fold_accuracies": [
+            0.8034188034188035,
+            0.808,
+            0.8394160583941606,
+            0.8110236220472441,
+            0.7480916030534351
+          ],
+          "mean_probe_entropy_bits": 0.188804196609253,
+          "std_probe_entropy_bits": 0.3000605402747922,
+          "median_probe_entropy_bits": 0.02100561746023375,
+          "fold_mean_entropies_bits": [
+            0.1908292187671094,
+            0.19051462155793836,
+            0.1671174231750235,
+            0.17438325892267573,
+            0.2220241686369621
+          ],
+          "mean_positive_class_probability": 0.6296151048614732
+        },
+        "26": {
+          "mean_accuracy": 0.8010228398576418,
+          "std_accuracy": 0.01992019908933961,
+          "fold_accuracies": [
+            0.8205128205128205,
+            0.8,
+            0.8102189781021898,
+            0.8110236220472441,
+            0.7633587786259542
+          ],
+          "mean_probe_entropy_bits": 0.17810173372387594,
+          "std_probe_entropy_bits": 0.28524341305334894,
+          "median_probe_entropy_bits": 0.018157125357131435,
+          "fold_mean_entropies_bits": [
+            0.19323329315647686,
+            0.16580213465559687,
+            0.1481716045591346,
+            0.17350579863579,
+            0.21208012213362457
+          ],
+          "mean_positive_class_probability": 0.6295046069636767
+        },
+        "27": {
+          "mean_accuracy": 0.8034434524972325,
+          "std_accuracy": 0.024372633823479675,
+          "fold_accuracies": [
+            0.8034188034188035,
+            0.8,
+            0.8394160583941606,
+            0.8110236220472441,
+            0.7633587786259542
+          ],
+          "mean_probe_entropy_bits": 0.18917143546231052,
+          "std_probe_entropy_bits": 0.29601991182825144,
+          "median_probe_entropy_bits": 0.022777865549437813,
+          "fold_mean_entropies_bits": [
+            0.23215777589792355,
+            0.18514634275276548,
+            0.16276511765655505,
+            0.17051592233606014,
+            0.2003214390054303
+          ],
+          "mean_positive_class_probability": 0.6276361431555213
+        },
+        "28": {
+          "mean_accuracy": 0.7979867460594925,
+          "std_accuracy": 0.03252526829138924,
+          "fold_accuracies": [
+            0.8290598290598291,
+            0.784,
+            0.8175182481751825,
+            0.8188976377952756,
+            0.7404580152671756
+          ],
+          "mean_probe_entropy_bits": 0.1913670583183286,
+          "std_probe_entropy_bits": 0.295368595590252,
+          "median_probe_entropy_bits": 0.0216401146594724,
+          "fold_mean_entropies_bits": [
+            0.2134217521838198,
+            0.18854741937941877,
+            0.17215659199923922,
+            0.20490776272022596,
+            0.18132293703417246
+          ],
+          "mean_positive_class_probability": 0.6284172527343438
+        },
+        "29": {
+          "mean_accuracy": 0.7998362937542958,
+          "std_accuracy": 0.03312079832893827,
+          "fold_accuracies": [
+            0.8376068376068376,
+            0.792,
+            0.8102189781021898,
+            0.8188976377952756,
+            0.7404580152671756
+          ],
+          "mean_probe_entropy_bits": 0.1947867653733174,
+          "std_probe_entropy_bits": 0.29758471443807905,
+          "median_probe_entropy_bits": 0.021526040945716862,
+          "fold_mean_entropies_bits": [
+            0.20948294946913637,
+            0.19740671230809775,
+            0.19174978868140855,
+            0.18068182666888044,
+            0.1960115448862689
+          ],
+          "mean_positive_class_probability": 0.6290023045107328
+        },
+        "30": {
+          "mean_accuracy": 0.7895784468639411,
+          "std_accuracy": 0.04164683172712489,
+          "fold_accuracies": [
+            0.7948717948717948,
+            0.776,
+            0.8248175182481752,
+            0.8346456692913385,
+            0.7175572519083969
+          ],
+          "mean_probe_entropy_bits": 0.20115848040877882,
+          "std_probe_entropy_bits": 0.30421557417704775,
+          "median_probe_entropy_bits": 0.024490220641690295,
+          "fold_mean_entropies_bits": [
+            0.23828643676687544,
+            0.1853021606059725,
+            0.20375483469436015,
+            0.18396953238332345,
+            0.19707729677184516
+          ],
+          "mean_positive_class_probability": 0.6269903442667706
+        },
+        "31": {
+          "mean_accuracy": 0.7815753799817202,
+          "std_accuracy": 0.035433628155940075,
+          "fold_accuracies": [
+            0.7777777777777778,
+            0.784,
+            0.8175182481751825,
+            0.8110236220472441,
+            0.7175572519083969
+          ],
+          "mean_probe_entropy_bits": 0.19771818800241334,
+          "std_probe_entropy_bits": 0.303269258178279,
+          "median_probe_entropy_bits": 0.0249382754884877,
+          "fold_mean_entropies_bits": [
+            0.232498627093784,
+            0.18309470062725766,
+            0.21363219210856232,
+            0.19840665071563013,
+            0.163298120987781
+          ],
+          "mean_positive_class_probability": 0.6225412696784102
+        },
+        "32": {
+          "mean_accuracy": 0.7787650736619249,
+          "std_accuracy": 0.03297044930557404,
+          "fold_accuracies": [
+            0.7863247863247863,
+            0.776,
+            0.8029197080291971,
+            0.8110236220472441,
+            0.7175572519083969
+          ],
+          "mean_probe_entropy_bits": 0.19746980091271024,
+          "std_probe_entropy_bits": 0.30075590596729757,
+          "median_probe_entropy_bits": 0.027209196576329517,
+          "fold_mean_entropies_bits": [
+            0.235051431411737,
+            0.18904670227137133,
+            0.1899100056234351,
+            0.1989933543029327,
+            0.17837084851464668
+          ],
+          "mean_positive_class_probability": 0.6297789702342234
+        }
+      },
+      "llada": {
+        "1": {
+          "mean_accuracy": 0.5590488424079496,
+          "std_accuracy": 0.04050586502642741,
+          "fold_accuracies": [
+            0.5470085470085471,
+            0.624,
+            0.5401459854014599,
+            0.5039370078740157,
+            0.5801526717557252
+          ],
+          "mean_probe_entropy_bits": 0.25234729185586763,
+          "std_probe_entropy_bits": 0.33635431904157237,
+          "median_probe_entropy_bits": 0.04618913770251675,
+          "fold_mean_entropies_bits": [
+            0.26685644809771064,
+            0.22077811674756642,
+            0.23415897136822258,
+            0.2636124453182661,
+            0.27761218517895764
+          ],
+          "mean_positive_class_probability": 0.5883144449570443
+        },
+        "2": {
+          "mean_accuracy": 0.580659387948242,
+          "std_accuracy": 0.03703779990398009,
+          "fold_accuracies": [
+            0.6239316239316239,
+            0.616,
+            0.5401459854014599,
+            0.5354330708661418,
+            0.5877862595419847
+          ],
+          "mean_probe_entropy_bits": 0.2447023995906569,
+          "std_probe_entropy_bits": 0.33139853926785773,
+          "median_probe_entropy_bits": 0.05100607174410131,
+          "fold_mean_entropies_bits": [
+            0.28340526543866773,
+            0.2262267966625475,
+            0.2788914849748593,
+            0.24340640967068738,
+            0.1932665300028465
+          ],
+          "mean_positive_class_probability": 0.5963110147087655
+        },
+        "3": {
+          "mean_accuracy": 0.5912902494330606,
+          "std_accuracy": 0.03678174029324415,
+          "fold_accuracies": [
+            0.5982905982905983,
+            0.656,
+            0.5474452554744526,
+            0.5669291338582677,
+            0.5877862595419847
+          ],
+          "mean_probe_entropy_bits": 0.2454764868419284,
+          "std_probe_entropy_bits": 0.33549535775251077,
+          "median_probe_entropy_bits": 0.0451063248593626,
+          "fold_mean_entropies_bits": [
+            0.26361074068962165,
+            0.24048741229879705,
+            0.24390357656508943,
+            0.26064306426868106,
+            0.22098228831094102
+          ],
+          "mean_positive_class_probability": 0.6260792310963195
+        },
+        "4": {
+          "mean_accuracy": 0.588765168661644,
+          "std_accuracy": 0.018069133012214727,
+          "fold_accuracies": [
+            0.5897435897435898,
+            0.616,
+            0.5912408759124088,
+            0.5590551181102362,
+            0.5877862595419847
+          ],
+          "mean_probe_entropy_bits": 0.26008489112229904,
+          "std_probe_entropy_bits": 0.337791447012764,
+          "median_probe_entropy_bits": 0.06726412309336738,
+          "fold_mean_entropies_bits": [
+            0.29365542684746115,
+            0.23377214170303834,
+            0.3103868421789019,
+            0.26549418436996935,
+            0.19735965036164932
+          ],
+          "mean_positive_class_probability": 0.6116503617905517
+        },
+        "5": {
+          "mean_accuracy": 0.5941036226350769,
+          "std_accuracy": 0.016169228755455373,
+          "fold_accuracies": [
+            0.6068376068376068,
+            0.616,
+            0.5693430656934306,
+            0.5905511811023622,
+            0.5877862595419847
+          ],
+          "mean_probe_entropy_bits": 0.2523937414036788,
+          "std_probe_entropy_bits": 0.33922221936970587,
+          "median_probe_entropy_bits": 0.06008156199071908,
+          "fold_mean_entropies_bits": [
+            0.2566566772421333,
+            0.24181807146155584,
+            0.27079627671862166,
+            0.28083030746700877,
+            0.21186400110960346
+          ],
+          "mean_positive_class_probability": 0.6293473256237652
+        },
+        "6": {
+          "mean_accuracy": 0.6066703723471875,
+          "std_accuracy": 0.015465631456421231,
+          "fold_accuracies": [
+            0.6239316239316239,
+            0.624,
+            0.583941605839416,
+            0.5984251968503937,
+            0.6030534351145038
+          ],
+          "mean_probe_entropy_bits": 0.2653190945587784,
+          "std_probe_entropy_bits": 0.3311880440945787,
+          "median_probe_entropy_bits": 0.08146801418935003,
+          "fold_mean_entropies_bits": [
+            0.271878412924021,
+            0.20878861779113975,
+            0.28386546316695527,
+            0.2993216045485198,
+            0.26104198065957257
+          ],
+          "mean_positive_class_probability": 0.6367619015712521
+        },
+        "7": {
+          "mean_accuracy": 0.605932651679038,
+          "std_accuracy": 0.00342818918049638,
+          "fold_accuracies": [
+            0.6068376068376068,
+            0.6,
+            0.6058394160583942,
+            0.6062992125984252,
+            0.6106870229007634
+          ],
+          "mean_probe_entropy_bits": 0.2734273739739429,
+          "std_probe_entropy_bits": 0.34349709571573167,
+          "median_probe_entropy_bits": 0.07364265633293428,
+          "fold_mean_entropies_bits": [
+            0.2369049670312336,
+            0.22277966740516744,
+            0.32248377552264496,
+            0.31074078931245463,
+            0.26689725315891033
+          ],
+          "mean_positive_class_probability": 0.6263632659564724
+        },
+        "8": {
+          "mean_accuracy": 0.6073018819345337,
+          "std_accuracy": 0.010104789542868621,
+          "fold_accuracies": [
+            0.5982905982905983,
+            0.608,
+            0.6058394160583942,
+            0.5984251968503937,
+            0.6259541984732825
+          ],
+          "mean_probe_entropy_bits": 0.28648670380936375,
+          "std_probe_entropy_bits": 0.3419283366134047,
+          "median_probe_entropy_bits": 0.09947440921152856,
+          "fold_mean_entropies_bits": [
+            0.2815127860247861,
+            0.27336878799315445,
+            0.33237300947164583,
+            0.31155082205983,
+            0.23115938292600402
+          ],
+          "mean_positive_class_probability": 0.6164748510313911
+        },
+        "9": {
+          "mean_accuracy": 0.5977316950017935,
+          "std_accuracy": 0.031383380642242546,
+          "fold_accuracies": [
+            0.5982905982905983,
+            0.6,
+            0.6058394160583942,
+            0.5433070866141733,
+            0.6412213740458015
+          ],
+          "mean_probe_entropy_bits": 0.28838223711424943,
+          "std_probe_entropy_bits": 0.34179355462631567,
+          "median_probe_entropy_bits": 0.09505196336215306,
+          "fold_mean_entropies_bits": [
+            0.30326236436033704,
+            0.2889058715943272,
+            0.31659103773150576,
+            0.29088263506021816,
+            0.2426678445836835
+          ],
+          "mean_positive_class_probability": 0.6248409908057813
+        },
+        "10": {
+          "mean_accuracy": 0.6231401325855437,
+          "std_accuracy": 0.04680816408444797,
+          "fold_accuracies": [
+            0.6752136752136753,
+            0.544,
+            0.6642335766423357,
+            0.6062992125984252,
+            0.6259541984732825
+          ],
+          "mean_probe_entropy_bits": 0.2917764890009543,
+          "std_probe_entropy_bits": 0.3347513365399621,
+          "median_probe_entropy_bits": 0.11885605492648307,
+          "fold_mean_entropies_bits": [
+            0.31226931809885833,
+            0.2945533620680378,
+            0.3227842060152428,
+            0.2784817904256943,
+            0.25128488098767443
+          ],
+          "mean_positive_class_probability": 0.6332710168882674
+        },
+        "11": {
+          "mean_accuracy": 0.6300531960942509,
+          "std_accuracy": 0.030692620411672807,
+          "fold_accuracies": [
+            0.6581196581196581,
+            0.624,
+            0.6058394160583942,
+            0.5905511811023622,
+            0.6717557251908397
+          ],
+          "mean_probe_entropy_bits": 0.30756345239711175,
+          "std_probe_entropy_bits": 0.3466088020155707,
+          "median_probe_entropy_bits": 0.15136051869978223,
+          "fold_mean_entropies_bits": [
+            0.3525746151564949,
+            0.29169779562156856,
+            0.36164661160986994,
+            0.23434390063490468,
+            0.29692521816617656
+          ],
+          "mean_positive_class_probability": 0.6306302123402002
+        },
+        "12": {
+          "mean_accuracy": 0.6226349631657471,
+          "std_accuracy": 0.011773390241537441,
+          "fold_accuracies": [
+            0.6068376068376068,
+            0.616,
+            0.6423357664233577,
+            0.6220472440944882,
+            0.6259541984732825
+          ],
+          "mean_probe_entropy_bits": 0.30136984713524967,
+          "std_probe_entropy_bits": 0.3474376576341729,
+          "median_probe_entropy_bits": 0.12096767807524061,
+          "fold_mean_entropies_bits": [
+            0.3699083837810461,
+            0.28820497110291976,
+            0.352910396265013,
+            0.2407270934548206,
+            0.2576078257850205
+          ],
+          "mean_positive_class_probability": 0.6420408713554706
+        },
+        "13": {
+          "mean_accuracy": 0.6132367315832288,
+          "std_accuracy": 0.0445428947960431,
+          "fold_accuracies": [
+            0.6410256410256411,
+            0.552,
+            0.6788321167883211,
+            0.6141732283464567,
+            0.5801526717557252
+          ],
+          "mean_probe_entropy_bits": 0.2793662426220136,
+          "std_probe_entropy_bits": 0.3347294387905211,
+          "median_probe_entropy_bits": 0.11110945054074367,
+          "fold_mean_entropies_bits": [
+            0.3197389573434691,
+            0.3379898252066985,
+            0.29995478048777247,
+            0.22864284637341056,
+            0.21501270209123288
+          ],
+          "mean_positive_class_probability": 0.6409417578715806
+        },
+        "14": {
+          "mean_accuracy": 0.6395711002335045,
+          "std_accuracy": 0.029724432986246153,
+          "fold_accuracies": [
+            0.6752136752136753,
+            0.648,
+            0.656934306569343,
+            0.6299212598425197,
+            0.5877862595419847
+          ],
+          "mean_probe_entropy_bits": 0.2810964098103722,
+          "std_probe_entropy_bits": 0.33102256074122893,
+          "median_probe_entropy_bits": 0.12465664913331438,
+          "fold_mean_entropies_bits": [
+            0.30680376364485457,
+            0.2994409200859873,
+            0.27539527029320976,
+            0.27193605819685507,
+            0.25547500970107156
+          ],
+          "mean_positive_class_probability": 0.6504637018714949
+        },
+        "15": {
+          "mean_accuracy": 0.6218202042667954,
+          "std_accuracy": 0.027102088608726416,
+          "fold_accuracies": [
+            0.6410256410256411,
+            0.616,
+            0.6496350364963503,
+            0.6299212598425197,
+            0.5725190839694656
+          ],
+          "mean_probe_entropy_bits": 0.28232466899456643,
+          "std_probe_entropy_bits": 0.33370747623520386,
+          "median_probe_entropy_bits": 0.11214747850389001,
+          "fold_mean_entropies_bits": [
+            0.30566141033575706,
+            0.2769525139410195,
+            0.28783188598912535,
+            0.2915731708241604,
+            0.2518824719270935
+          ],
+          "mean_positive_class_probability": 0.6554555971667476
+        },
+        "16": {
+          "mean_accuracy": 0.6367072846421262,
+          "std_accuracy": 0.02851208767725803,
+          "fold_accuracies": [
+            0.6410256410256411,
+            0.632,
+            0.6861313868613139,
+            0.5984251968503937,
+            0.6259541984732825
+          ],
+          "mean_probe_entropy_bits": 0.2838149792608885,
+          "std_probe_entropy_bits": 0.342830046707299,
+          "median_probe_entropy_bits": 0.0971505370689737,
+          "fold_mean_entropies_bits": [
+            0.24783674317679183,
+            0.27900648438285014,
+            0.3443060504332838,
+            0.28314179243639975,
+            0.2579274484035298
+          ],
+          "mean_positive_class_probability": 0.6444934988649311
+        },
+        "17": {
+          "mean_accuracy": 0.6511124231857017,
+          "std_accuracy": 0.040725029049049385,
+          "fold_accuracies": [
+            0.717948717948718,
+            0.608,
+            0.6496350364963503,
+            0.6692913385826772,
+            0.6106870229007634
+          ],
+          "mean_probe_entropy_bits": 0.28345472420987683,
+          "std_probe_entropy_bits": 0.34035455603673204,
+          "median_probe_entropy_bits": 0.10435634676178795,
+          "fold_mean_entropies_bits": [
+            0.23933722203556412,
+            0.31077030127899846,
+            0.32728859534671056,
+            0.27611462173829654,
+            0.2580673447358223
+          ],
+          "mean_positive_class_probability": 0.6254703749550933
+        },
+        "18": {
+          "mean_accuracy": 0.6641042644077897,
+          "std_accuracy": 0.05745680263652362,
+          "fold_accuracies": [
+            0.7008547008547008,
+            0.68,
+            0.7372262773722628,
+            0.6299212598425197,
+            0.5725190839694656
+          ],
+          "mean_probe_entropy_bits": 0.29432481608117605,
+          "std_probe_entropy_bits": 0.35347030434313415,
+          "median_probe_entropy_bits": 0.09839816614005804,
+          "fold_mean_entropies_bits": [
+            0.2712470180130813,
+            0.28706420626542517,
+            0.3500928070384521,
+            0.2777140192741781,
+            0.2796456942054346
+          ],
+          "mean_positive_class_probability": 0.6416096092733399
+        },
+        "19": {
+          "mean_accuracy": 0.7217979012486884,
+          "std_accuracy": 0.045664361030116174,
+          "fold_accuracies": [
+            0.7521367521367521,
+            0.68,
+            0.7883211678832117,
+            0.7244094488188977,
+            0.6641221374045801
+          ],
+          "mean_probe_entropy_bits": 0.2665656234560356,
+          "std_probe_entropy_bits": 0.32768744356082674,
+          "median_probe_entropy_bits": 0.09314895252229147,
+          "fold_mean_entropies_bits": [
+            0.30395964116016605,
+            0.24930445237682408,
+            0.3071136017517567,
+            0.22800600164281776,
+            0.24461558725208954
+          ],
+          "mean_positive_class_probability": 0.6509156005189373
+        },
+        "20": {
+          "mean_accuracy": 0.768453926743862,
+          "std_accuracy": 0.03502442692685459,
+          "fold_accuracies": [
+            0.7777777777777778,
+            0.752,
+            0.8321167883211679,
+            0.7322834645669292,
+            0.7480916030534351
+          ],
+          "mean_probe_entropy_bits": 0.25622541384604486,
+          "std_probe_entropy_bits": 0.3385162852177338,
+          "median_probe_entropy_bits": 0.059343638761391614,
+          "fold_mean_entropies_bits": [
+            0.25951273427014343,
+            0.2850457422827715,
+            0.26342440181743576,
+            0.25228635557798584,
+            0.2220791657830873
+          ],
+          "mean_positive_class_probability": 0.6414886399407971
+        },
+        "21": {
+          "mean_accuracy": 0.8038064529588477,
+          "std_accuracy": 0.0436210702560673,
+          "fold_accuracies": [
+            0.8376068376068376,
+            0.808,
+            0.8613138686131386,
+            0.7716535433070866,
+            0.7404580152671756
+          ],
+          "mean_probe_entropy_bits": 0.19985620211311678,
+          "std_probe_entropy_bits": 0.296744131494468,
+          "median_probe_entropy_bits": 0.037260138235662765,
+          "fold_mean_entropies_bits": [
+            0.1821760715315224,
+            0.23377183848639044,
+            0.20443885588418834,
+            0.1887216855661447,
+            0.18928658964148304
+          ],
+          "mean_positive_class_probability": 0.657577115270954
+        },
+        "22": {
+          "mean_accuracy": 0.8000890210320206,
+          "std_accuracy": 0.04008568512852919,
+          "fold_accuracies": [
+            0.8547008547008547,
+            0.808,
+            0.8175182481751825,
+            0.7874015748031497,
+            0.732824427480916
+          ],
+          "mean_probe_entropy_bits": 0.19765003170816764,
+          "std_probe_entropy_bits": 0.3060724690706533,
+          "median_probe_entropy_bits": 0.02687394149175575,
+          "fold_mean_entropies_bits": [
+            0.17330752281214848,
+            0.2088735305318989,
+            0.20078932724350296,
+            0.20823846680532576,
+            0.19513340149586078
+          ],
+          "mean_positive_class_probability": 0.6498967379908762
+        },
+        "23": {
+          "mean_accuracy": 0.8475679032630918,
+          "std_accuracy": 0.03430607538036145,
+          "fold_accuracies": [
+            0.8974358974358975,
+            0.864,
+            0.8321167883211679,
+            0.8503937007874016,
+            0.7938931297709924
+          ],
+          "mean_probe_entropy_bits": 0.1668328268284696,
+          "std_probe_entropy_bits": 0.2898653637897378,
+          "median_probe_entropy_bits": 0.010250782065405242,
+          "fold_mean_entropies_bits": [
+            0.12992876708553083,
+            0.17963373067416588,
+            0.20085450305947264,
+            0.16383852371656382,
+            0.15490129141454906
+          ],
+          "mean_positive_class_probability": 0.6460356236239095
+        },
+        "24": {
+          "mean_accuracy": 0.8649519942915571,
+          "std_accuracy": 0.03936688367966348,
+          "fold_accuracies": [
+            0.9230769230769231,
+            0.88,
+            0.8540145985401459,
+            0.8661417322834646,
+            0.8015267175572519
+          ],
+          "mean_probe_entropy_bits": 0.15944863699029968,
+          "std_probe_entropy_bits": 0.28171434792253847,
+          "median_probe_entropy_bits": 0.011426375473303838,
+          "fold_mean_entropies_bits": [
+            0.1275358644404601,
+            0.18274067888838438,
+            0.18861831473473328,
+            0.1722832492662195,
+            0.12277724417382196
+          ],
+          "mean_positive_class_probability": 0.6381179993662481
+        },
+        "25": {
+          "mean_accuracy": 0.8867115365721563,
+          "std_accuracy": 0.03988444856242173,
+          "fold_accuracies": [
+            0.9487179487179487,
+            0.904,
+            0.8905109489051095,
+            0.8582677165354331,
+            0.8320610687022901
+          ],
+          "mean_probe_entropy_bits": 0.13195744105519217,
+          "std_probe_entropy_bits": 0.261370482714725,
+          "median_probe_entropy_bits": 0.0046057531128530635,
+          "fold_mean_entropies_bits": [
+            0.0830901010036537,
+            0.15439307965120477,
+            0.16115305012963937,
+            0.1164747830587564,
+            0.1386713577260052
+          ],
+          "mean_positive_class_probability": 0.634858846200911
+        },
+        "26": {
+          "mean_accuracy": 0.8863470397423455,
+          "std_accuracy": 0.039497539166484304,
+          "fold_accuracies": [
+            0.9401709401709402,
+            0.904,
+            0.9051094890510949,
+            0.8503937007874016,
+            0.8320610687022901
+          ],
+          "mean_probe_entropy_bits": 0.12779108460442654,
+          "std_probe_entropy_bits": 0.25035151502191194,
+          "median_probe_entropy_bits": 0.004618726949979323,
+          "fold_mean_entropies_bits": [
+            0.0796666623360716,
+            0.14241823999387107,
+            0.12998802875740179,
+            0.12631278478510657,
+            0.1559508228472738
+          ],
+          "mean_positive_class_probability": 0.6348021870098877
+        },
+        "27": {
+          "mean_accuracy": 0.8928421670176133,
+          "std_accuracy": 0.03961900072616812,
+          "fold_accuracies": [
+            0.9572649572649573,
+            0.896,
+            0.9051094890510949,
+            0.8661417322834646,
+            0.8396946564885496
+          ],
+          "mean_probe_entropy_bits": 0.11166443758555618,
+          "std_probe_entropy_bits": 0.23744437537940452,
+          "median_probe_entropy_bits": 0.002833565972966196,
+          "fold_mean_entropies_bits": [
+            0.06373587061833445,
+            0.14168909864863924,
+            0.12506929922464854,
+            0.0999156781967866,
+            0.12319257575424043
+          ],
+          "mean_positive_class_probability": 0.6362249778685065
+        },
+        "28": {
+          "mean_accuracy": 0.887909876566251,
+          "std_accuracy": 0.037544077442855095,
+          "fold_accuracies": [
+            0.9487179487179487,
+            0.888,
+            0.9051094890510949,
+            0.8503937007874016,
+            0.8473282442748091
+          ],
+          "mean_probe_entropy_bits": 0.11205692539839263,
+          "std_probe_entropy_bits": 0.24114381748400182,
+          "median_probe_entropy_bits": 0.0027140316231737058,
+          "fold_mean_entropies_bits": [
+            0.05580083343177533,
+            0.14163742669763427,
+            0.13236051957266265,
+            0.10442557363538493,
+            0.1202400503580567
+          ],
+          "mean_positive_class_probability": 0.6280571414460321
+        },
+        "29": {
+          "mean_accuracy": 0.8943381402988655,
+          "std_accuracy": 0.04158270076509482,
+          "fold_accuracies": [
+            0.9658119658119658,
+            0.88,
+            0.9124087591240876,
+            0.8661417322834646,
+            0.8473282442748091
+          ],
+          "mean_probe_entropy_bits": 0.10528046830522154,
+          "std_probe_entropy_bits": 0.22785655193307375,
+          "median_probe_entropy_bits": 0.002466620253381943,
+          "fold_mean_entropies_bits": [
+            0.05853610948654509,
+            0.12355630401072831,
+            0.12980482982562438,
+            0.10456712305484807,
+            0.10463442126017605
+          ],
+          "mean_positive_class_probability": 0.6291842351000274
+        },
+        "30": {
+          "mean_accuracy": 0.9068866772201328,
+          "std_accuracy": 0.0316914252083451,
+          "fold_accuracies": [
+            0.9658119658119658,
+            0.904,
+            0.9051094890510949,
+            0.8740157480314961,
+            0.8854961832061069
+          ],
+          "mean_probe_entropy_bits": 0.11755009917662092,
+          "std_probe_entropy_bits": 0.24968602492475742,
+          "median_probe_entropy_bits": 0.0026461449053917516,
+          "fold_mean_entropies_bits": [
+            0.0732502465196763,
+            0.14889678835786183,
+            0.15611690927139568,
+            0.11183903741928056,
+            0.0924081027904032
+          ],
+          "mean_positive_class_probability": 0.6310840034066737
+        },
+        "31": {
+          "mean_accuracy": 0.9021073705543612,
+          "std_accuracy": 0.03728735356620172,
+          "fold_accuracies": [
+            0.9572649572649573,
+            0.92,
+            0.9124087591240876,
+            0.8582677165354331,
+            0.8625954198473282
+          ],
+          "mean_probe_entropy_bits": 0.13022116463302955,
+          "std_probe_entropy_bits": 0.26226588066821205,
+          "median_probe_entropy_bits": 0.0024360948091938367,
+          "fold_mean_entropies_bits": [
+            0.08630249114852524,
+            0.1657508793821136,
+            0.1622738366646811,
+            0.115176333946756,
+            0.11660855305189967
+          ],
+          "mean_positive_class_probability": 0.6295471471893008
+        },
+        "32": {
+          "mean_accuracy": 0.9038387895312351,
+          "std_accuracy": 0.030228071683777454,
+          "fold_accuracies": [
+            0.9572649572649573,
+            0.912,
+            0.8978102189781022,
+            0.8818897637795275,
+            0.8702290076335878
+          ],
+          "mean_probe_entropy_bits": 0.12513129155557537,
+          "std_probe_entropy_bits": 0.251406060991955,
+          "median_probe_entropy_bits": 0.002144466986981455,
+          "fold_mean_entropies_bits": [
+            0.09790952307338445,
+            0.15454404186652135,
+            0.1583917319574183,
+            0.09171022523905337,
+            0.11899501835476547
+          ],
+          "mean_positive_class_probability": 0.6278139494800499
+        }
+      }
+    }
+  }
+}

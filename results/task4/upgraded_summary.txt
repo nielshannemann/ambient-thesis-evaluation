@@ -1,0 +1,65 @@
+Task 4 upgraded layerwise probing summary
+
+Config:
+  llama_model: meta-llama/Meta-Llama-3.1-8B
+  llada_model: GSAI-ML/LLaDA-8B-Base
+  data_path: data/test_baked.jsonl
+  max_examples: 580
+  batch_size: 16
+  seed: 42
+  use_4bit: True
+  include_embedding_layer: False
+  dataset_modes: ['side_reconstructed', 'fully_disambiguated']
+  compute_weight_entropy: True
+  weight_entropy_max_samples: 2000000
+  weight_entropy_bins: 256
+
+Dataset metadata for side_reconstructed:
+  mode: side_reconstructed
+  num_pairs: 688
+  num_unique_instances: 543
+  label_distribution: {'entailment': 418, 'contradiction': 270}
+  source_ambiguity_distribution_instances: {'premise': 365, 'hypothesis': 141, 'both': 37}
+  source_ambiguity_distribution_pairs: {'premise': 387, 'hypothesis': 184, 'both': 117}
+  pair_distribution_by_source_type_and_label: {'premise::entailment': 251, 'hypothesis::entailment': 117, 'both::contradiction': 67, 'both::entailment': 50, 'hypothesis::contradiction': 67, 'premise::contradiction': 136}
+
+Dataset mode: side_reconstructed (Side-reconstructed disambiguations)
+  LLaMA-3.1-8B: best accuracy at layer 15 (0.8073), lowest probe entropy at layer 19 (0.1871 bits)
+  LLaDA-8B: best accuracy at layer 32 (0.8776), lowest probe entropy at layer 30 (0.1308 bits)
+  Largest accuracy advantage for LLaDA: layer 32 (+0.1336)
+  Largest accuracy advantage for LLaMA: layer 15 (-0.1821)
+  Largest probe-entropy advantage for LLaDA: layer 15 (+0.1066 bits)
+  Largest probe-entropy advantage for LLaMA: layer 29 (-0.0828 bits)
+  Mean accuracy Δ (LLaDA-LLaMA), early: -0.0023
+  Mean probe entropy Δ (LLaDA-LLaMA), early: -0.0362 bits
+  Mean accuracy Δ (LLaDA-LLaMA), middle: -0.1256
+  Mean probe entropy Δ (LLaDA-LLaMA), middle: +0.0776 bits
+  Mean accuracy Δ (LLaDA-LLaMA), late: +0.0997
+  Mean probe entropy Δ (LLaDA-LLaMA), late: -0.0627 bits
+
+Dataset metadata for fully_disambiguated:
+  mode: fully_disambiguated
+  num_pairs: 637
+  num_unique_instances: 543
+  label_distribution: {'entailment': 397, 'contradiction': 240}
+  source_ambiguity_distribution_instances: {'premise': 365, 'hypothesis': 141, 'both': 37}
+  source_ambiguity_distribution_pairs: {'premise': 387, 'hypothesis': 184, 'both': 66}
+  pair_distribution_by_source_type_and_label: {'premise::entailment': 251, 'hypothesis::entailment': 117, 'both::contradiction': 37, 'both::entailment': 29, 'hypothesis::contradiction': 67, 'premise::contradiction': 136}
+
+Dataset mode: fully_disambiguated (Fully disambiguated pairs)
+  LLaMA-3.1-8B: best accuracy at layer 17 (0.8383), lowest probe entropy at layer 17 (0.1690 bits)
+  LLaDA-8B: best accuracy at layer 30 (0.9069), lowest probe entropy at layer 29 (0.1053 bits)
+  Largest accuracy advantage for LLaDA: layer 32 (+0.1251)
+  Largest accuracy advantage for LLaMA: layer 13 (-0.2102)
+  Largest probe-entropy advantage for LLaDA: layer 11 (+0.1147 bits)
+  Largest probe-entropy advantage for LLaMA: layer 29 (-0.0895 bits)
+  Mean accuracy Δ (LLaDA-LLaMA), early: -0.0265
+  Mean probe entropy Δ (LLaDA-LLaMA), early: -0.0123 bits
+  Mean accuracy Δ (LLaDA-LLaMA), middle: -0.1491
+  Mean probe entropy Δ (LLaDA-LLaMA), middle: +0.0910 bits
+  Mean accuracy Δ (LLaDA-LLaMA), late: +0.1008
+  Mean probe entropy Δ (LLaDA-LLaMA), late: -0.0721 bits
+
+Global approximate weight entropy:
+  LLaMA-3.1-8B: 6.7321 bits (sampled 2,000,000 / 4,540,600,320 weights, bins=256, stride=2270)
+  LLaDA-8B: 6.8211 bits (sampled 2,000,000 / 4,525,920,256 weights, bins=256, stride=2262)

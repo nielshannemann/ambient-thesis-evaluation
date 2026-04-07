@@ -1,0 +1,11 @@
+{
+    "llama8b_alt-n100": {
+        "diversity_mean_cosine_dist": 0.8047548326119973,
+        "perplexity_median": 44.79342269897461,
+        "perplexity_mean": 250.17827380765752,
+        "overlap_mean": 0.09510823057851889,
+        "num_evaluated_instances": 543,
+        "seed_used": 42,
+        "local_save_path": "results/llama8b_alt-n100/task2_semantic_metrics.json"
+    }
+}
