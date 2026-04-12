@@ -1,5 +1,0 @@
-num_rows,num_token_comparable,num_token_mismatches,share_token_mismatches,avg_chars_per_continuation,median_chars_per_continuation,avg_words_per_continuation,median_words_per_continuation,avg_whitespace_splits_per_continuation,median_whitespace_splits_per_continuation,avg_stored_tokens_per_continuation,median_stored_tokens_per_continuation,avg_recomputed_tokens_per_continuation,median_recomputed_tokens_per_continuation,model_name,subset,num_examples
-16390,16390,0,0.0,91.97608297742526,72.0,17.648993288590603,14.0,17.102684563758388,13.0,22.763697376449056,17.0,22.763697376449056,17.0,llada8b-n10-d8,all,543
-13661,13661,0,0.0,91.71597979650099,71.0,17.72110387233731,14.0,17.27670009516141,13.0,22.007686113754485,17.0,22.007686113754485,17.0,llada8b-n10-d8,clean_only,543
-2729,2729,0,0.0,93.2781238548919,76.0,17.288017588860388,14.0,16.231586661780874,13.0,26.548186148772444,22.0,26.548186148772444,22.0,llada8b-n10-d8,flagged_only,522
-16390,16390,0,0.0,91.97608297742526,72.0,17.648993288590603,14.0,17.102684563758388,13.0,22.763697376449056,17.0,22.763697376449056,17.0,__GLOBAL__,all,543
