@@ -1,40 +1,50 @@
 #!/usr/bin/env python3
 # src/ambient/evaluation/task4_linear_probing.py
 """
-Task 4: Internal Representation Probing (Layerwise Linear Probing + Probe Entropy)
+Task 4: Internal Representation Probing (Layerwise Linear Probing + Probe Entropy
++ von Neumann Entropy)
 
-This script evaluates whether binary NLI entailment states are linearly
-accessible in the hidden representations of:
-- an autoregressive base model
-- a diffusion base model (LLaDA)
+This script keeps the layerwise linear probing setup from the extended Task-4
+implementation and additionally computes a representation-level von Neumann
+entropy analysis for ambiguous versus disambiguated inputs.
 
-Compared with the earlier layerwise version, this implementation additionally:
-- supports multiple probe input regimes
-- keeps results both for the current side-reconstructed disambiguations and for
-  fully disambiguated premise-hypothesis pairs
-- computes per-layer probe entropy from held-out logistic-regression probabilities
-- computes an approximate global histogram entropy over the model weights
+What is preserved from the earlier probing script:
+- grouped 5-fold layerwise linear probing with LogisticRegression
+- per-layer mean/std accuracy
+- per-layer probe entropy derived from held-out classifier probabilities
+- support for multiple probe dataset constructions:
+    * side_reconstructed
+    * fully_disambiguated
 
-Important note on entropy:
-- "probe entropy" is the Shannon entropy of the held-out binary class
-  probabilities predicted by the probe for a given layer. This is interpretable
-  as task-level uncertainty of a linear readout, not entropy of the raw hidden
-  vector itself.
-- "weight entropy" is an approximate histogram-based Shannon entropy over a
-  large deterministic sample of model parameter values. It is descriptive and
-  depends on the chosen sampling budget and number of histogram bins; it should
-  not be interpreted as Bayesian uncertainty.
+What changes relative to the earlier entropy extension:
+- the approximate histogram-based global weight entropy is removed
+- instead, the script adds von Neumann entropy over token-level hidden-state
+  matrices for ambiguous vs. disambiguated inputs
+
+von Neumann entropy construction:
+- For one input and one layer, let H in R^{T x D} be the hidden-state matrix for
+  the non-padding tokens.
+- We form the token Gram matrix G = H H^T.
+- We normalize it to rho = G / Tr(G).
+- The von Neumann entropy is S(rho) = -Tr(rho log2 rho).
+
+Notes:
+- Using H H^T is efficient because T is much smaller than D, and it shares the
+  same non-zero spectrum as H^T H after trace-normalization.
+- Because disambiguated strings are often longer than ambiguous originals, the
+  script reports both raw entropy and a normalized entropy, dividing by log2(T).
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import random
 import warnings
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import DefaultDict, Dict, Iterable, List, Tuple
 
 import numpy as np
 import torch
@@ -56,7 +66,7 @@ warnings.filterwarnings("ignore")
 LLADA_MASK_ID = 126336
 VALID_BINARY_LABELS = {"entailment", "contradiction"}
 DATASET_MODE_CHOICES = ("side_reconstructed", "fully_disambiguated")
-WEIGHT_ENTROPY_CACHE: Dict[Tuple[object, ...], Dict[str, float]] = {}
+VNE_INPUT_MODE_CHOICES = ("sentence_only", "pair_prompt")
 
 
 def set_all_seeds(seed: int) -> None:
@@ -71,7 +81,6 @@ def set_all_seeds(seed: int) -> None:
     set_seed(seed)
 
 
-
 def build_prompt(premise: str, hypothesis: str) -> str:
     return (
         f"Premise: {premise}\n"
@@ -79,7 +88,6 @@ def build_prompt(premise: str, hypothesis: str) -> str:
         "Question: Does the premise entail or contradict the hypothesis?\n"
         "Answer:"
     )
-
 
 
 def ambiguity_type_name(premise_ambiguous: bool, hypothesis_ambiguous: bool) -> str:
@@ -92,7 +100,6 @@ def ambiguity_type_name(premise_ambiguous: bool, hypothesis_ambiguous: bool) -> 
     return "none"
 
 
-
 def load_probe_dataset(
     path: Path,
     mode: str,
@@ -103,15 +110,13 @@ def load_probe_dataset(
 
     Modes:
     - side_reconstructed:
-        Current Task-4 behavior. If premise is ambiguous, use the disambiguated
-        premise with the original hypothesis. If hypothesis is ambiguous, use
-        the original premise with the disambiguated hypothesis. If both are
-        ambiguous, include both variants.
+        If premise is ambiguous, use the disambiguated premise with the original
+        hypothesis. If hypothesis is ambiguous, use the original premise with the
+        disambiguated hypothesis. If both are ambiguous, include both variants.
 
     - fully_disambiguated:
         Use the fully disambiguated premise-hypothesis pair from each
-        disambiguation entry. This keeps the rewritten pair together and is the
-        most direct comparison condition against side-reconstructed prompts.
+        disambiguation entry.
     """
     if mode not in DATASET_MODE_CHOICES:
         raise ValueError(f"Unsupported dataset mode: {mode}")
@@ -226,6 +231,117 @@ def load_probe_dataset(
     return texts, labels, groups, source_types, metadata
 
 
+def load_vne_dataset(
+    path: Path,
+    input_mode: str,
+    max_examples: int = 580,
+) -> Tuple[List[Dict[str, str]], Dict[str, object]]:
+    """
+    Build paired ambiguous/disambiguated inputs for the von Neumann analysis.
+
+    sentence_only:
+        Compare the ambiguous sentence directly to the corresponding same-side
+        disambiguation.
+
+    pair_prompt:
+        Keep the full NLI prompt template and replace only the ambiguous side.
+    """
+    if input_mode not in VNE_INPUT_MODE_CHOICES:
+        raise ValueError(f"Unsupported vne input mode: {input_mode}")
+
+    pairs: List[Dict[str, str]] = []
+    side_counter = Counter()
+    label_counter = Counter()
+    used_instance_ids = set()
+
+    if not path.exists():
+        print(f"[error] Dataset not found at {path}")
+        return pairs, {}
+
+    with open(path, "r", encoding="utf-8") as handle:
+        for line in handle:
+            ex = json.loads(line)
+            disambiguations = ex.get("disambiguations", [])
+            if not disambiguations:
+                continue
+
+            premise_ambiguous = bool(ex.get("premise_ambiguous", False))
+            hypothesis_ambiguous = bool(ex.get("hypothesis_ambiguous", False))
+            if not (premise_ambiguous or hypothesis_ambiguous):
+                continue
+
+            original_premise = ex.get("premise", "")
+            original_hypothesis = ex.get("hypothesis", "")
+            instance_id = str(ex.get("id", f"{original_premise} || {original_hypothesis}"))
+
+            if instance_id not in used_instance_ids:
+                if len(used_instance_ids) >= max_examples:
+                    break
+                used_instance_ids.add(instance_id)
+
+            seen = set()
+            for disambig in disambiguations:
+                label = str(disambig.get("label", "unknown"))
+
+                if premise_ambiguous:
+                    amb = (original_premise or "").strip()
+                    dis = (disambig.get("premise") or "").strip()
+                    if amb and dis:
+                        if input_mode == "sentence_only":
+                            ambiguous_text = amb
+                            disambiguated_text = dis
+                        else:
+                            ambiguous_text = build_prompt(amb, original_hypothesis)
+                            disambiguated_text = build_prompt(dis, original_hypothesis)
+                        key = (instance_id, "premise", label, ambiguous_text, disambiguated_text)
+                        if key not in seen:
+                            pairs.append(
+                                {
+                                    "instance_id": instance_id,
+                                    "side": "premise",
+                                    "label": label,
+                                    "ambiguous_text": ambiguous_text,
+                                    "disambiguated_text": disambiguated_text,
+                                }
+                            )
+                            seen.add(key)
+                            side_counter["premise"] += 1
+                            label_counter[label] += 1
+
+                if hypothesis_ambiguous:
+                    amb = (original_hypothesis or "").strip()
+                    dis = (disambig.get("hypothesis") or "").strip()
+                    if amb and dis:
+                        if input_mode == "sentence_only":
+                            ambiguous_text = amb
+                            disambiguated_text = dis
+                        else:
+                            ambiguous_text = build_prompt(original_premise, amb)
+                            disambiguated_text = build_prompt(original_premise, dis)
+                        key = (instance_id, "hypothesis", label, ambiguous_text, disambiguated_text)
+                        if key not in seen:
+                            pairs.append(
+                                {
+                                    "instance_id": instance_id,
+                                    "side": "hypothesis",
+                                    "label": label,
+                                    "ambiguous_text": ambiguous_text,
+                                    "disambiguated_text": disambiguated_text,
+                                }
+                            )
+                            seen.add(key)
+                            side_counter["hypothesis"] += 1
+                            label_counter[label] += 1
+
+    metadata = {
+        "input_mode": input_mode,
+        "num_pairs": len(pairs),
+        "num_unique_instances": len({p['instance_id'] for p in pairs}),
+        "side_distribution": dict(side_counter),
+        "label_distribution": dict(label_counter),
+    }
+    return pairs, metadata
+
 
 def load_model_and_tokenizer(model_id: str, is_llada: bool, use_4bit: bool):
     if is_llada:
@@ -260,86 +376,6 @@ def load_model_and_tokenizer(model_id: str, is_llada: bool, use_4bit: bool):
     return model, tokenizer
 
 
-
-def _iter_parameter_samples(model: torch.nn.Module, global_stride: int) -> Iterable[np.ndarray]:
-    for param in model.parameters():
-        if param.numel() == 0:
-            continue
-        flat = param.detach().view(-1)
-        sampled = flat[::global_stride]
-        if sampled.numel() == 0:
-            continue
-        yield sampled.float().cpu().numpy()
-
-
-
-def approximate_model_weight_entropy_bits(
-    model: torch.nn.Module,
-    max_samples: int = 2_000_000,
-    num_bins: int = 256,
-) -> Dict[str, float]:
-    """
-    Approximate a global histogram entropy over model parameter values.
-
-    This uses deterministic strided sampling across all parameters to avoid
-    materializing billions of weights in memory.
-    """
-    total_numel = 0
-    for param in model.parameters():
-        total_numel += int(param.numel())
-
-    if total_numel == 0:
-        return {
-            "histogram_entropy_bits": float("nan"),
-            "sampled_weights": 0,
-            "total_weights": 0,
-            "num_bins": num_bins,
-            "global_stride": 1,
-        }
-
-    global_stride = max(1, total_numel // max_samples)
-    sample_chunks = list(_iter_parameter_samples(model, global_stride))
-    if not sample_chunks:
-        return {
-            "histogram_entropy_bits": float("nan"),
-            "sampled_weights": 0,
-            "total_weights": total_numel,
-            "num_bins": num_bins,
-            "global_stride": global_stride,
-        }
-
-    samples = np.concatenate(sample_chunks, axis=0)
-    if samples.size > max_samples:
-        samples = samples[:max_samples]
-
-    if samples.size == 0:
-        entropy = float("nan")
-        min_value = float("nan")
-        max_value = float("nan")
-    else:
-        min_value = float(np.min(samples))
-        max_value = float(np.max(samples))
-        if np.isclose(min_value, max_value):
-            entropy = 0.0
-        else:
-            counts, _ = np.histogram(samples, bins=num_bins, range=(min_value, max_value))
-            probs = counts.astype(np.float64)
-            probs /= probs.sum()
-            probs = probs[probs > 0]
-            entropy = float(-(probs * np.log2(probs)).sum())
-
-    return {
-        "histogram_entropy_bits": entropy,
-        "sampled_weights": int(samples.size),
-        "total_weights": int(total_numel),
-        "num_bins": int(num_bins),
-        "global_stride": int(global_stride),
-        "sample_min": min_value,
-        "sample_max": max_value,
-    }
-
-
-
 def extract_hidden_states(
     model_id: str,
     texts: List[str],
@@ -347,42 +383,17 @@ def extract_hidden_states(
     batch_size: int,
     use_4bit: bool,
     include_embedding_layer: bool = False,
-    compute_weight_entropy: bool = True,
-    weight_entropy_max_samples: int = 2_000_000,
-    weight_entropy_bins: int = 256,
-) -> Tuple[Dict[int, np.ndarray], Dict[str, float] | None]:
+) -> Dict[int, np.ndarray]:
+    """
+    Extract per-layer summary vectors for the probing setup.
+
+    AR:
+        final valid causal token state
+    LLaDA:
+        appended [MASK] summary state
+    """
     print(f"[info] Initializing feature extraction pipeline for: {model_id}")
     model, tokenizer = load_model_and_tokenizer(model_id, is_llada=is_llada, use_4bit=use_4bit)
-
-    weight_entropy_info = None
-    entropy_cache_key = (
-        model_id,
-        is_llada,
-        use_4bit,
-        weight_entropy_max_samples,
-        weight_entropy_bins,
-    )
-    if compute_weight_entropy:
-        if entropy_cache_key in WEIGHT_ENTROPY_CACHE:
-            weight_entropy_info = WEIGHT_ENTROPY_CACHE[entropy_cache_key]
-            print(
-                f"[info] Reusing cached weight entropy for {model_id}: "
-                f"{weight_entropy_info['histogram_entropy_bits']:.4f} bits"
-            )
-        else:
-            print(f"[info] Computing approximate global weight entropy for: {model_id}")
-            weight_entropy_info = approximate_model_weight_entropy_bits(
-                model,
-                max_samples=weight_entropy_max_samples,
-                num_bins=weight_entropy_bins,
-            )
-            WEIGHT_ENTROPY_CACHE[entropy_cache_key] = weight_entropy_info
-            print(
-                f"[info] Approximate global weight entropy for {model_id}: "
-                f"{weight_entropy_info['histogram_entropy_bits']:.4f} bits "
-                f"(sampled {weight_entropy_info['sampled_weights']:,} / "
-                f"{weight_entropy_info['total_weights']:,} weights)"
-            )
 
     all_embeddings_by_layer: Dict[int, List[np.ndarray]] = {}
 
@@ -461,8 +472,7 @@ def extract_hidden_states(
         f"({'including' if include_embedding_layer else 'excluding'} embedding layer)."
     )
     print(f"[info] Layer indices: {layer_list[0]} .. {layer_list[-1]}")
-    return final_embeddings_by_layer, weight_entropy_info
-
+    return final_embeddings_by_layer
 
 
 def binary_entropy_bits_from_positive_probs(p_positive: np.ndarray) -> np.ndarray:
@@ -471,7 +481,6 @@ def binary_entropy_bits_from_positive_probs(p_positive: np.ndarray) -> np.ndarra
         p_positive * np.log2(p_positive)
         + (1.0 - p_positive) * np.log2(1.0 - p_positive)
     )
-
 
 
 def run_layerwise_probe(
@@ -533,7 +542,6 @@ def run_layerwise_probe(
     return results
 
 
-
 def summarize_results(model_name: str, results: Dict[int, Dict[str, object]]) -> None:
     ordered_layers = sorted(results.keys())
     middle_layer = ordered_layers[len(ordered_layers) // 2]
@@ -565,10 +573,232 @@ def summarize_results(model_name: str, results: Dict[int, Dict[str, object]]) ->
     )
 
 
+def von_neumann_entropy_from_token_matrix(
+    token_matrix: np.ndarray,
+    center_tokens: bool = False,
+    eps: float = 1e-12,
+) -> Dict[str, float]:
+    """
+    Compute von Neumann entropy from the token hidden-state matrix H.
+    """
+    if token_matrix.ndim != 2:
+        raise ValueError(f"Expected 2D token matrix, got shape={token_matrix.shape}")
+
+    H = token_matrix.astype(np.float64, copy=False)
+    num_tokens = int(H.shape[0])
+
+    if num_tokens <= 1:
+        return {
+            "raw_entropy_bits": 0.0,
+            "normalized_entropy": 0.0,
+            "effective_rank": 1.0,
+            "num_tokens": num_tokens,
+        }
+
+    if center_tokens:
+        H = H - H.mean(axis=0, keepdims=True)
+
+    gram = H @ H.T
+    gram = 0.5 * (gram + gram.T)
+    trace = float(np.trace(gram))
+
+    if trace <= eps:
+        return {
+            "raw_entropy_bits": 0.0,
+            "normalized_entropy": 0.0,
+            "effective_rank": 1.0,
+            "num_tokens": num_tokens,
+        }
+
+    rho = gram / trace
+    eigvals = np.linalg.eigvalsh(rho)
+    eigvals = np.clip(eigvals, 0.0, None)
+    eigvals = eigvals[eigvals > eps]
+
+    if eigvals.size == 0:
+        raw_entropy_bits = 0.0
+    else:
+        eigvals = eigvals / eigvals.sum()
+        raw_entropy_bits = float(-(eigvals * np.log2(eigvals)).sum())
+
+    max_entropy = math.log2(num_tokens) if num_tokens > 1 else 1.0
+    normalized_entropy = raw_entropy_bits / max_entropy if max_entropy > 0 else 0.0
+    effective_rank = float(2 ** raw_entropy_bits)
+
+    return {
+        "raw_entropy_bits": raw_entropy_bits,
+        "normalized_entropy": float(normalized_entropy),
+        "effective_rank": effective_rank,
+        "num_tokens": num_tokens,
+    }
+
+
+def extract_vne_comparison(
+    model_id: str,
+    pairs: List[Dict[str, str]],
+    is_llada: bool,
+    batch_size: int,
+    use_4bit: bool,
+    include_embedding_layer: bool = False,
+    center_tokens: bool = False,
+) -> Dict[int, Dict[str, object]]:
+    """
+    Compute layerwise von Neumann entropy summaries for ambiguous vs.
+    disambiguated paired inputs.
+
+    For the VNE analysis, both AR and LLaDA are run on the observed token string
+    as-is. Unlike the probing path, LLaDA does not receive an appended [MASK]
+    summary token here because we want the token-token representation matrix of
+    the actual input.
+    """
+    print(f"[info] Initializing von Neumann extraction pipeline for: {model_id}")
+    model, tokenizer = load_model_and_tokenizer(model_id, is_llada=is_llada, use_4bit=use_4bit)
+
+    layer_stats: DefaultDict[int, Dict[str, List[float]]] = defaultdict(
+        lambda: {
+            "ambiguous_raw_entropy_bits": [],
+            "ambiguous_normalized_entropy": [],
+            "ambiguous_effective_rank": [],
+            "ambiguous_num_tokens": [],
+            "disambiguated_raw_entropy_bits": [],
+            "disambiguated_normalized_entropy": [],
+            "disambiguated_effective_rank": [],
+            "disambiguated_num_tokens": [],
+            "delta_raw_entropy_bits": [],
+            "delta_normalized_entropy": [],
+            "delta_effective_rank": [],
+        }
+    )
+
+    all_texts: List[str] = []
+    pair_index: List[Tuple[int, str]] = []
+    for idx, pair in enumerate(pairs):
+        all_texts.append(pair["ambiguous_text"])
+        pair_index.append((idx, "ambiguous"))
+        all_texts.append(pair["disambiguated_text"])
+        pair_index.append((idx, "disambiguated"))
+
+    per_pair_per_layer: DefaultDict[int, Dict[int, Dict[str, Dict[str, float]]]] = defaultdict(dict)
+
+    with torch.no_grad():
+        for i in range(0, len(all_texts), batch_size):
+            batch_texts = all_texts[i : i + batch_size]
+            batch_meta = pair_index[i : i + batch_size]
+
+            inputs = tokenizer(
+                batch_texts,
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+            )
+
+            input_ids = inputs["input_ids"].to(model.device)
+            attention_mask = inputs["attention_mask"].to(model.device)
+
+            outputs = model(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                output_hidden_states=True,
+            )
+            hidden_states = outputs.hidden_states
+            start_idx = 0 if include_embedding_layer else 1
+
+            attention_mask_cpu = attention_mask.detach().cpu().numpy().astype(bool)
+
+            for layer_idx in range(start_idx, len(hidden_states)):
+                layer_h = hidden_states[layer_idx].detach().float().cpu().numpy()
+
+                for local_idx, (pair_id, variant) in enumerate(batch_meta):
+                    valid_tokens = attention_mask_cpu[local_idx]
+                    token_matrix = layer_h[local_idx][valid_tokens]
+                    entropy_info = von_neumann_entropy_from_token_matrix(
+                        token_matrix,
+                        center_tokens=center_tokens,
+                    )
+                    per_pair_per_layer[pair_id].setdefault(layer_idx, {})[variant] = entropy_info
+
+    for pair_id in sorted(per_pair_per_layer.keys()):
+        for layer_idx, variants in per_pair_per_layer[pair_id].items():
+            if "ambiguous" not in variants or "disambiguated" not in variants:
+                continue
+
+            amb = variants["ambiguous"]
+            dis = variants["disambiguated"]
+            stats = layer_stats[layer_idx]
+
+            stats["ambiguous_raw_entropy_bits"].append(float(amb["raw_entropy_bits"]))
+            stats["ambiguous_normalized_entropy"].append(float(amb["normalized_entropy"]))
+            stats["ambiguous_effective_rank"].append(float(amb["effective_rank"]))
+            stats["ambiguous_num_tokens"].append(float(amb["num_tokens"]))
+
+            stats["disambiguated_raw_entropy_bits"].append(float(dis["raw_entropy_bits"]))
+            stats["disambiguated_normalized_entropy"].append(float(dis["normalized_entropy"]))
+            stats["disambiguated_effective_rank"].append(float(dis["effective_rank"]))
+            stats["disambiguated_num_tokens"].append(float(dis["num_tokens"]))
+
+            stats["delta_raw_entropy_bits"].append(float(dis["raw_entropy_bits"] - amb["raw_entropy_bits"]))
+            stats["delta_normalized_entropy"].append(float(dis["normalized_entropy"] - amb["normalized_entropy"]))
+            stats["delta_effective_rank"].append(float(dis["effective_rank"] - amb["effective_rank"]))
+
+    del model
+    del tokenizer
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    output: Dict[int, Dict[str, object]] = {}
+    for layer_idx, stats in sorted(layer_stats.items()):
+        output[layer_idx] = {
+            "num_pairs": len(stats["delta_normalized_entropy"]),
+            "ambiguous_raw_entropy_bits_mean": float(np.mean(stats["ambiguous_raw_entropy_bits"])),
+            "ambiguous_raw_entropy_bits_std": float(np.std(stats["ambiguous_raw_entropy_bits"])),
+            "ambiguous_normalized_entropy_mean": float(np.mean(stats["ambiguous_normalized_entropy"])),
+            "ambiguous_normalized_entropy_std": float(np.std(stats["ambiguous_normalized_entropy"])),
+            "ambiguous_effective_rank_mean": float(np.mean(stats["ambiguous_effective_rank"])),
+            "ambiguous_num_tokens_mean": float(np.mean(stats["ambiguous_num_tokens"])),
+            "disambiguated_raw_entropy_bits_mean": float(np.mean(stats["disambiguated_raw_entropy_bits"])),
+            "disambiguated_raw_entropy_bits_std": float(np.std(stats["disambiguated_raw_entropy_bits"])),
+            "disambiguated_normalized_entropy_mean": float(np.mean(stats["disambiguated_normalized_entropy"])),
+            "disambiguated_normalized_entropy_std": float(np.std(stats["disambiguated_normalized_entropy"])),
+            "disambiguated_effective_rank_mean": float(np.mean(stats["disambiguated_effective_rank"])),
+            "disambiguated_num_tokens_mean": float(np.mean(stats["disambiguated_num_tokens"])),
+            "delta_raw_entropy_bits_mean": float(np.mean(stats["delta_raw_entropy_bits"])),
+            "delta_raw_entropy_bits_std": float(np.std(stats["delta_raw_entropy_bits"])),
+            "delta_normalized_entropy_mean": float(np.mean(stats["delta_normalized_entropy"])),
+            "delta_normalized_entropy_std": float(np.std(stats["delta_normalized_entropy"])),
+            "delta_effective_rank_mean": float(np.mean(stats["delta_effective_rank"])),
+            "delta_effective_rank_std": float(np.std(stats["delta_effective_rank"])),
+        }
+
+    return output
+
+
+def summarize_vne_results(model_name: str, results: Dict[int, Dict[str, object]]) -> None:
+    if not results:
+        print(f"[summary] {model_name} | no von Neumann results")
+        return
+
+    ordered_layers = sorted(results.keys())
+    middle_layer = ordered_layers[len(ordered_layers) // 2]
+    max_delta_layer = max(ordered_layers, key=lambda layer: abs(results[layer]["delta_normalized_entropy_mean"]))
+
+    print(f"[summary-vne] {model_name}")
+    for label, layer_idx in [
+        ("middle layer", middle_layer),
+        ("final layer", ordered_layers[-1]),
+        ("largest |delta normalized entropy|", max_delta_layer),
+    ]:
+        res = results[layer_idx]
+        print(
+            f"  {label}: {layer_idx} | "
+            f"H_amb={res['ambiguous_normalized_entropy_mean']:.4f}, "
+            f"H_dis={res['disambiguated_normalized_entropy_mean']:.4f}, "
+            f"delta={res['delta_normalized_entropy_mean']:+.4f}"
+        )
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Task 4: Layerwise Linear Probing of Internal Representations"
+        description="Task 4: Layerwise Linear Probing with additional von Neumann entropy analysis"
     )
     parser.add_argument(
         "--llama-model",
@@ -614,7 +844,7 @@ def main() -> None:
     parser.add_argument(
         "--include-embedding-layer",
         action="store_true",
-        help="Also probe the embedding layer (index 0). Default: hidden layers only.",
+        help="Also include the embedding layer (index 0). Default: hidden layers only.",
     )
     parser.add_argument(
         "--dataset-modes",
@@ -627,37 +857,44 @@ def main() -> None:
         ),
     )
     parser.add_argument(
-        "--skip-weight-entropy",
+        "--vne-input-mode",
+        type=str,
+        default="sentence_only",
+        choices=list(VNE_INPUT_MODE_CHOICES),
+        help=(
+            "How the von Neumann entropy comparison should be built. "
+            "sentence_only compares just the ambiguous string vs. its same-side rewrite; "
+            "pair_prompt keeps the full NLI prompt context."
+        ),
+    )
+    parser.add_argument(
+        "--vne-center-tokens",
         action="store_true",
-        help="Skip the approximate global histogram entropy over model weights.",
+        help="Mean-center token representations before computing the token Gram matrix.",
     )
     parser.add_argument(
-        "--weight-entropy-max-samples",
-        type=int,
-        default=2_000_000,
-        help="Maximum number of sampled weights for approximate global weight entropy.",
-    )
-    parser.add_argument(
-        "--weight-entropy-bins",
-        type=int,
-        default=256,
-        help="Number of histogram bins for approximate global weight entropy.",
+        "--skip-vne",
+        action="store_true",
+        help="Skip the additional von Neumann entropy analysis.",
     )
     parser.add_argument(
         "--output-path",
         type=Path,
-        default=Path("results/task4/layerwise_probe_results_with_entropy.json"),
-        help="Where to save the layerwise probing results as JSON.",
+        default=Path("results/task4/layerwise_probe_results_with_vne.json"),
+        help="Where to save the combined Task-4 results as JSON.",
     )
     args = parser.parse_args()
 
-    print("=== Starting Task 4: Layerwise Internal Representation Probing ===")
+    print("=== Starting Task 4: Layerwise Internal Representation Probing + VNE ===")
     print(f"[info] Global seed: {args.seed}")
     print(f"[info] Batch size: {args.batch_size}")
     print(f"[info] 4-bit quantization: {args.use_4bit}")
     print(f"[info] Include embedding layer: {args.include_embedding_layer}")
-    print(f"[info] Dataset modes: {args.dataset_modes}")
-    print(f"[info] Compute weight entropy: {not args.skip_weight_entropy}")
+    print(f"[info] Probe dataset modes: {args.dataset_modes}")
+    print(f"[info] Compute von Neumann entropy: {not args.skip_vne}")
+    if not args.skip_vne:
+        print(f"[info] VNE input mode: {args.vne_input_mode}")
+        print(f"[info] VNE token centering: {args.vne_center_tokens}")
 
     set_all_seeds(args.seed)
 
@@ -672,18 +909,18 @@ def main() -> None:
             "use_4bit": args.use_4bit,
             "include_embedding_layer": args.include_embedding_layer,
             "dataset_modes": args.dataset_modes,
-            "compute_weight_entropy": not args.skip_weight_entropy,
-            "weight_entropy_max_samples": args.weight_entropy_max_samples,
-            "weight_entropy_bins": args.weight_entropy_bins,
+            "vne_input_mode": args.vne_input_mode,
+            "vne_center_tokens": args.vne_center_tokens,
+            "compute_vne": not args.skip_vne,
         },
         "datasets": {},
-        "weight_entropy": {},
         "results": {},
+        "von_neumann_entropy": {},
     }
 
     for mode in args.dataset_modes:
         print("=" * 72)
-        print(f"[info] Preparing dataset mode: {mode}")
+        print(f"[info] Preparing probing dataset mode: {mode}")
         texts, labels, groups, source_types, dataset_metadata = load_probe_dataset(
             args.data_path,
             mode=mode,
@@ -700,33 +937,22 @@ def main() -> None:
             print(f"[warn] No valid NLI pairs found for dataset mode '{mode}'. Skipping.")
             continue
 
-        llama_embeddings, llama_weight_entropy = extract_hidden_states(
+        llama_embeddings = extract_hidden_states(
             args.llama_model,
             texts,
             is_llada=False,
             batch_size=args.batch_size,
             use_4bit=args.use_4bit,
             include_embedding_layer=args.include_embedding_layer,
-            compute_weight_entropy=not args.skip_weight_entropy,
-            weight_entropy_max_samples=args.weight_entropy_max_samples,
-            weight_entropy_bins=args.weight_entropy_bins,
         )
-        llada_embeddings, llada_weight_entropy = extract_hidden_states(
+        llada_embeddings = extract_hidden_states(
             args.llada_model,
             texts,
             is_llada=True,
             batch_size=args.batch_size,
             use_4bit=args.use_4bit,
             include_embedding_layer=args.include_embedding_layer,
-            compute_weight_entropy=not args.skip_weight_entropy,
-            weight_entropy_max_samples=args.weight_entropy_max_samples,
-            weight_entropy_bins=args.weight_entropy_bins,
         )
-
-        if llama_weight_entropy is not None:
-            output["weight_entropy"]["llama"] = llama_weight_entropy
-        if llada_weight_entropy is not None:
-            output["weight_entropy"]["llada"] = llada_weight_entropy
 
         llama_results = run_layerwise_probe(
             llama_embeddings,
@@ -742,7 +968,7 @@ def main() -> None:
         )
 
         print("-" * 72)
-        print(f"=== RESULTS FOR DATASET MODE: {mode} ===")
+        print(f"=== PROBING RESULTS FOR DATASET MODE: {mode} ===")
         summarize_results("LLaMA-3.1-8B (AR)", llama_results)
         summarize_results("LLaDA-8B (Diffusion)", llada_results)
         print("-" * 72)
@@ -753,12 +979,61 @@ def main() -> None:
             "llada": {str(k): v for k, v in llada_results.items()},
         }
 
+    if not args.skip_vne:
+        print("=" * 72)
+        print("[info] Preparing ambiguous vs. disambiguated VNE dataset...")
+        vne_pairs, vne_metadata = load_vne_dataset(
+            args.data_path,
+            input_mode=args.vne_input_mode,
+            max_examples=args.max_examples,
+        )
+        print(
+            f"[info] Extracted {len(vne_pairs)} VNE pairs across "
+            f"{vne_metadata.get('num_unique_instances', 0)} unique source instances."
+        )
+        print(f"[info] VNE side distribution: {vne_metadata.get('side_distribution', {})}")
+        print(f"[info] VNE label distribution: {vne_metadata.get('label_distribution', {})}")
+
+        if vne_pairs:
+            llama_vne = extract_vne_comparison(
+                args.llama_model,
+                vne_pairs,
+                is_llada=False,
+                batch_size=args.batch_size,
+                use_4bit=args.use_4bit,
+                include_embedding_layer=args.include_embedding_layer,
+                center_tokens=args.vne_center_tokens,
+            )
+            llada_vne = extract_vne_comparison(
+                args.llada_model,
+                vne_pairs,
+                is_llada=True,
+                batch_size=args.batch_size,
+                use_4bit=args.use_4bit,
+                include_embedding_layer=args.include_embedding_layer,
+                center_tokens=args.vne_center_tokens,
+            )
+
+            print("-" * 72)
+            print("=== VON NEUMANN ENTROPY RESULTS (AMBIGUOUS VS. DISAMBIGUATED) ===")
+            summarize_vne_results("LLaMA-3.1-8B (AR)", llama_vne)
+            summarize_vne_results("LLaDA-8B (Diffusion)", llada_vne)
+            print("-" * 72)
+
+            output["datasets"]["von_neumann_entropy"] = vne_metadata
+            output["von_neumann_entropy"] = {
+                "llama": {str(k): v for k, v in llama_vne.items()},
+                "llada": {str(k): v for k, v in llada_vne.items()},
+            }
+        else:
+            print("[warn] No valid ambiguous/disambiguated pairs found for VNE analysis.")
+
     args.output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(args.output_path, "w", encoding="utf-8") as handle:
         json.dump(output, handle, indent=2)
 
     print("=" * 72)
-    print(f"[info] Saved layerwise results to: {args.output_path}")
+    print(f"[info] Saved combined Task-4 results to: {args.output_path}")
 
 
 if __name__ == "__main__":

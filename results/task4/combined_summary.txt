@@ -1,4 +1,4 @@
-Task 4 upgraded layerwise probing summary
+Task 4 combined layerwise probing + von Neumann entropy summary
 
 Config:
   llama_model: meta-llama/Meta-Llama-3.1-8B
@@ -10,9 +10,9 @@ Config:
   use_4bit: True
   include_embedding_layer: False
   dataset_modes: ['side_reconstructed', 'fully_disambiguated']
-  compute_weight_entropy: True
-  weight_entropy_max_samples: 2000000
-  weight_entropy_bins: 256
+  vne_input_mode: sentence_only
+  vne_center_tokens: False
+  compute_vne: True
 
 Dataset metadata for side_reconstructed:
   mode: side_reconstructed
@@ -60,6 +60,18 @@ Dataset mode: fully_disambiguated (Fully disambiguated pairs)
   Mean accuracy Δ (LLaDA-LLaMA), late: +0.1008
   Mean probe entropy Δ (LLaDA-LLaMA), late: -0.0721 bits
 
-Global approximate weight entropy:
-  LLaMA-3.1-8B: 6.7321 bits (sampled 2,000,000 / 4,540,600,320 weights, bins=256, stride=2270)
-  LLaDA-8B: 6.8211 bits (sampled 2,000,000 / 4,525,920,256 weights, bins=256, stride=2262)
+Dataset metadata for von_neumann_entropy:
+  input_mode: sentence_only
+  num_pairs: 1217
+  num_unique_instances: 543
+  side_distribution: {'premise': 839, 'hypothesis': 378}
+  label_distribution: {'entailment': 418, 'neutral': 529, 'contradiction': 270}
+
+Von Neumann entropy summary:
+  LLaMA-3.1-8B middle layer 17: H_amb=0.0250, H_dis=0.0279, Δ=+0.0029
+  LLaMA-3.1-8B final layer 32: H_amb=0.8124, H_dis=0.7931, Δ=-0.0193
+  LLaMA-3.1-8B max |Δ| layer 31: H_amb=0.2347, H_dis=0.2554, Δ=+0.0207
+  LLaDA-8B middle layer 17: H_amb=0.3456, H_dis=0.3467, Δ=+0.0011
+  LLaDA-8B final layer 32: H_amb=0.4737, H_dis=0.4595, Δ=-0.0142
+  LLaDA-8B max |Δ| layer 32: H_amb=0.4737, H_dis=0.4595, Δ=-0.0142
+  Largest model gap in normalized VNE delta (LLaDA-LLaMA): layer 29 (-0.0268)
