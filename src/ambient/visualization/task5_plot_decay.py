@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# src/ambient/evaluation/task5_plot_decay.py
+# src/ambient/visualization/task5_plot_decay.py
 """
 Plot Task 5: Temporal Semantic Commitment trajectories.
 
@@ -8,7 +8,7 @@ entropy over a shared 0%--100% progress axis for autoregressive and diffusion
 models.
 
 Compatibility:
-- supports updated trajectory format:
+- supports the current trajectory format:
     {"metadata": ..., "results": {id: {"trajectory": [...]}}}
 - also supports older direct trajectory maps:
     {"results": {id: [...]}} or {id: [...]}
@@ -19,7 +19,6 @@ Thesis references:
 
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 from typing import Any, Dict, List
@@ -94,25 +93,19 @@ def load_and_interpolate(file_path: Path):
     return common_x, np.array(all_interpolated_entropies)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Plot Task-5 temporal semantic commitment")
-    parser.add_argument("--ar-file", type=Path, help="Path to AR trajectories JSON")
-    parser.add_argument("--diff-file", type=Path, help="Path to diffusion trajectories JSON")
-    parser.add_argument("--out-dir", type=Path, default=Path("results/task5/"), help="Directory to save plots")
-    args = parser.parse_args()
+def run(args) -> int:
+    args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    args.out_dir.mkdir(parents=True, exist_ok=True)
-
-    if not args.ar_file and not args.diff_file:
-        print("[ERROR] You must provide at least one trajectory file (--ar-file or --diff-file).")
-        return
+    if not args.llama_file and not args.llada_file:
+        print("[ERROR] You must provide at least one trajectory file (--llama-file or --llada-file).")
+        return 1
 
     plt.figure(figsize=(10, 6))
 
     # --- Plot Autoregressive Track ---
-    if args.ar_file and args.ar_file.exists():
-        print(f"[INFO] Processing AR data: {args.ar_file.name}")
-        x_ar, y_ar_matrix = load_and_interpolate(args.ar_file)
+    if args.llama_file and args.llama_file.exists():
+        print(f"[INFO] Processing AR data: {args.llama_file.name}")
+        x_ar, y_ar_matrix = load_and_interpolate(args.llama_file)
 
         if len(y_ar_matrix) > 0:
             mean_ar = np.mean(y_ar_matrix, axis=0)
@@ -136,9 +129,9 @@ def main() -> None:
             print("[WARN] No valid AR trajectories found for plotting.")
 
     # --- Plot Diffusion Track ---
-    if args.diff_file and args.diff_file.exists():
-        print(f"[INFO] Processing diffusion data: {args.diff_file.name}")
-        x_diff, y_diff_matrix = load_and_interpolate(args.diff_file)
+    if args.llada_file and args.llada_file.exists():
+        print(f"[INFO] Processing diffusion data: {args.llada_file.name}")
+        x_diff, y_diff_matrix = load_and_interpolate(args.llada_file)
 
         if len(y_diff_matrix) > 0:
             mean_diff = np.mean(y_diff_matrix, axis=0)
@@ -173,11 +166,8 @@ def main() -> None:
     # Entropy = 0 corresponds to full commitment to one reading
     plt.axhline(0, color="black", linestyle="--", linewidth=1, alpha=0.5)
 
-    out_file = args.out_dir / "temporal_semantic_commitment_comparison.png"
+    out_file = args.output_dir / "temporal_semantic_commitment_comparison.png"
     plt.tight_layout()
     plt.savefig(out_file, dpi=300, bbox_inches="tight")
     print(f"\n[INFO] Success! Plot saved to: {out_file}")
-
-
-if __name__ == "__main__":
-    main()
+    return 0

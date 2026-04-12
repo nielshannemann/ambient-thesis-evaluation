@@ -22,9 +22,8 @@ Methodological Integration:
 import os
 
 import json
-import torch
 import random
-import argparse
+import torch
 import numpy as np
 from pathlib import Path
 from tqdm import tqdm
@@ -177,15 +176,7 @@ Winner (Model A, Model B, or Tie):"""
     return winner_model, judge_response, ("A" if llada_is_model_a else "B")
 
 
-def main():
-    parser = argparse.ArgumentParser(description="LLM-as-a-Judge Evaluation for Task 1")
-    parser.add_argument("--llada-file", type=Path, default=Path("results/task1/llada8b_n100.json"), help="Path to LLaDA generations")
-    parser.add_argument("--llama-file", type=Path, default=Path("results/task1/llama8b_n100.json"), help="Path to LLaMA generations")
-    parser.add_argument("--judge-model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct", help="HuggingFace ID of the judge model")
-    parser.add_argument("--seed", type=int, default=42, help="Random seed for blind A/B test assignment [Thesis Ref: Section 2.6.2]")
-    parser.add_argument("--disable-4bit", action="store_true", help="Disable 4-bit quantization (BitsAndBytes NF4)")
-    args = parser.parse_args()
-
+def run(args) -> int:
     print(f"=== Starting LLM-as-a-Judge Evaluation Pipeline ===")
     print(f"[info] Judge Model: {args.judge_model}")
     print(f"[info] Base Seed: {args.seed}")
@@ -267,7 +258,4 @@ def main():
     for k, v in scores.items():
         print(f"{k:10s}: {v} ({(v/len(common_ids))*100:.2f}%)")
     print("="*50)
-
-
-if __name__ == "__main__":
-    main()
+    return 0

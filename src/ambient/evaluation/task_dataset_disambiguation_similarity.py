@@ -25,7 +25,6 @@ Outputs:
 
 from __future__ import annotations
 
-import argparse
 import itertools
 import json
 import math
@@ -41,11 +40,14 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_distances
 from transformers import set_seed
 
+from ambient.paths import dataset_similarity_default_paths
+
 DEFAULT_DATA_PATH = Path("data/test_baked.jsonl")
 DEFAULT_EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-DEFAULT_OUTPUT_JSON = Path("results/task_disambiguation_similarity_summary.json")
-DEFAULT_OUTPUT_CSV = Path("results/task_disambiguation_similarity_instances.csv")
-DEFAULT_OUTPUT_AGG_CSV = Path("results/task_disambiguation_similarity_aggregates.csv")
+DEFAULT_OUTPUTS = dataset_similarity_default_paths()
+DEFAULT_OUTPUT_JSON = DEFAULT_OUTPUTS["json"]
+DEFAULT_OUTPUT_CSV = DEFAULT_OUTPUTS["csv"]
+DEFAULT_OUTPUT_AGG_CSV = DEFAULT_OUTPUTS["agg_csv"]
 DEFAULT_SEED = 42
 CACHE_DIR = "./models"
 
@@ -320,18 +322,7 @@ def aggregate_from_dataframe(df: pd.DataFrame, group_name: str) -> List[dict]:
     return rows
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Analyze similarity among gold disambiguations in AMBIENT.")
-    parser.add_argument("--data-path", type=Path, default=DEFAULT_DATA_PATH)
-    parser.add_argument("--embed-model", type=str, default=DEFAULT_EMBED_MODEL)
-    parser.add_argument("--batch-size", type=int, default=128)
-    parser.add_argument("--max-examples", type=int, default=None)
-    parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
-    parser.add_argument("--output-json", type=Path, default=DEFAULT_OUTPUT_JSON)
-    parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
-    parser.add_argument("--output-agg-csv", type=Path, default=DEFAULT_OUTPUT_AGG_CSV)
-    args = parser.parse_args()
-
+def run(args) -> int:
     set_global_determinism(args.seed)
     instances = load_instances(args.data_path, args.max_examples)
     if not instances:
@@ -519,5 +510,4 @@ def main() -> None:
     print(f"  mean disambig→distractor cosine distance: {_fmt(overall_summary['full_pair_view']['disambig_to_distractor_cosine_mean']['mean'])}")
 
 
-if __name__ == "__main__":
-    main()
+    return 0

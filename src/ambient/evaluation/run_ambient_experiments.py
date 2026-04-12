@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# src/ambient/run_ambient_experiments.py
+# src/ambient/evaluation/run_ambient_experiments.py
 """
 =============================================================================
 AMBIENT EVALUATION ORCHESTRATOR (SINGLE-MODEL PIPELINE)
@@ -26,24 +26,25 @@ import traceback
 import math
 from pathlib import Path
 from typing import List
-import pandas as pd
 
-import click
+import pandas as pd
 import torch
 import numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # [Thesis Reference: Section 3.1.2 - The Adapter Framework]
 from ambient.adapters import LLaDaAdapter, ARAdapter, register_adapter
+from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
 from ambient.llada_loader import load_llada_model
 from ambient.evaluation.continuation_evaluation_adapted import continuation_evaluation
+from ambient.paths import task0_run_dir
 from ambient.utils import write_json_atomic
 
 # ==========================================
 # CONFIGURATION
 # ==========================================
-LLADA_MODEL_ID = "GSAI-ML/LLaDA-8B-Base"
-LLAMA_MODEL_ID = "meta-llama/Meta-Llama-3.1-8B"
+LLADA_MODEL_ID = LLADA_BASE_MODEL_ID
+LLAMA_MODEL_ID = LLAMA_BASE_MODEL_ID
 
 def set_seed(seed_val: int):
     """
@@ -201,26 +202,22 @@ def auto_detect_4bit(model_id: str) -> bool:
         
     return vram_gb < 16
 
-@click.command()
-@click.option("--data-path", type=click.Path(exists=True), default="data/test_baked.jsonl")
-@click.option("--model-name", type=str, required=True, help="E.g., 'llama8b', 'llada8b'")
-@click.option("--model-id", type=str, required=False, help="Hugging Face Model ID")
-@click.option("--model-type", default=None, type=click.Choice(["ar", "diffusion"]), required=True)
-# --- Hardware & Reproducibility Parameters ---
-@click.option("--num-generations", type=int, default=100, help="Total number of sampled continuations (N).")
-@click.option("--gen-batch-size", type=int, default=25, help="Batch size for parallel text generation (chunking).")
-@click.option("--seed", type=int, default=42, help="Global deterministic random seed.")
-# --- Ablation Study Hyperparameters (Thesis Ref: Section 3.3.2) ---
-@click.option("--diffusion-steps", type=int, default=64, help="T: Number of unmasking steps.")
-@click.option("--mc-num", type=str, default="128", help="Comma-separated list of MC iterations, e.g. '2,16,128'")
-@click.option("--mc-batch-size", type=int, default=16, help="Batch size specifically for Monte Carlo NLL scoring.")
-@click.option("--cfg-scale", type=float, default=0.0, help="Classifier-Free Guidance Scale.")
-@click.option("--top-p", type=float, default=1.0, help="Top-P sampling for generation.")
-@click.option("--top-k", type=int, default=0, help="Top-K sampling for generation.")
-@click.option("--temperature", type=float, default=1.0, help="Temperature for generation.")
-def main(data_path, model_name, model_id, model_type, num_generations, gen_batch_size, 
-         diffusion_steps, mc_num, mc_batch_size, cfg_scale, top_p, seed, top_k, temperature):
-    
+def run(args) -> int:
+    data_path = args.data_path
+    model_name = args.model_name
+    model_id = args.model_id
+    model_type = "diffusion" if args.model_family == "llada" else "ar"
+    num_generations = args.num_generations
+    gen_batch_size = args.batch_size
+    diffusion_steps = args.diffusion_steps
+    mc_num = args.mc_num
+    mc_batch_size = args.mc_batch_size
+    cfg_scale = args.cfg_scale
+    top_p = args.top_p
+    seed = args.seed
+    top_k = args.top_k
+    temperature = args.temperature
+
     is_diffusion = model_type == "diffusion"
     # Use user-provided model ID if given, else fall back to the instruct defaults
     if model_id is None:
@@ -244,7 +241,12 @@ def main(data_path, model_name, model_id, model_type, num_generations, gen_batch
         mc_list = [1] 
         summary_names = ["summary.jsonl"]
         
-    out_dir = Path(f"results/{dir_name}")
+    out_dir = args.output_dir or task0_run_dir(
+        model_name=model_name,
+        num_generations=num_generations,
+        model_family=args.model_family,
+        diffusion_steps=diffusion_steps,
+    )
     out_dir.mkdir(parents=True, exist_ok=True)
     meta_path = out_dir / "run_meta.json"
 
@@ -359,6 +361,4 @@ def main(data_path, model_name, model_id, model_type, num_generations, gen_batch
     finally:
         run_meta["timestamp_end"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         write_json_atomic(meta_path, run_meta)
-
-if __name__ == "__main__":
-    main()
+    return 0

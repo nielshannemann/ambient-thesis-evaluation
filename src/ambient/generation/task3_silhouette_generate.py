@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# src/ambient/evaluation/task3_silhouette_generate.py
+# src/ambient/generation/task3_silhouette_generate.py
 """
 =============================================================================
 TASK 3: GENERATIVE SEMANTIC CLUSTERING (PHASE 1 - SAMPLING)
@@ -18,10 +18,10 @@ cryptographic reproducibility via chunk-level deterministic seeding.
 """
 
 import json
-import torch
-import argparse
 import time
 from pathlib import Path
+
+import torch
 from tqdm import tqdm
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed, BitsAndBytesConfig
@@ -29,6 +29,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed, BitsAndB
 # Custom AmbiEnt modules
 from ambient.llada_loader import load_llada_model
 from ambient.adapters import ARAdapter, LLaDaAdapter
+from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
+from ambient.paths import task3_output_path
 
 
 def auto_detect_4bit(hf_model: str) -> bool:
@@ -91,28 +93,7 @@ def load_ambiguous_examples(path: Path, max_examples: int = 600) -> list:
     return data
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Task 3: Unconstrained Continuation Sampling")
-    parser.add_argument("--model-name", type=str, required=True, help="E.g., 'llama8b', 'llada8b'")
-    parser.add_argument("--model-type", choices=["llama", "llada"], required=True, help="Target generative architecture.")
-    parser.add_argument("--model-id", type=str, default=None, help="HuggingFace repository ID.")
-    parser.add_argument("--data-path", type=Path, default=Path("data/test_baked.jsonl"), help="Path to the dataset.")
-    parser.add_argument("--prompt-type", choices=["ambiguous", "disambiguated_control"], default="ambiguous", help="Target input format.")
-    parser.add_argument("--max-examples", type=int, default=580, help="Maximum number of dataset instances to process.")
-
-    # --- HARDWARE & REPRODUCIBILITY ABLATIONS ---
-    parser.add_argument("--num-continuations", type=int, default=10, help="Total number of semantic samples generated per premise (N).")
-    parser.add_argument("--batch-size", type=int, default=25, help="Maximum sequences generated in parallel (prevents VRAM OOM).")
-    parser.add_argument("--seed", type=int, default=42, help="Global deterministic random seed.")
-
-    # --- GENERATION HYPERPARAMETERS ---
-    parser.add_argument("--temperature", type=float, default=1.0, help="Stochasticity scaling factor for sampling.")
-    parser.add_argument("--top-p", type=float, default=1.0, help="Nucleus sampling cumulative probability threshold.")
-    parser.add_argument("--top-k", type=int, default=0, help="Top-K absolute probability truncation (0 = disabled).")
-    parser.add_argument("--cfg-scale", type=float, default=0.0, help="Classifier-Free Guidance multiplier (LLaDA architecture only).")
-    parser.add_argument("--diffusion-steps", type=int, default=128, help="Number of reverse-generation denoising steps (LLaDA only).")
-    args = parser.parse_args()
-
+def run(args) -> int:
     print("=== Starting Task 3: Generative Sampling ===")
 
     # 1. STRICT GLOBAL DETERMINISM
@@ -121,23 +102,22 @@ def main():
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
 
-    is_diffusion = (args.model_type == "llada")
-    model_id = args.model_id or ("GSAI-ML/LLaDA-8B-Base" if is_diffusion else "meta-llama/Meta-Llama-3.1-8B")
+    is_diffusion = args.model_family == "llada"
+    model_id = args.model_id or (LLADA_BASE_MODEL_ID if is_diffusion else LLAMA_BASE_MODEL_ID)
     use_4bit = auto_detect_4bit(model_id)
 
-    print(f"[INFO] Architecture: {args.model_type.upper()} | Prompt Construct: {args.prompt_type.upper()}")
+    print(f"[INFO] Architecture: {args.model_family.upper()} | Prompt Construct: {args.prompt_type.upper()}")
     print(f"[INFO] Hardware Setting: Generating {args.num_continuations} total samples in chunks of {args.batch_size}.")
     print(f"[INFO] Hyperparameters: Temp={args.temperature}, Top-K={args.top_k}, Top-P={args.top_p}, CFG={args.cfg_scale}, Steps={args.diffusion_steps}")
 
-    out_name = f"{args.model_name}_{args.prompt_type}.json"
-    out_path = Path(f"results/task3/{out_name}")
+    out_path = args.output_path or task3_output_path(args.model_name, args.prompt_type)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     run_meta = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "task": "task3_generative_clustering",
         "model_name": args.model_name,
-        "model_type": args.model_type,
+        "model_type": args.model_family,
         "model_id": model_id,
         "prompt_type": args.prompt_type,
         "hyperparameters": {
@@ -229,7 +209,4 @@ def main():
         json.dump(final_output, f, ensure_ascii=False, indent=2)
 
     print(f"\n[INFO] Task 3 Sampling complete. Results serialized to: {out_path}")
-
-
-if __name__ == "__main__":
-    main()
+    return 0

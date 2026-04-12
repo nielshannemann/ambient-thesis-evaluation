@@ -31,7 +31,6 @@ with environments where only matplotlib/pandas are available.
 
 from __future__ import annotations
 
-import argparse
 import json
 import math
 import re
@@ -40,6 +39,8 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
+
+from ambient.paths import plots_root
 
 
 # ---------------------------
@@ -115,15 +116,6 @@ TASK2_METRICS_TO_PLOT = [
     "overlap_mean",
     "num_evaluated_instances",
 ]
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Plot Task0/Task2 result overviews")
-    parser.add_argument("--results-dir", type=Path, default=Path("results"), help="Root results directory")
-    parser.add_argument("--out-dir", type=Path, default=None, help="Output plot directory (default: <results-dir>/plots)")
-    parser.add_argument("--llada-pattern", type=str, default=r"llada8b-n10-d(\d+)", help="Regex for llada result dirs")
-    parser.add_argument("--llama-dir", type=str, default="llama8b-n100", help="Baseline LLaMA directory name")
-    return parser.parse_args()
 
 
 def ensure_dir(path: Path) -> None:
@@ -485,10 +477,9 @@ def plot_task2(llada_df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
     print(f"[INFO] Saved plot: {out_path}")
 
 
-def main() -> None:
-    args = parse_args()
+def run(args) -> int:
     results_dir = args.results_dir
-    out_dir = args.out_dir or (results_dir / "plots")
+    out_dir = args.output_dir or plots_root(results_dir)
 
     ensure_dir(out_dir)
     ensure_dir(out_dir / "task0" / "by_diffusion_steps")
@@ -523,7 +514,4 @@ def main() -> None:
     plot_task2(task2_llada_df, task2_llama_df, out_dir / "task2")
 
     print(f"\n[INFO] Done. All plots saved under: {out_dir}")
-
-
-if __name__ == "__main__":
-    main()
+    return 0

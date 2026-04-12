@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# src/ambient/evaluation/task5_superposition_decay.py
+# src/ambient/generation/task5_superposition_decay.py
 """
 Task 5: Temporal Semantic Commitment
 
 This script generates per-instance entropy trajectories for the Task-5 analysis.
 
-Methodological updates relative to earlier versions:
+Methodological notes:
 - deterministic target-pair selection instead of taking the first two
   disambiguations
 - diffusion-side scoring aligned more closely with the Task-0 MC estimator
@@ -25,7 +25,6 @@ Thesis references:
 
 from __future__ import annotations
 
-import argparse
 import hashlib
 import json
 import math
@@ -41,10 +40,12 @@ import torch.nn.functional as F
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 
+from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
 from ambient.llada_loader import load_llada_model
+from ambient.paths import task5_output_path
 
-LLADA_MODEL_ID = "GSAI-ML/LLaDA-8B-Base"
-LLAMA_MODEL_ID = "meta-llama/Meta-Llama-3.1-8B"
+LLADA_MODEL_ID = LLADA_BASE_MODEL_ID
+LLAMA_MODEL_ID = LLAMA_BASE_MODEL_ID
 LLADA_MASK_ID = 126336
 
 
@@ -427,23 +428,11 @@ def diffusion_temporal_decay_track(
     return trajectory
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Task 5: Temporal Semantic Commitment")
-    parser.add_argument("--data-path", type=Path, default=Path("data/test_baked.jsonl"))
-    parser.add_argument("--model-name", type=str, required=True)
-    parser.add_argument("--model-type", choices=["ar", "diffusion"], required=True)
-    parser.add_argument("--model-id", type=str, required=False)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--max-examples", type=int, default=580)
-    parser.add_argument("--max-steps", type=int, default=20)
-    parser.add_argument("--mc-num", type=int, default=8, help="Diffusion MC samples per mask-ratio checkpoint")
-    parser.add_argument("--cfg-scale", type=float, default=0.0, help="Optional CFG for diffusion-side scoring")
-    args = parser.parse_args()
-
-    is_diffusion = args.model_type == "diffusion"
+def run(args) -> int:
+    is_diffusion = args.model_family == "llada"
     model_id = args.model_id or (LLADA_MODEL_ID if is_diffusion else LLAMA_MODEL_ID)
 
-    print(f"=== Starting Task 5: {args.model_type.upper()} ===")
+    print(f"=== Starting Task 5: {args.model_family.upper()} ===")
     print(f"[INFO] Using model: {model_id}")
 
     set_global_determinism(args.seed)
@@ -451,7 +440,7 @@ def main() -> None:
     run_meta = {
         "task": "task5_superposition_decay_updated",
         "model_name": args.model_name,
-        "model_type": args.model_type,
+        "model_type": "diffusion" if is_diffusion else "ar",
         "model_id": model_id,
         "seed": args.seed,
         "max_examples": args.max_examples,
@@ -470,7 +459,7 @@ def main() -> None:
 
     all_trajectories: Dict[str, Any] = {}
 
-    if args.model_type == "ar":
+    if not is_diffusion:
         tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir="./models")
         if getattr(tokenizer, "pad_token", None) is None:
             tokenizer.pad_token = getattr(tokenizer, "eos_token", None)
@@ -514,13 +503,10 @@ def main() -> None:
 
     out = {"metadata": run_meta, "results": all_trajectories}
 
-    out_path = Path(f"results/task5/{args.model_name}.json")
+    out_path = args.output_path or task5_output_path(args.model_name)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, ensure_ascii=False)
 
     print(f"[INFO] Saved Task-5 trajectories to {out_path}")
-
-
-if __name__ == "__main__":
-    main()
+    return 0

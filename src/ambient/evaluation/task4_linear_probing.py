@@ -37,7 +37,6 @@ Notes:
 
 from __future__ import annotations
 
-import argparse
 import json
 import math
 import random
@@ -796,94 +795,9 @@ def summarize_vne_results(model_name: str, results: Dict[int, Dict[str, object]]
         )
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Task 4: Layerwise Linear Probing with additional von Neumann entropy analysis"
-    )
-    parser.add_argument(
-        "--llama-model",
-        type=str,
-        default="meta-llama/Meta-Llama-3.1-8B",
-        help="Hugging Face ID for the AR model.",
-    )
-    parser.add_argument(
-        "--llada-model",
-        type=str,
-        default="GSAI-ML/LLaDA-8B-Base",
-        help="Hugging Face ID for the diffusion model.",
-    )
-    parser.add_argument(
-        "--data-path",
-        type=Path,
-        default=Path("data/test_baked.jsonl"),
-        help="Path to the AMBIENT dataset.",
-    )
-    parser.add_argument(
-        "--max-examples",
-        type=int,
-        default=580,
-        help="Maximum number of ambiguous source instances to process.",
-    )
-    parser.add_argument(
-        "--batch-size",
-        type=int,
-        default=16,
-        help="Batch size for hidden-state extraction.",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=42,
-        help="Global random seed.",
-    )
-    parser.add_argument(
-        "--use-4bit",
-        action="store_true",
-        help="Enable 4-bit quantization (NF4) for model loading.",
-    )
-    parser.add_argument(
-        "--include-embedding-layer",
-        action="store_true",
-        help="Also include the embedding layer (index 0). Default: hidden layers only.",
-    )
-    parser.add_argument(
-        "--dataset-modes",
-        nargs="+",
-        default=list(DATASET_MODE_CHOICES),
-        choices=list(DATASET_MODE_CHOICES),
-        help=(
-            "Which probe dataset constructions to evaluate. "
-            "Default: both side_reconstructed and fully_disambiguated."
-        ),
-    )
-    parser.add_argument(
-        "--vne-input-mode",
-        type=str,
-        default="sentence_only",
-        choices=list(VNE_INPUT_MODE_CHOICES),
-        help=(
-            "How the von Neumann entropy comparison should be built. "
-            "sentence_only compares just the ambiguous string vs. its same-side rewrite; "
-            "pair_prompt keeps the full NLI prompt context."
-        ),
-    )
-    parser.add_argument(
-        "--vne-center-tokens",
-        action="store_true",
-        help="Mean-center token representations before computing the token Gram matrix.",
-    )
-    parser.add_argument(
-        "--skip-vne",
-        action="store_true",
-        help="Skip the additional von Neumann entropy analysis.",
-    )
-    parser.add_argument(
-        "--output-path",
-        type=Path,
-        default=Path("results/task4/layerwise_probe_results_with_vne.json"),
-        help="Where to save the combined Task-4 results as JSON.",
-    )
-    args = parser.parse_args()
+def run(args) -> int:
+    llama_model = args.llama_model_id
+    llada_model = args.llada_model_id
 
     print("=== Starting Task 4: Layerwise Internal Representation Probing + VNE ===")
     print(f"[info] Global seed: {args.seed}")
@@ -900,8 +814,8 @@ def main() -> None:
 
     output = {
         "config": {
-            "llama_model": args.llama_model,
-            "llada_model": args.llada_model,
+            "llama_model": llama_model,
+            "llada_model": llada_model,
             "data_path": str(args.data_path),
             "max_examples": args.max_examples,
             "batch_size": args.batch_size,
@@ -938,7 +852,7 @@ def main() -> None:
             continue
 
         llama_embeddings = extract_hidden_states(
-            args.llama_model,
+            llama_model,
             texts,
             is_llada=False,
             batch_size=args.batch_size,
@@ -946,7 +860,7 @@ def main() -> None:
             include_embedding_layer=args.include_embedding_layer,
         )
         llada_embeddings = extract_hidden_states(
-            args.llada_model,
+            llada_model,
             texts,
             is_llada=True,
             batch_size=args.batch_size,
@@ -996,7 +910,7 @@ def main() -> None:
 
         if vne_pairs:
             llama_vne = extract_vne_comparison(
-                args.llama_model,
+                llama_model,
                 vne_pairs,
                 is_llada=False,
                 batch_size=args.batch_size,
@@ -1005,7 +919,7 @@ def main() -> None:
                 center_tokens=args.vne_center_tokens,
             )
             llada_vne = extract_vne_comparison(
-                args.llada_model,
+                llada_model,
                 vne_pairs,
                 is_llada=True,
                 batch_size=args.batch_size,
@@ -1034,7 +948,4 @@ def main() -> None:
 
     print("=" * 72)
     print(f"[info] Saved combined Task-4 results to: {args.output_path}")
-
-
-if __name__ == "__main__":
-    main()
+    return 0

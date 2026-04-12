@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# src/ambient/evaluation/task1_disambiguation.py
+# src/ambient/generation/task1_disambiguation.py
 """
 =============================================================================
 TASK 1: EXPLICIT GENERATIVE DISAMBIGUATION
@@ -20,13 +20,13 @@ Methodological Integration:
 """
 
 import json
-import torch
-import argparse
-import random
 import os
+import random
 import time
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import torch
 from tqdm import tqdm
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, set_seed
@@ -34,12 +34,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 # Custom AmbiEnt modules
 from ambient.llada_loader import load_llada_model
 from ambient.adapters import ARAdapter, LLaDaAdapter
+from ambient.constants import LLADA_INSTRUCT_MODEL_ID, LLAMA_INSTRUCT_MODEL_ID
+from ambient.paths import task1_output_path
 
 # ==========================================
 # CONFIGURATION
 # ==========================================
-LLADA_MODEL_ID = "GSAI-ML/LLaDA-8B-Instruct"
-LLAMA_MODEL_ID = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+LLADA_MODEL_ID = LLADA_INSTRUCT_MODEL_ID
+LLAMA_MODEL_ID = LLAMA_INSTRUCT_MODEL_ID
 
 def auto_detect_4bit(hf_model: str) -> bool:
     """
@@ -133,27 +135,7 @@ def clean_generated_interpretations(raw_text: str) -> str:
     else:
         return "1. " + clean_text
 
-def main():
-    parser = argparse.ArgumentParser(description="Task 1: Explicit Generative Disambiguation")
-    parser.add_argument("--model-name", type=str, required=True, help="E.g., 'llama8b', 'llada8b'")
-    parser.add_argument("--model-type", choices=["llama", "llada"], required=True, help="Target instruct-tuned architecture.")
-    parser.add_argument("--model-id", type=str, default=None, help="HuggingFace repository ID.")
-    parser.add_argument("--data-path", type=Path, default=Path("data/test_baked.jsonl"))
-    parser.add_argument("--max-examples", type=int, default=580, help="Number of examples to evaluate.")
-    
-    # --- HARDWARE & REPRODUCIBILITY ABLATIONS ---
-    parser.add_argument("--num-continuations", type=int, default=1, help="Total number of disambiguation attempts generated per premise (N).")
-    parser.add_argument("--batch-size", type=int, default=25, help="Maximum sequences generated in parallel (prevents VRAM OOM).")
-    parser.add_argument("--seed", type=int, default=42, help="Global deterministic random seed.")
-    
-    # --- GENERATION HYPERPARAMETERS ---
-    parser.add_argument("--temperature", type=float, default=1.0, help="Stochasticity scaling factor for sampling.")
-    parser.add_argument("--top-p", type=float, default=1.0, help="Nucleus sampling cumulative probability threshold.")
-    parser.add_argument("--top-k", type=int, default=0, help="Top-K absolute probability truncation (0 = disabled).")
-    parser.add_argument("--cfg-scale", type=float, default=0.0, help="Classifier-Free Guidance multiplier (LLaDA architecture only).")
-    parser.add_argument("--diffusion-steps", type=int, default=128, help="Number of reverse-generation denoising steps (LLaDA only).")
-    args = parser.parse_args()
-
+def run(args) -> int:
     print(f"=== Starting Task 1: Explicit Disambiguation ===")
     
     # 1. STRICT GLOBAL DETERMINISM
@@ -164,7 +146,7 @@ def main():
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
     
-    is_diffusion = (args.model_type == "llada")
+    is_diffusion = args.model_family == "llada"
     # Use user-provided model ID if given, else fall back to the instruct defaults
     if args.model_id is None:
         model_id = LLADA_MODEL_ID if is_diffusion else LLAMA_MODEL_ID
@@ -178,15 +160,14 @@ def main():
     print(f"[INFO] Hyperparameters: Temp={args.temperature}, Top-K={args.top_k}, Top-P={args.top_p}, CFG={args.cfg_scale}, Steps={args.diffusion_steps}")
     
     # Configure output path
-    out_name = f"{args.model_name}_n{args.num_continuations}.json"
-    out_path = Path(f"results/task1/{out_name}")
+    out_path = args.output_path or task1_output_path(args.model_name, args.num_continuations)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     
     # --- METADATA RECORDING ---
     run_meta = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "task": "task1_explicit_disambiguation",
-        "model_type": args.model_type,
+        "model_type": args.model_family,
         "model_id": model_id,
         "hyperparameters": {
             "max_examples": args.max_examples,
@@ -308,6 +289,4 @@ def main():
         json.dump(final_output, f, ensure_ascii=False, indent=2)
 
     print(f"\n[INFO] Task 1 complete. Results saved to {out_path}")
-
-if __name__ == "__main__":
-    main()
+    return 0

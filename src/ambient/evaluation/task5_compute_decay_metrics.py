@@ -14,12 +14,11 @@ statistics reported in the thesis:
 It additionally computes percentile bootstrap confidence intervals by
 resampling whole trajectories (instances) with replacement.
 
-New in this version:
-- reports paired model differences (LLaDA - LLaMA) with paired bootstrap CIs
-  over the intersection of shared instance IDs.
+It also reports paired model differences (LLaDA - LLaMA) with paired bootstrap
+confidence intervals over the intersection of shared instance IDs.
 
 Compatibility:
-- supports the updated trajectory format:
+- supports the current trajectory format:
     {"metadata": ..., "results": {id: {"trajectory": [...]}}}
 - also supports older direct trajectory maps:
     {"results": {id: [...]}} or {id: [...]}
@@ -27,7 +26,6 @@ Compatibility:
 
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
@@ -275,36 +273,7 @@ def _format_delta_line(key: str, value: float, ci: Dict[str, float], ci_level: f
     )
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Compute Task-5 temporal semantic commitment metrics")
-    parser.add_argument("--ar-file", type=Path, required=True, help="Path to AR trajectory JSON")
-    parser.add_argument("--diff-file", type=Path, required=True, help="Path to diffusion trajectory JSON")
-    parser.add_argument(
-        "--bootstrap-reps",
-        type=int,
-        default=5000,
-        help="Number of bootstrap resamples for confidence intervals (default: 5000)",
-    )
-    parser.add_argument(
-        "--ci-level",
-        type=float,
-        default=95.0,
-        help="Confidence level for percentile bootstrap intervals (default: 95)",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=42,
-        help="Random seed for bootstrap resampling (default: 42)",
-    )
-    parser.add_argument(
-        "--out-file",
-        type=Path,
-        default=None,
-        help="Optional JSON output path for summary metrics and confidence intervals",
-    )
-    args = parser.parse_args()
-
+def run(args) -> int:
     print("=" * 50)
     print("=== TEMPORAL SEMANTIC COMMITMENT METRICS ===")
     print("=" * 50)
@@ -324,8 +293,8 @@ def main() -> None:
     results_cache: Dict[str, Dict[str, Any]] = {}
 
     for short_name, display_name, filepath in [
-        ("llama", "Autoregressive (LLaMA-8B)", args.ar_file),
-        ("llada", "Discrete Diffusion (LLaDA-8B)", args.diff_file),
+        ("llama", "Autoregressive (LLaMA-8B)", args.llama_file),
+        ("llada", "Discrete Diffusion (LLaDA-8B)", args.llada_file),
     ]:
         metrics, cis, valid_count, metrics_map = compute_metrics(
             filepath=filepath,
@@ -376,12 +345,9 @@ def main() -> None:
         "confidence_intervals": delta_cis,
     }
 
-    if args.out_file is not None:
-        args.out_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(args.out_file, "w", encoding="utf-8") as handle:
+    if args.output_path is not None:
+        args.output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(args.output_path, "w", encoding="utf-8") as handle:
             json.dump(output_payload, handle, indent=2, ensure_ascii=False)
-        print(f"\n[INFO] Saved metric summary with bootstrap CIs to: {args.out_file}")
-
-
-if __name__ == "__main__":
-    main()
+        print(f"\n[INFO] Saved metric summary with bootstrap CIs to: {args.output_path}")
+    return 0

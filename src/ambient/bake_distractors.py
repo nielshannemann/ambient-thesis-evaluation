@@ -1,9 +1,14 @@
 import json
 from pathlib import Path
+
 # Assuming your create_distractor function is in a file called distractors.py
 from external.ambient.evaluation.distractors import create_distractor
 
-def bake_distractors(input_path="external/ambient/AmbiEnt/test.jsonl", output_path="external/ambient/AmbiEnt/test_baked.jsonl"):
+
+def bake_distractors(
+    input_path="external/ambient/AmbiEnt/test.jsonl",
+    output_path="external/ambient/AmbiEnt/test_baked.jsonl",
+):
     print(f"Baking distractors from {input_path}...")
     baked_data = []
     
@@ -13,7 +18,8 @@ def bake_distractors(input_path="external/ambient/AmbiEnt/test.jsonl", output_pa
     
     with open(input_path, 'r', encoding='utf-8') as f:
         for line in f:
-            if not line.strip(): continue
+            if not line.strip():
+                continue
             row = json.loads(line)
             
             # Check the boolean flags and generate distractors for the correct targets
@@ -32,5 +38,7 @@ def bake_distractors(input_path="external/ambient/AmbiEnt/test.jsonl", output_pa
             
     print(f"Successfully baked {len(baked_data)} distractors into {output_path}!")
 
-if __name__ == "__main__":
-    bake_distractors()
+
+def run(args) -> int:
+    bake_distractors(input_path=args.data_path, output_path=args.output_path)
+    return 0

@@ -1,2 +1,11 @@
-# src/ambient/__init__.py
-__all__ = ["adapters", "llada_loader", "utils", "evaluation"]
+"""AMBIENT local package."""
+
+__all__ = [
+    "adapters",
+    "cli",
+    "constants",
+    "evaluation",
+    "llada_loader",
+    "paths",
+    "utils",
+]

@@ -8,3 +8,12 @@ version = "0.1.0"
 description = "Local packaged version of the Colab ambient workflow"
 authors = [{name="Niels Hannemann"}]
 dependencies = []
+
+[project.scripts]
+ambient = "ambient.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

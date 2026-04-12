@@ -16,8 +16,8 @@ Restored Features from Original Codebase:
 """
 
 import json
-import argparse
 from pathlib import Path
+
 import numpy as np
 
 def read_jsonl(path: Path):
@@ -117,15 +117,10 @@ def compute_metrics(results: list, metric_key: str = "empirical_KL_div"):
     
     return metrics
 
-def main():
-    parser = argparse.ArgumentParser(description="Compute evaluation metrics for AMBIENT.")
-    parser.add_argument("results_path", type=Path, help="Path to the summary.jsonl file.")
-    parser.add_argument("--dedupe", choices=["instance", "row"], default="instance", help="Deduplication strategy.")
-    args = parser.parse_args()
-    
+def run(args) -> int:
     if not args.results_path.exists():
         print(f"[Error] File not found: {args.results_path}")
-        return
+        return 1
         
     print(f"\n{'='*50}\nAMBIENT METRICS AGGREGATION\n{'='*50}")
     print(f"File: {args.results_path.name}")
@@ -160,6 +155,4 @@ def main():
     with open(out_metrics_path, "w", encoding="utf-8") as fo:
         json.dump(final_output, fo, indent=2, default=str)
     print(f"\n[info] Wrote final_output to {out_metrics_path}")
-
-if __name__ == "__main__":
-    main()
+    return 0

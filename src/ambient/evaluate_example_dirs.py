@@ -43,7 +43,6 @@ python analyze_continuation_lengths.py \
 
 from __future__ import annotations
 
-import argparse
 import csv
 import json
 import re
@@ -53,6 +52,8 @@ from statistics import mean, median
 from typing import Any, Dict, Iterable, List, Optional
 
 from transformers import AutoTokenizer
+
+from ambient.paths import continuation_length_output_paths
 
 
 LLAMA_TOKENIZER_ID = "meta-llama/Meta-Llama-3.1-8B"
@@ -338,15 +339,9 @@ def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--roots", nargs="+", required=True)
-    parser.add_argument("--out-summary", default="continuation_length_summary.csv")
-    parser.add_argument("--out-details", default="continuation_length_details.csv")
-    parser.add_argument("--out-mismatches", default="continuation_token_mismatches.csv")
-    args = parser.parse_args()
-
+def run(args) -> int:
     roots = [Path(p) for p in args.roots]
+    output_paths = continuation_length_output_paths(args.output_dir)
 
     model_names: List[str] = []
     for root in roots:
@@ -367,7 +362,7 @@ def main() -> None:
 
     if not all_rows:
         print("[ERROR] No continuations found.")
-        return
+        return 1
 
     summary_rows = build_summary_rows(all_rows)
     print_summary(summary_rows)
@@ -375,14 +370,11 @@ def main() -> None:
     detail_rows = [asdict(r) for r in all_rows]
     mismatch_rows = [asdict(r) for r in all_rows if r.token_match is False]
 
-    write_csv(Path(args.out-details if False else args.out_details), detail_rows)
-    write_csv(Path(args.out_summary), summary_rows)
-    write_csv(Path(args.out_mismatches), mismatch_rows)
+    write_csv(output_paths["details"], detail_rows)
+    write_csv(output_paths["summary"], summary_rows)
+    write_csv(output_paths["mismatches"], mismatch_rows)
 
-    print(f"[INFO] Wrote detailed rows to: {args.out_details}")
-    print(f"[INFO] Wrote summary to: {args.out_summary}")
-    print(f"[INFO] Wrote mismatch rows to: {args.out_mismatches}")
-
-
-if __name__ == "__main__":
-    main()
+    print(f"[INFO] Wrote detailed rows to: {output_paths['details']}")
+    print(f"[INFO] Wrote summary to: {output_paths['summary']}")
+    print(f"[INFO] Wrote mismatch rows to: {output_paths['mismatches']}")
+    return 0

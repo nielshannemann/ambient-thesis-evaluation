@@ -27,7 +27,6 @@ import math
 import json
 import torch
 import random
-import argparse
 import numpy as np
 from pathlib import Path
 from tqdm import tqdm
@@ -36,6 +35,8 @@ import warnings
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 from sklearn.metrics.pairwise import cosine_distances
+
+from ambient.paths import task2_metrics_path
 
 warnings.filterwarnings("ignore")
 
@@ -105,18 +106,7 @@ def calculate_word_overlap(prompt: str, continuation: str) -> float:
     return float(overlap)
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Task 2: Text Quality & Diversity Metrics")
-    parser.add_argument("--model-dirs", nargs="+", type=Path, required=True, 
-                        help="List of paths to the 'example_dirs' of the runs to evaluate.")
-    parser.add_argument("--ppl-model", type=str, default=DEFAULT_PPL_MODEL_ID, 
-                        help="HuggingFace ID for the Oracle Perplexity model.")
-    parser.add_argument("--embed-model", type=str, default=DEFAULT_EMBED_MODEL_ID, 
-                        help="HuggingFace ID for the SBERT diversity model.")
-    parser.add_argument("--use-4bit", action="store_true", help="Load PPL model in 4-bit (NF4) to save VRAM.")
-    parser.add_argument("--seed", type=int, default=DEFAULT_SEED, help="Global deterministic random seed.")
-    args = parser.parse_args()
-
+def run(args) -> int:
     print(f"=== Starting Task 2: Quality & Diversity Evaluation ===")
     
     # Enforce reproducibility
@@ -252,7 +242,7 @@ def main():
              print(f"\n[warn] Looked in {len(instance_dirs)} folders inside {model_dir}, but found ZERO valid continuation files (y*.jsonl).")
 
         # --- D. Aggregate and Print Individual Results ---
-        individual_json_path = model_root_dir / "task2_semantic_metrics.json"
+        individual_json_path = task2_metrics_path(model_root_dir)
 
         model_stats = {
             "diversity_mean_cosine_dist": float(np.mean(metrics["diversity_scores"])) if metrics["diversity_scores"] else None,
@@ -305,6 +295,4 @@ def main():
             print(f"  -> Local Summary:   {stats['local_save_path']}")
             
     print("="*60)
-
-if __name__ == "__main__":
-    main()
+    return 0

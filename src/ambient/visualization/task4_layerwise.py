@@ -38,7 +38,6 @@ This script creates:
 
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -345,13 +344,7 @@ def summarize_vne(vne_results: dict) -> List[str]:
 # Main
 # -----------------------------------------------------------------------------
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Plot combined Task-4 probing + VNE results.")
-    parser.add_argument("--input", type=Path, required=True, help="Path to the combined JSON results file.")
-    parser.add_argument("--output-dir", type=Path, required=True, help="Directory for plots and summary.")
-    parser.add_argument("--no-error-band", action="store_true", help="Disable shaded error bands.")
-    args = parser.parse_args()
-
+def run(args) -> int:
     data = load_json(args.input)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -484,7 +477,4 @@ def main() -> None:
         f.write("\n".join(summary_lines).rstrip() + "\n")
 
     print(f"Saved plots and summary to: {args.output_dir}")
-
-
-if __name__ == "__main__":
-    main()
+    return 0

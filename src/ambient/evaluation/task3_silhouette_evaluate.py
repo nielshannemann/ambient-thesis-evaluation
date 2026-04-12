@@ -21,14 +21,15 @@ Extracts the exact random seed from the generation metadata to guarantee
 =============================================================================
 """
 
-import argparse
 import json
+import os
+import warnings
+from pathlib import Path
+
 import numpy as np
 import torch
-from pathlib import Path
-import warnings
+
 warnings.filterwarnings("ignore", category=UserWarning)
-import os
 
 if "HF_HOME" not in os.environ:
     os.environ["HF_HOME"] = "/mnt/storage2/student_data/nhannemann/hf_cache"
@@ -57,7 +58,7 @@ def infer_ambiguity_side(result_item: dict) -> str | None:
     Backward-compatible ambiguity-side inference.
 
     Priority:
-      1. Explicit `ambiguity_side` field written by the updated generator.
+      1. Explicit `ambiguity_side` field written by the current generator.
       2. Exact string match against the ambiguous prompt stored in legacy files.
     """
     side = result_item.get("ambiguity_side")
@@ -98,16 +99,10 @@ def extract_gold_texts(result_item: dict) -> tuple[list[str], str | None]:
     return gold_texts, side
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Task 3: Deterministic Semantic Clustering Evaluation")
-    parser.add_argument("--results-path", type=Path, required=True, help="Path to the JSON file generated in Phase 1.")
-    parser.add_argument("--embed-model", type=str, default="all-MiniLM-L6-v2", help="SentenceTransformer model ID for semantic projection.")
-    parser.add_argument("--nli-model", type=str, default="roberta-large-mnli", help="NLI model ID for strict entailment coverage.")
-    args = parser.parse_args()
-
+def run(args) -> int:
     if not args.results_path.exists():
         print(f"[ERROR] Target file not found: {args.results_path}")
-        return
+        return 1
 
     with open(args.results_path, "r", encoding="utf-8") as f:
         full_data = json.load(f)
@@ -209,7 +204,4 @@ def main():
     if nli_coverage_scores:
         print(f"-> Minority Target Coverage (NLI):     {np.mean(nli_coverage_scores) * 100:.1f}%")
     print("=" * 65)
-
-
-if __name__ == "__main__":
-    main()
+    return 0
