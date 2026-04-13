@@ -10,7 +10,9 @@ Config:
   use_4bit: True
   include_embedding_layer: False
   dataset_modes: ['side_reconstructed', 'fully_disambiguated']
+  probe_control_modes: ['unambiguous_length_matched']
   vne_input_mode: sentence_only
+  vne_control_conditions: ['distractor_rewrite', 'random_matched_rewrite']
   vne_center_tokens: False
   compute_vne: True
 
@@ -30,12 +32,12 @@ Dataset mode: side_reconstructed (Side-reconstructed disambiguations)
   Largest accuracy advantage for LLaMA: layer 15 (-0.1821)
   Largest probe-entropy advantage for LLaDA: layer 15 (+0.1066 bits)
   Largest probe-entropy advantage for LLaMA: layer 29 (-0.0828 bits)
-  Mean accuracy Δ (LLaDA-LLaMA), early: -0.0023
-  Mean probe entropy Δ (LLaDA-LLaMA), early: -0.0362 bits
-  Mean accuracy Δ (LLaDA-LLaMA), middle: -0.1256
-  Mean probe entropy Δ (LLaDA-LLaMA), middle: +0.0776 bits
-  Mean accuracy Δ (LLaDA-LLaMA), late: +0.0997
-  Mean probe entropy Δ (LLaDA-LLaMA), late: -0.0627 bits
+  Mean accuracy delta (LLaDA-LLaMA), early: -0.0023
+  Mean probe entropy delta (LLaDA-LLaMA), early: -0.0362 bits
+  Mean accuracy delta (LLaDA-LLaMA), middle: -0.1256
+  Mean probe entropy delta (LLaDA-LLaMA), middle: +0.0776 bits
+  Mean accuracy delta (LLaDA-LLaMA), late: +0.0997
+  Mean probe entropy delta (LLaDA-LLaMA), late: -0.0627 bits
 
 Dataset metadata for fully_disambiguated:
   mode: fully_disambiguated
@@ -53,12 +55,70 @@ Dataset mode: fully_disambiguated (Fully disambiguated pairs)
   Largest accuracy advantage for LLaMA: layer 13 (-0.2102)
   Largest probe-entropy advantage for LLaDA: layer 11 (+0.1147 bits)
   Largest probe-entropy advantage for LLaMA: layer 29 (-0.0895 bits)
-  Mean accuracy Δ (LLaDA-LLaMA), early: -0.0265
-  Mean probe entropy Δ (LLaDA-LLaMA), early: -0.0123 bits
-  Mean accuracy Δ (LLaDA-LLaMA), middle: -0.1491
-  Mean probe entropy Δ (LLaDA-LLaMA), middle: +0.0910 bits
-  Mean accuracy Δ (LLaDA-LLaMA), late: +0.1008
-  Mean probe entropy Δ (LLaDA-LLaMA), late: -0.0721 bits
+  Mean accuracy delta (LLaDA-LLaMA), early: -0.0265
+  Mean probe entropy delta (LLaDA-LLaMA), early: -0.0123 bits
+  Mean accuracy delta (LLaDA-LLaMA), middle: -0.1491
+  Mean probe entropy delta (LLaDA-LLaMA), middle: +0.0910 bits
+  Mean accuracy delta (LLaDA-LLaMA), late: +0.1008
+  Mean probe entropy delta (LLaDA-LLaMA), late: -0.0721 bits
+
+Dataset metadata for unambiguous_length_matched__matched_to__side_reconstructed:
+  mode: unambiguous_length_matched
+  matched_to_num_reference_pairs: 688
+  num_pairs: 360
+  num_unique_instances: 360
+  label_distribution: {'entailment': 216, 'contradiction': 144}
+  source_ambiguity_distribution_instances: {'none': 360}
+  source_ambiguity_distribution_pairs: {'none': 360}
+  pair_distribution_by_source_type_and_label: {'none::entailment': 216, 'none::contradiction': 144}
+  unmatched_reference_pairs: 328
+  mean_length_gap_tokens: 1.55
+  median_length_gap_tokens: 0.0
+  max_length_gap_tokens: 22
+  matched_to_mode: side_reconstructed
+
+Dataset mode: unambiguous_length_matched__matched_to__side_reconstructed (Unambiguous length-matched control (matched to Side-reconstructed disambiguations))
+  LLaMA-3.1-8B: best accuracy at layer 18 (0.8028), lowest probe entropy at layer 20 (0.1992 bits)
+  LLaDA-8B: best accuracy at layer 29 (0.8722), lowest probe entropy at layer 30 (0.1578 bits)
+  Largest accuracy advantage for LLaDA: layer 29 (+0.1111)
+  Largest accuracy advantage for LLaMA: layer 18 (-0.1972)
+  Largest probe-entropy advantage for LLaDA: layer 19 (+0.1324 bits)
+  Largest probe-entropy advantage for LLaMA: layer 31 (-0.0848 bits)
+  Mean accuracy delta (LLaDA-LLaMA), early: -0.0476
+  Mean probe entropy delta (LLaDA-LLaMA), early: -0.0058 bits
+  Mean accuracy delta (LLaDA-LLaMA), middle: -0.1359
+  Mean probe entropy delta (LLaDA-LLaMA), middle: +0.1059 bits
+  Mean accuracy delta (LLaDA-LLaMA), late: +0.0833
+  Mean probe entropy delta (LLaDA-LLaMA), late: -0.0543 bits
+
+Dataset metadata for unambiguous_length_matched__matched_to__fully_disambiguated:
+  mode: unambiguous_length_matched
+  matched_to_num_reference_pairs: 637
+  num_pairs: 360
+  num_unique_instances: 360
+  label_distribution: {'entailment': 216, 'contradiction': 144}
+  source_ambiguity_distribution_instances: {'none': 360}
+  source_ambiguity_distribution_pairs: {'none': 360}
+  pair_distribution_by_source_type_and_label: {'none::entailment': 216, 'none::contradiction': 144}
+  unmatched_reference_pairs: 277
+  mean_length_gap_tokens: 1.4666666666666666
+  median_length_gap_tokens: 0.0
+  max_length_gap_tokens: 28
+  matched_to_mode: fully_disambiguated
+
+Dataset mode: unambiguous_length_matched__matched_to__fully_disambiguated (Unambiguous length-matched control (matched to Fully disambiguated pairs))
+  LLaMA-3.1-8B: best accuracy at layer 18 (0.8083), lowest probe entropy at layer 20 (0.1998 bits)
+  LLaDA-8B: best accuracy at layer 29 (0.8722), lowest probe entropy at layer 30 (0.1570 bits)
+  Largest accuracy advantage for LLaDA: layer 29 (+0.1111)
+  Largest accuracy advantage for LLaMA: layer 18 (-0.2000)
+  Largest probe-entropy advantage for LLaDA: layer 19 (+0.1338 bits)
+  Largest probe-entropy advantage for LLaMA: layer 31 (-0.0853 bits)
+  Mean accuracy delta (LLaDA-LLaMA), early: -0.0490
+  Mean probe entropy delta (LLaDA-LLaMA), early: -0.0060 bits
+  Mean accuracy delta (LLaDA-LLaMA), middle: -0.1369
+  Mean probe entropy delta (LLaDA-LLaMA), middle: +0.1056 bits
+  Mean accuracy delta (LLaDA-LLaMA), late: +0.0816
+  Mean probe entropy delta (LLaDA-LLaMA), late: -0.0551 bits
 
 Dataset metadata for von_neumann_entropy:
   input_mode: sentence_only
@@ -68,10 +128,50 @@ Dataset metadata for von_neumann_entropy:
   label_distribution: {'entailment': 418, 'neutral': 529, 'contradiction': 270}
 
 Von Neumann entropy summary:
-  LLaMA-3.1-8B middle layer 17: H_amb=0.0250, H_dis=0.0279, Δ=+0.0029
-  LLaMA-3.1-8B final layer 32: H_amb=0.8124, H_dis=0.7931, Δ=-0.0193
-  LLaMA-3.1-8B max |Δ| layer 31: H_amb=0.2347, H_dis=0.2554, Δ=+0.0207
-  LLaDA-8B middle layer 17: H_amb=0.3456, H_dis=0.3467, Δ=+0.0011
-  LLaDA-8B final layer 32: H_amb=0.4737, H_dis=0.4595, Δ=-0.0142
-  LLaDA-8B max |Δ| layer 32: H_amb=0.4737, H_dis=0.4595, Δ=-0.0142
+  LLaMA-3.1-8B middle layer 17: H_amb=0.0250, H_dis=0.0279, delta=+0.0029
+  LLaMA-3.1-8B final layer 32: H_amb=0.8124, H_dis=0.7931, delta=-0.0193
+  LLaMA-3.1-8B max |delta| layer 31: H_amb=0.2347, H_dis=0.2554, delta=+0.0207
+  LLaDA-8B middle layer 17: H_amb=0.3456, H_dis=0.3467, delta=+0.0011
+  LLaDA-8B final layer 32: H_amb=0.4737, H_dis=0.4595, delta=-0.0142
+  LLaDA-8B max |delta| layer 32: H_amb=0.4737, H_dis=0.4595, delta=-0.0142
   Largest model gap in normalized VNE delta (LLaDA-LLaMA): layer 29 (-0.0268)
+
+Dataset metadata for von_neumann_entropy_controls::distractor_rewrite:
+  condition: distractor_rewrite
+  input_mode: sentence_only
+  num_pairs: 580
+  num_unique_instances: 543
+  side_distribution: {'premise': 402, 'hypothesis': 178}
+  label_distribution: {'neutral': 170, 'entailment': 229, 'contradiction': 181}
+  mean_length_gap_tokens: 1.8879310344827587
+  median_length_gap_tokens: 1.0
+  max_length_gap_tokens: 10
+
+Von Neumann entropy summary (distractor_rewrite):
+  LLaMA-3.1-8B middle layer 17: H_amb=0.0250, H_dis=0.0251, delta=+0.0001
+  LLaMA-3.1-8B final layer 32: H_amb=0.8122, H_dis=0.7977, delta=-0.0145
+  LLaMA-3.1-8B max |delta| layer 32: H_amb=0.8122, H_dis=0.7977, delta=-0.0145
+  LLaDA-8B middle layer 17: H_amb=0.3457, H_dis=0.3470, delta=+0.0013
+  LLaDA-8B final layer 32: H_amb=0.4738, H_dis=0.4537, delta=-0.0201
+  LLaDA-8B max |delta| layer 31: H_amb=0.5101, H_dis=0.5340, delta=+0.0239
+  Largest model gap in normalized VNE delta (LLaDA-LLaMA): layer 31 (+0.0220)
+
+Dataset metadata for von_neumann_entropy_controls::random_matched_rewrite:
+  condition: random_matched_rewrite
+  input_mode: sentence_only
+  num_pairs: 580
+  num_unique_instances: 543
+  side_distribution: {'premise': 402, 'hypothesis': 178}
+  label_distribution: {'entailment': 408, 'contradiction': 172}
+  mean_length_gap_tokens: 0.09655172413793103
+  median_length_gap_tokens: 0.0
+  max_length_gap_tokens: 29
+
+Von Neumann entropy summary (random_matched_rewrite):
+  LLaMA-3.1-8B middle layer 17: H_amb=0.0250, H_dis=0.0276, delta=+0.0026
+  LLaMA-3.1-8B final layer 32: H_amb=0.8122, H_dis=0.8022, delta=-0.0100
+  LLaMA-3.1-8B max |delta| layer 31: H_amb=0.2347, H_dis=0.2537, delta=+0.0190
+  LLaDA-8B middle layer 17: H_amb=0.3457, H_dis=0.3463, delta=+0.0006
+  LLaDA-8B final layer 32: H_amb=0.4738, H_dis=0.4564, delta=-0.0174
+  LLaDA-8B max |delta| layer 32: H_amb=0.4738, H_dis=0.4564, delta=-0.0174
+  Largest model gap in normalized VNE delta (LLaDA-LLaMA): layer 26 (-0.0212)
