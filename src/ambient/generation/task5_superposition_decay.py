@@ -73,6 +73,20 @@ def stable_text_key(text: str) -> Tuple[int, str]:
     return (len(text or ""), text or "")
 
 
+def approx_token_count(text: str) -> int:
+    """Deterministic token-count proxy for control matching before model loading."""
+    return len((text or "").split())
+
+
+def get_ambiguity_side(ex: dict) -> Optional[str]:
+    """Preserve the original Task-5 side priority: premise before hypothesis."""
+    if ex.get("premise_ambiguous"):
+        return "premise"
+    if ex.get("hypothesis_ambiguous"):
+        return "hypothesis"
+    return None
+
+
 def choose_target_pair(disambiguations: List[Dict[str, Any]], side: str) -> Optional[Dict[str, Any]]:
     """
     Select two target readings deterministically.
@@ -133,50 +147,190 @@ def choose_target_pair(disambiguations: List[Dict[str, Any]], side: str) -> Opti
     }
 
 
-def load_ambient_opposing_targets(path: Path, max_examples: int = 50) -> List[Dict[str, Any]]:
-    """
-    Load ambiguous AMBIENT instances and construct deterministic target pairs.
-    """
+def choose_disambiguation_closest_to_length(
+    disambiguations: List[Dict[str, Any]],
+    side: str,
+    target_length: int,
+) -> Optional[Dict[str, Any]]:
+    """Choose the same-side gold rewrite closest in length to a control target."""
+    candidates: List[Dict[str, Any]] = []
+    for disambiguation in disambiguations:
+        text = (disambiguation.get(side) or "").strip()
+        if not text:
+            continue
+        candidates.append(
+            {
+                "text": text,
+                "label": (disambiguation.get("label") or "unknown").lower(),
+                "length_tokens": approx_token_count(text),
+            }
+        )
+
+    if not candidates:
+        return None
+
+    return min(
+        candidates,
+        key=lambda row: (abs(row["length_tokens"] - target_length), row["length_tokens"], row["label"], row["text"]),
+    )
+
+
+def build_task5_instances(
+    examples: List[Dict[str, Any]],
+    condition: str = "gold_disambiguation",
+    max_examples: int = 50,
+) -> List[Dict[str, Any]]:
+    """Build Task-5 target pairs for the gold or control conditions."""
+    random_pool: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
+    if condition == "random_matched_rewrite":
+        pool_builder: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
+        for ex in examples:
+            side = get_ambiguity_side(ex)
+            if side is None:
+                continue
+            for disambiguation in ex.get("disambiguations", []):
+                text = (disambiguation.get(side) or "").strip()
+                label = (disambiguation.get("label") or "unknown").lower()
+                if not text:
+                    continue
+                pool_builder.setdefault((side, label), []).append(
+                    {
+                        "source_instance_id": str(ex.get("id")),
+                        "text": text,
+                        "label": label,
+                        "length_tokens": approx_token_count(text),
+                    }
+                )
+
+        for key, rows in pool_builder.items():
+            random_pool[key] = sorted(
+                rows,
+                key=lambda row: (row["length_tokens"], row["source_instance_id"], row["text"]),
+            )
+
     data: List[Dict[str, Any]] = []
-    if not path.exists():
-        print(f"[ERROR] Dataset not found at {path}")
-        return data
+    for ex in examples:
+        disambiguations = ex.get("disambiguations", [])
+        if len(disambiguations) < 2:
+            continue
 
-    with open(path, "r", encoding="utf-8") as handle:
-        for line in handle:
-            if not line.strip():
-                continue
+        side = get_ambiguity_side(ex)
+        if side is None:
+            continue
 
-            ex = json.loads(line)
-            disambiguations = ex.get("disambiguations", [])
-            if len(disambiguations) < 2:
-                continue
+        prompt_text = ex.get(side, "")
+        if not prompt_text:
+            continue
 
-            if ex.get("premise_ambiguous"):
-                side = "premise"
-                prompt_text = ex.get("premise", "")
-            elif ex.get("hypothesis_ambiguous"):
-                side = "hypothesis"
-                prompt_text = ex.get("hypothesis", "")
-            else:
-                continue
-
+        instance_id = str(ex.get("id"))
+        if condition == "gold_disambiguation":
             pair = choose_target_pair(disambiguations, side)
             if pair is None:
                 continue
-
             data.append(
                 {
                     "id": ex.get("id"),
                     "prompt": prompt_text,
                     "ambiguity_side": side,
+                    "condition": condition,
+                    "target_b_source": "gold_disambiguation",
+                    "target_b_source_instance_id": instance_id,
+                    "length_gap_tokens": abs(approx_token_count(pair["target_a"]) - approx_token_count(pair["target_b"])),
                     **pair,
                 }
             )
-            if len(data) >= max_examples:
-                break
+        elif condition == "distractor_rewrite":
+            distractor_text = (ex.get(f"distractor_{side}") or "").strip()
+            if not distractor_text:
+                continue
+            target_b_length = approx_token_count(distractor_text)
+            target_a = choose_disambiguation_closest_to_length(disambiguations, side, target_b_length)
+            if target_a is None:
+                continue
+            data.append(
+                {
+                    "id": ex.get("id"),
+                    "prompt": prompt_text,
+                    "ambiguity_side": side,
+                    "target_a": target_a["text"],
+                    "target_b": distractor_text,
+                    "label_a": target_a["label"],
+                    "label_b": "control_distractor",
+                    "selection_rule": "closest_gold_to_distractor_length",
+                    "condition": condition,
+                    "target_b_source": "distractor_rewrite",
+                    "target_b_source_instance_id": instance_id,
+                    "length_gap_tokens": abs(target_a["length_tokens"] - target_b_length),
+                }
+            )
+        elif condition == "random_matched_rewrite":
+            pair = choose_target_pair(disambiguations, side)
+            if pair is None:
+                continue
+            target_a_length = approx_token_count(pair["target_a"])
+            pool = [
+                candidate
+                for candidate in random_pool.get((side, pair["label_a"]), [])
+                if candidate["source_instance_id"] != instance_id
+            ]
+            if not pool:
+                continue
+
+            chosen = min(
+                pool,
+                key=lambda candidate: (
+                    abs(candidate["length_tokens"] - target_a_length),
+                    candidate["length_tokens"],
+                    candidate["source_instance_id"],
+                    candidate["text"],
+                ),
+            )
+            data.append(
+                {
+                    "id": ex.get("id"),
+                    "prompt": prompt_text,
+                    "ambiguity_side": side,
+                    "target_a": pair["target_a"],
+                    "target_b": chosen["text"],
+                    "label_a": pair["label_a"],
+                    "label_b": chosen["label"],
+                    "selection_rule": f"{pair['selection_rule']}+random_matched_rewrite",
+                    "condition": condition,
+                    "target_b_source": "random_matched_rewrite",
+                    "target_b_source_instance_id": chosen["source_instance_id"],
+                    "length_gap_tokens": abs(target_a_length - chosen["length_tokens"]),
+                }
+            )
+        else:
+            raise ValueError(f"Unsupported Task-5 condition: {condition}")
+
+        if len(data) >= max_examples:
+            break
 
     return data
+
+
+def load_ambient_opposing_targets(
+    path: Path,
+    max_examples: int = 50,
+    condition: str = "gold_disambiguation",
+) -> List[Dict[str, Any]]:
+    """Load ambiguous AMBIENT instances and construct Task-5 target pairs."""
+    if not path.exists():
+        print(f"[ERROR] Dataset not found at {path}")
+        return []
+
+    examples: List[Dict[str, Any]] = []
+    with open(path, "r", encoding="utf-8") as handle:
+        for line in handle:
+            if line.strip():
+                examples.append(json.loads(line))
+
+    return build_task5_instances(
+        examples,
+        condition=condition,
+        max_examples=max_examples,
+    )
 
 
 def calculate_normalized_entropy(nll_a: float, nll_b: float) -> Tuple[float, float, float]:
@@ -434,6 +588,7 @@ def run(args) -> int:
 
     print(f"=== Starting Task 5: {args.model_family.upper()} ===")
     print(f"[INFO] Using model: {model_id}")
+    print(f"[INFO] Condition: {args.condition}")
 
     set_global_determinism(args.seed)
 
@@ -447,15 +602,24 @@ def run(args) -> int:
         "max_steps": args.max_steps,
         "mc_num": args.mc_num,
         "cfg_scale": args.cfg_scale,
-        "target_selection": "entailment_vs_nonentailment_else_deterministic_sorted_pair",
+        "condition": args.condition,
+        "target_selection": (
+            "entailment_vs_nonentailment_else_deterministic_sorted_pair"
+            if args.condition == "gold_disambiguation"
+            else args.condition
+        ),
         "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task0",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    test_instances = load_ambient_opposing_targets(args.data_path, max_examples=args.max_examples)
-    print(f"[INFO] Loaded {len(test_instances)} ambiguous instances with deterministic target pairs.")
+    test_instances = load_ambient_opposing_targets(
+        args.data_path,
+        max_examples=args.max_examples,
+        condition=args.condition,
+    )
+    print(f"[INFO] Loaded {len(test_instances)} instances for the selected Task-5 condition.")
     if not test_instances:
-        return
+        return 1
 
     all_trajectories: Dict[str, Any] = {}
 
@@ -503,7 +667,7 @@ def run(args) -> int:
 
     out = {"metadata": run_meta, "results": all_trajectories}
 
-    out_path = args.output_path or task5_output_path(args.model_name)
+    out_path = args.output_path or task5_output_path(args.model_name, condition=args.condition)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, ensure_ascii=False)

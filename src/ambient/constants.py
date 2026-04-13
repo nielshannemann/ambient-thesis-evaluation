@@ -15,5 +15,6 @@ LLAMA_INSTRUCT_MODEL_ID = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 LLADA_INSTRUCT_MODEL_ID = "GSAI-ML/LLaDA-8B-Instruct"
 
 TASK1_JUDGE_MODEL_ID = "meta-llama/Meta-Llama-3.1-70B-Instruct"
+TASK1_SECONDARY_JUDGE_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
 TASK2_EMBED_MODEL_ID = "all-MiniLM-L6-v2"
 TASK3_NLI_MODEL_ID = "roberta-large-mnli"

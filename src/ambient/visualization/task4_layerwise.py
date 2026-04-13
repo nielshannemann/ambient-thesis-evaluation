@@ -1,39 +1,11 @@
 #!/usr/bin/env python3
 """
-Plot combined Task-4 probing results with additional von Neumann entropy plots.
+Plot Task-4 probing and von Neumann entropy outputs.
 
-Supported input structure:
-- config
-- datasets
-- results
-    - <dataset_mode>
-        - llama
-        - llada
-            - <layer_idx>
-                - mean_accuracy
-                - std_accuracy
-                - mean_probe_entropy_bits
-                - std_probe_entropy_bits
-                - ...
-- von_neumann_entropy (optional)
-    - llama
-    - llada
-        - <layer_idx>
-            - ambiguous_raw_entropy_bits_mean
-            - ambiguous_normalized_entropy_mean
-            - disambiguated_raw_entropy_bits_mean
-            - disambiguated_normalized_entropy_mean
-            - delta_raw_entropy_bits_mean
-            - delta_normalized_entropy_mean
-            - ...
-
-This script creates:
-- one accuracy plot per dataset mode
-- one probe-entropy plot per dataset mode
-- one model-difference plot per dataset mode (LLaDA - LLaMA)
-- VNE plots for ambiguous vs. disambiguated inputs
-- VNE delta plots comparing models
-- one textual summary
+Compatibility:
+- old Task-4 JSON files without control blocks still render unchanged
+- probe control modes stored as extra entries under "results" are plotted too
+- VNE control conditions are read from "von_neumann_entropy_controls" when present
 """
 
 from __future__ import annotations
@@ -63,14 +35,22 @@ VNE_VARIANT_LABELS = {
 }
 
 
+def dataset_mode_label(mode: str) -> str:
+    if mode in DATASET_MODE_LABELS:
+        return DATASET_MODE_LABELS[mode]
+
+    prefix = "unambiguous_length_matched__matched_to__"
+    if mode.startswith(prefix):
+        reference_mode = mode[len(prefix):]
+        return f"Unambiguous length-matched control (matched to {DATASET_MODE_LABELS.get(reference_mode, reference_mode)})"
+
+    return mode
+
+
 def load_json(path: Path) -> dict:
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    with open(path, "r", encoding="utf-8") as handle:
+        return json.load(handle)
 
-
-# -----------------------------------------------------------------------------
-# Generic probing helpers
-# -----------------------------------------------------------------------------
 
 def extract_metric_series(model_results: Dict[str, dict], metric_key: str) -> Tuple[List[int], np.ndarray]:
     layers = sorted(int(k) for k in model_results.keys())
@@ -92,10 +72,6 @@ def safe_std_series(model_results: Dict[str, dict], metric_key: str) -> np.ndarr
     except KeyError:
         return None
 
-
-# -----------------------------------------------------------------------------
-# Probing plots
-# -----------------------------------------------------------------------------
 
 def plot_two_model_curves(
     out_path: Path,
@@ -141,7 +117,6 @@ def plot_difference_curve(
 ) -> None:
     llama_layers, llama_values = extract_metric_series(llama_results, metric_key)
     llada_layers, llada_values = extract_metric_series(llada_results, metric_key)
-
     if llama_layers != llada_layers:
         raise ValueError("Layer sets differ between llama and llada; cannot plot difference.")
 
@@ -158,10 +133,6 @@ def plot_difference_curve(
     plt.savefig(out_path, dpi=200)
     plt.close()
 
-
-# -----------------------------------------------------------------------------
-# VNE helpers and plots
-# -----------------------------------------------------------------------------
 
 def extract_vne_series(model_results: Dict[str, dict], metric_key: str) -> Tuple[List[int], np.ndarray]:
     layers = sorted(int(k) for k in model_results.keys())
@@ -187,8 +158,8 @@ def plot_vne_within_model(
         raise ValueError("Layer sets differ within VNE model plot.")
 
     plt.figure(figsize=(10, 6))
-    plt.plot(layers, ambiguous_values, marker="o", label=f"{model_label} — {VNE_VARIANT_LABELS['ambiguous']}")
-    plt.plot(layers, disambiguated_values, marker="o", label=f"{model_label} — {VNE_VARIANT_LABELS['disambiguated']}")
+    plt.plot(layers, ambiguous_values, marker="o", label=f"{model_label} - {VNE_VARIANT_LABELS['ambiguous']}")
+    plt.plot(layers, disambiguated_values, marker="o", label=f"{model_label} - {VNE_VARIANT_LABELS['disambiguated']}")
 
     if show_error_band and ambiguous_std_key is not None and disambiguated_std_key is not None:
         amb_std = np.array([model_results[str(layer)][ambiguous_std_key] for layer in layers], dtype=np.float64)
@@ -242,13 +213,9 @@ def plot_vne_delta_two_models(
     plt.close()
 
 
-# -----------------------------------------------------------------------------
-# Summaries
-# -----------------------------------------------------------------------------
-
 def summarize_mode(mode: str, mode_results: dict) -> List[str]:
     lines: List[str] = []
-    lines.append(f"Dataset mode: {mode} ({DATASET_MODE_LABELS.get(mode, mode)})")
+    lines.append(f"Dataset mode: {mode} ({dataset_mode_label(mode)})")
 
     for model_key in ("llama", "llada"):
         model_results = mode_results[model_key]
@@ -270,34 +237,25 @@ def summarize_mode(mode: str, mode_results: dict) -> List[str]:
     diff_acc = llada_acc - llama_acc
     diff_ent = llada_ent - llama_ent
 
-    best_llada_acc_layer = llama_layers[int(np.argmax(diff_acc))]
-    best_llama_acc_layer = llama_layers[int(np.argmin(diff_acc))]
-    best_llada_ent_layer = llama_layers[int(np.argmax(diff_ent))]
-    best_llama_ent_layer = llama_layers[int(np.argmin(diff_ent))]
-
-    lines.append(f"  Largest accuracy advantage for LLaDA: layer {best_llada_acc_layer} ({diff_acc.max():+.4f})")
-    lines.append(f"  Largest accuracy advantage for LLaMA: layer {best_llama_acc_layer} ({diff_acc.min():+.4f})")
-    lines.append(f"  Largest probe-entropy advantage for LLaDA: layer {best_llada_ent_layer} ({diff_ent.max():+.4f} bits)")
-    lines.append(f"  Largest probe-entropy advantage for LLaMA: layer {best_llama_ent_layer} ({diff_ent.min():+.4f} bits)")
+    lines.append(f"  Largest accuracy advantage for LLaDA: layer {llama_layers[int(np.argmax(diff_acc))]} ({diff_acc.max():+.4f})")
+    lines.append(f"  Largest accuracy advantage for LLaMA: layer {llama_layers[int(np.argmin(diff_acc))]} ({diff_acc.min():+.4f})")
+    lines.append(f"  Largest probe-entropy advantage for LLaDA: layer {llama_layers[int(np.argmax(diff_ent))]} ({diff_ent.max():+.4f} bits)")
+    lines.append(f"  Largest probe-entropy advantage for LLaMA: layer {llama_layers[int(np.argmin(diff_ent))]} ({diff_ent.min():+.4f} bits)")
 
     early_slice = slice(0, min(8, len(llama_layers)))
-    mid_start = len(llama_layers) // 3
-    mid_end = (2 * len(llama_layers)) // 3
-    mid_slice = slice(mid_start, mid_end)
+    mid_slice = slice(len(llama_layers) // 3, (2 * len(llama_layers)) // 3)
     late_slice = slice(max(len(llama_layers) - 8, 0), len(llama_layers))
 
     for name, slc in (("early", early_slice), ("middle", mid_slice), ("late", late_slice)):
-        lines.append(f"  Mean accuracy Δ (LLaDA-LLaMA), {name}: {np.mean(diff_acc[slc]):+.4f}")
-        lines.append(f"  Mean probe entropy Δ (LLaDA-LLaMA), {name}: {np.mean(diff_ent[slc]):+.4f} bits")
+        lines.append(f"  Mean accuracy delta (LLaDA-LLaMA), {name}: {np.mean(diff_acc[slc]):+.4f}")
+        lines.append(f"  Mean probe entropy delta (LLaDA-LLaMA), {name}: {np.mean(diff_ent[slc]):+.4f} bits")
 
     lines.append("")
     return lines
 
 
-def summarize_vne(vne_results: dict) -> List[str]:
-    lines: List[str] = []
-    lines.append("Von Neumann entropy summary:")
-
+def summarize_vne(vne_results: dict, heading: str = "Von Neumann entropy summary:") -> List[str]:
+    lines: List[str] = [heading]
     if not vne_results:
         lines.append("  No VNE results available.")
         lines.append("")
@@ -306,24 +264,19 @@ def summarize_vne(vne_results: dict) -> List[str]:
     for model_key in ("llama", "llada"):
         if model_key not in vne_results or not vne_results[model_key]:
             continue
-
         model_results = vne_results[model_key]
         layers = sorted(int(k) for k in model_results.keys())
-
-        max_abs_delta_layer = max(
-            layers,
-            key=lambda x: abs(model_results[str(x)]["delta_normalized_entropy_mean"]),
-        )
+        max_abs_delta_layer = max(layers, key=lambda x: abs(model_results[str(x)]["delta_normalized_entropy_mean"]))
         final_layer = layers[-1]
         middle_layer = layers[len(layers) // 2]
 
-        for layer_name, layer_idx in (("middle", middle_layer), ("final", final_layer), ("max |Δ|", max_abs_delta_layer)):
+        for layer_name, layer_idx in (("middle", middle_layer), ("final", final_layer), ("max |delta|", max_abs_delta_layer)):
             entry = model_results[str(layer_idx)]
             lines.append(
                 f"  {MODEL_LABELS[model_key]} {layer_name} layer {layer_idx}: "
                 f"H_amb={entry['ambiguous_normalized_entropy_mean']:.4f}, "
                 f"H_dis={entry['disambiguated_normalized_entropy_mean']:.4f}, "
-                f"Δ={entry['delta_normalized_entropy_mean']:+.4f}"
+                f"delta={entry['delta_normalized_entropy_mean']:+.4f}"
             )
 
     if "llama" in vne_results and "llada" in vne_results and vne_results["llama"] and vne_results["llada"]:
@@ -340,36 +293,90 @@ def summarize_vne(vne_results: dict) -> List[str]:
     return lines
 
 
-# -----------------------------------------------------------------------------
-# Main
-# -----------------------------------------------------------------------------
+def write_vne_plot_suite(
+    output_dir: Path,
+    filename_prefix: str,
+    title_prefix: str,
+    vne_results: dict,
+    show_error_band: bool,
+) -> None:
+    for model_key in ("llama", "llada"):
+        if model_key not in vne_results or not vne_results[model_key]:
+            continue
+        plot_vne_within_model(
+            out_path=output_dir / f"{filename_prefix}_{model_key}_raw_entropy.png",
+            title=f"{title_prefix} raw entropy - {MODEL_LABELS[model_key]}",
+            ylabel="Von Neumann entropy (bits)",
+            model_label=MODEL_LABELS[model_key],
+            model_results=vne_results[model_key],
+            ambiguous_metric_key="ambiguous_raw_entropy_bits_mean",
+            disambiguated_metric_key="disambiguated_raw_entropy_bits_mean",
+            ambiguous_std_key="ambiguous_raw_entropy_bits_std",
+            disambiguated_std_key="disambiguated_raw_entropy_bits_std",
+            show_error_band=show_error_band,
+        )
+        plot_vne_within_model(
+            out_path=output_dir / f"{filename_prefix}_{model_key}_normalized_entropy.png",
+            title=f"{title_prefix} normalized entropy - {MODEL_LABELS[model_key]}",
+            ylabel="Normalized von Neumann entropy",
+            model_label=MODEL_LABELS[model_key],
+            model_results=vne_results[model_key],
+            ambiguous_metric_key="ambiguous_normalized_entropy_mean",
+            disambiguated_metric_key="disambiguated_normalized_entropy_mean",
+            ambiguous_std_key="ambiguous_normalized_entropy_std",
+            disambiguated_std_key="disambiguated_normalized_entropy_std",
+            show_error_band=show_error_band,
+        )
+
+    if "llama" in vne_results and "llada" in vne_results and vne_results["llama"] and vne_results["llada"]:
+        plot_vne_delta_two_models(
+            out_path=output_dir / f"{filename_prefix}_delta_raw_entropy_difference.png",
+            title=f"{title_prefix} raw delta difference (LLaDA - LLaMA)",
+            ylabel="Delta raw entropy difference (bits)",
+            llama_results=vne_results["llama"],
+            llada_results=vne_results["llada"],
+            metric_key="delta_raw_entropy_bits_mean",
+            std_key="delta_raw_entropy_bits_std",
+            show_error_band=show_error_band,
+        )
+        plot_vne_delta_two_models(
+            out_path=output_dir / f"{filename_prefix}_delta_normalized_entropy_difference.png",
+            title=f"{title_prefix} normalized delta difference (LLaDA - LLaMA)",
+            ylabel="Delta normalized entropy difference",
+            llama_results=vne_results["llama"],
+            llada_results=vne_results["llada"],
+            metric_key="delta_normalized_entropy_mean",
+            std_key="delta_normalized_entropy_std",
+            show_error_band=show_error_band,
+        )
+
 
 def run(args) -> int:
     data = load_json(args.input)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    summary_lines: List[str] = []
-    summary_lines.append("Task 4 combined layerwise probing + von Neumann entropy summary")
-    summary_lines.append("")
+    summary_lines: List[str] = [
+        "Task 4 combined layerwise probing + von Neumann entropy summary",
+        "",
+    ]
 
     if "config" in data:
         summary_lines.append("Config:")
-        for k, v in data["config"].items():
-            summary_lines.append(f"  {k}: {v}")
+        for key, value in data["config"].items():
+            summary_lines.append(f"  {key}: {value}")
         summary_lines.append("")
 
     datasets = data.get("datasets", {})
     results = data.get("results", {})
 
-    # Probing plots
     for mode, mode_results in results.items():
-        mode_label = DATASET_MODE_LABELS.get(mode, mode)
+        mode_label = dataset_mode_label(mode)
         llama_results = mode_results["llama"]
         llada_results = mode_results["llada"]
 
         plot_two_model_curves(
             out_path=args.output_dir / f"{mode}_accuracy.png",
-            title=f"Layerwise probe accuracy — {mode_label}",
+            title=f"Layerwise probe accuracy - {mode_label}",
             ylabel="Accuracy",
             llama_results=llama_results,
             llada_results=llada_results,
@@ -378,7 +385,7 @@ def run(args) -> int:
         )
         plot_two_model_curves(
             out_path=args.output_dir / f"{mode}_probe_entropy.png",
-            title=f"Layerwise probe entropy — {mode_label}",
+            title=f"Layerwise probe entropy - {mode_label}",
             ylabel="Probe entropy (bits)",
             llama_results=llama_results,
             llada_results=llada_results,
@@ -387,7 +394,7 @@ def run(args) -> int:
         )
         plot_difference_curve(
             out_path=args.output_dir / f"{mode}_accuracy_difference.png",
-            title=f"Accuracy difference (LLaDA - LLaMA) — {mode_label}",
+            title=f"Accuracy difference (LLaDA - LLaMA) - {mode_label}",
             ylabel="Accuracy difference",
             llama_results=llama_results,
             llada_results=llada_results,
@@ -395,7 +402,7 @@ def run(args) -> int:
         )
         plot_difference_curve(
             out_path=args.output_dir / f"{mode}_probe_entropy_difference.png",
-            title=f"Probe entropy difference (LLaDA - LLaMA) — {mode_label}",
+            title=f"Probe entropy difference (LLaDA - LLaMA) - {mode_label}",
             ylabel="Entropy difference (bits)",
             llama_results=llama_results,
             llada_results=llada_results,
@@ -404,77 +411,59 @@ def run(args) -> int:
 
         if mode in datasets:
             summary_lines.append(f"Dataset metadata for {mode}:")
-            for k, v in datasets[mode].items():
-                summary_lines.append(f"  {k}: {v}")
+            for key, value in datasets[mode].items():
+                summary_lines.append(f"  {key}: {value}")
             summary_lines.append("")
 
         summary_lines.extend(summarize_mode(mode, mode_results))
 
-    # VNE plots
     vne_results = data.get("von_neumann_entropy", {})
     if vne_results:
         if "von_neumann_entropy" in datasets:
             summary_lines.append("Dataset metadata for von_neumann_entropy:")
-            for k, v in datasets["von_neumann_entropy"].items():
-                summary_lines.append(f"  {k}: {v}")
+            for key, value in datasets["von_neumann_entropy"].items():
+                summary_lines.append(f"  {key}: {value}")
             summary_lines.append("")
 
-        for model_key in ("llama", "llada"):
-            if model_key not in vne_results or not vne_results[model_key]:
-                continue
-
-            plot_vne_within_model(
-                out_path=args.output_dir / f"vne_{model_key}_raw_entropy.png",
-                title=f"Von Neumann entropy (raw) — {MODEL_LABELS[model_key]}",
-                ylabel="Von Neumann entropy (bits)",
-                model_label=MODEL_LABELS[model_key],
-                model_results=vne_results[model_key],
-                ambiguous_metric_key="ambiguous_raw_entropy_bits_mean",
-                disambiguated_metric_key="disambiguated_raw_entropy_bits_mean",
-                ambiguous_std_key="ambiguous_raw_entropy_bits_std",
-                disambiguated_std_key="disambiguated_raw_entropy_bits_std",
-                show_error_band=not args.no_error_band,
-            )
-            plot_vne_within_model(
-                out_path=args.output_dir / f"vne_{model_key}_normalized_entropy.png",
-                title=f"Von Neumann entropy (normalized) — {MODEL_LABELS[model_key]}",
-                ylabel="Normalized von Neumann entropy",
-                model_label=MODEL_LABELS[model_key],
-                model_results=vne_results[model_key],
-                ambiguous_metric_key="ambiguous_normalized_entropy_mean",
-                disambiguated_metric_key="disambiguated_normalized_entropy_mean",
-                ambiguous_std_key="ambiguous_normalized_entropy_std",
-                disambiguated_std_key="disambiguated_normalized_entropy_std",
-                show_error_band=not args.no_error_band,
-            )
-
-        if "llama" in vne_results and "llada" in vne_results and vne_results["llama"] and vne_results["llada"]:
-            plot_vne_delta_two_models(
-                out_path=args.output_dir / "vne_delta_raw_entropy_difference.png",
-                title="Raw VNE delta difference (LLaDA - LLaMA)",
-                ylabel="Δ raw entropy difference (bits)",
-                llama_results=vne_results["llama"],
-                llada_results=vne_results["llada"],
-                metric_key="delta_raw_entropy_bits_mean",
-                std_key="delta_raw_entropy_bits_std",
-                show_error_band=not args.no_error_band,
-            )
-            plot_vne_delta_two_models(
-                out_path=args.output_dir / "vne_delta_normalized_entropy_difference.png",
-                title="Normalized VNE delta difference (LLaDA - LLaMA)",
-                ylabel="Δ normalized entropy difference",
-                llama_results=vne_results["llama"],
-                llada_results=vne_results["llada"],
-                metric_key="delta_normalized_entropy_mean",
-                std_key="delta_normalized_entropy_std",
-                show_error_band=not args.no_error_band,
-            )
-
+        write_vne_plot_suite(
+            output_dir=args.output_dir,
+            filename_prefix="vne",
+            title_prefix="Von Neumann entropy",
+            vne_results=vne_results,
+            show_error_band=not args.no_error_band,
+        )
         summary_lines.extend(summarize_vne(vne_results))
 
+    vne_control_results = data.get("von_neumann_entropy_controls", {})
+    vne_control_metadata = datasets.get("von_neumann_entropy_controls", {})
+    if isinstance(vne_control_results, dict):
+        for condition, condition_results in vne_control_results.items():
+            if not condition_results:
+                continue
+
+            if isinstance(vne_control_metadata, dict) and condition in vne_control_metadata:
+                summary_lines.append(f"Dataset metadata for von_neumann_entropy_controls::{condition}:")
+                for key, value in vne_control_metadata[condition].items():
+                    summary_lines.append(f"  {key}: {value}")
+                summary_lines.append("")
+
+            write_vne_plot_suite(
+                output_dir=args.output_dir,
+                filename_prefix=f"vne_{condition}",
+                title_prefix=f"Von Neumann entropy ({condition})",
+                vne_results=condition_results,
+                show_error_band=not args.no_error_band,
+            )
+            summary_lines.extend(
+                summarize_vne(
+                    condition_results,
+                    heading=f"Von Neumann entropy summary ({condition}):",
+                )
+            )
+
     summary_path = args.output_dir / "combined_summary.txt"
-    with open(summary_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(summary_lines).rstrip() + "\n")
+    with open(summary_path, "w", encoding="utf-8") as handle:
+        handle.write("\n".join(summary_lines).rstrip() + "\n")
 
     print(f"Saved plots and summary to: {args.output_dir}")
     return 0

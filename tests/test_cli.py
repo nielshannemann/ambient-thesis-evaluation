@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 
 from ambient.cli import build_parser, main
-from ambient.paths import plots_root, task4_output_path, task5_plot_dir
+from ambient.constants import TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID
+from ambient.paths import plots_root, task1_judge_output_path, task4_output_path, task5_output_path, task5_plot_dir
 
 
 def test_help_entrypoints_exit_cleanly() -> None:
@@ -75,11 +76,27 @@ def test_task5_and_plot_commands_use_llama_llada_file_flags() -> None:
     assert plot_args.output_dir == task5_plot_dir()
 
 
+def test_task1_judge_defaults_to_multi_judge_output_path() -> None:
+    parser = build_parser()
+    args = parser.parse_args(["task1", "judge"])
+
+    assert args.judge_models is None
+    assert args.judge_model is None
+    assert args.default_judge_models == [TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID]
+    assert args.output_path == task1_judge_output_path()
+
+
 def test_task4_and_plot_defaults_match_contract_paths() -> None:
     parser = build_parser()
 
     task4_args = parser.parse_args(["task4", "evaluate"])
     assert task4_args.output_path == task4_output_path()
+    assert task4_args.probe_control_modes == []
+    assert task4_args.vne_control_conditions == []
+
+    task5_args = parser.parse_args(["task5", "generate", "--model-family", "llama", "--model-name", "llama8b"])
+    assert task5_args.condition == "gold_disambiguation"
+    assert task5_output_path("llama8b", condition=task5_args.condition) == Path("results/task5/llama8b.json")
 
     sweep_args = parser.parse_args(["plots", "sweep-overview"])
     assert sweep_args.results_dir == Path("results")

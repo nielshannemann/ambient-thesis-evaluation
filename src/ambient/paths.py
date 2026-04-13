@@ -7,6 +7,7 @@ RESULTS_ROOT = Path("results")
 
 TASK4_RESULT_FILENAME = "layerwise_probe_results_with_vne.json"
 TASK5_PLOT_FILENAME = "temporal_semantic_commitment_comparison.png"
+TASK1_JUDGE_RESULT_FILENAME = "judge_evaluation.json"
 
 
 def task0_run_dir(model_name: str, num_generations: int, model_family: str, diffusion_steps: int) -> Path:
@@ -20,6 +21,10 @@ def task1_output_path(model_name: str, num_continuations: int) -> Path:
     return RESULTS_ROOT / "task1" / f"{model_name}_n{num_continuations}.json"
 
 
+def task1_judge_output_path() -> Path:
+    return RESULTS_ROOT / "task1" / TASK1_JUDGE_RESULT_FILENAME
+
+
 def task3_output_path(model_name: str, prompt_type: str) -> Path:
     return RESULTS_ROOT / "task3" / f"{model_name}_{prompt_type}.json"
 
@@ -28,8 +33,11 @@ def task4_output_path() -> Path:
     return RESULTS_ROOT / "task4" / TASK4_RESULT_FILENAME
 
 
-def task5_output_path(model_name: str) -> Path:
-    return RESULTS_ROOT / "task5" / f"{model_name}.json"
+def task5_output_path(model_name: str, condition: str = "gold_disambiguation") -> Path:
+    filename = model_name
+    if condition != "gold_disambiguation":
+        filename = f"{filename}_{condition}"
+    return RESULTS_ROOT / "task5" / f"{filename}.json"
 
 
 def task5_plot_dir() -> Path:

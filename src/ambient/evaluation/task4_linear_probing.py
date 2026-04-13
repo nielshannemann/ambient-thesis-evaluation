@@ -1,38 +1,15 @@
 #!/usr/bin/env python3
-# src/ambient/evaluation/task4_linear_probing.py
 """
-Task 4: Internal Representation Probing (Layerwise Linear Probing + Probe Entropy
-+ von Neumann Entropy)
+Task 4: layerwise probing plus von Neumann entropy analyses.
 
-This script keeps the layerwise linear probing setup from the extended Task-4
-implementation and additionally computes a representation-level von Neumann
-entropy analysis for ambiguous versus disambiguated inputs.
+This version preserves the existing ambiguous-input analyses and adds optional
+dataset-only negative controls to test whether observed effects are driven by
+ambiguity rather than generic rewrite or length effects.
 
-What is preserved from the earlier probing script:
-- grouped 5-fold layerwise linear probing with LogisticRegression
-- per-layer mean/std accuracy
-- per-layer probe entropy derived from held-out classifier probabilities
-- support for multiple probe dataset constructions:
-    * side_reconstructed
-    * fully_disambiguated
-
-What changes relative to the earlier entropy extension:
-- the approximate histogram-based global weight entropy is removed
-- instead, the script adds von Neumann entropy over token-level hidden-state
-  matrices for ambiguous vs. disambiguated inputs
-
-von Neumann entropy construction:
-- For one input and one layer, let H in R^{T x D} be the hidden-state matrix for
-  the non-padding tokens.
-- We form the token Gram matrix G = H H^T.
-- We normalize it to rho = G / Tr(G).
-- The von Neumann entropy is S(rho) = -Tr(rho log2 rho).
-
-Notes:
-- Using H H^T is efficient because T is much smaller than D, and it shares the
-  same non-zero spectrum as H^T H after trace-normalization.
-- Because disambiguated strings are often longer than ambiguous originals, the
-  script reports both raw entropy and a normalized entropy, dividing by log2(T).
+Compatibility invariants:
+- existing probe dataset modes stay unchanged
+- the gold ambiguous-vs-disambiguated VNE block keeps its current JSON shape
+- extra VNE conditions are stored in a new sibling field
 """
 
 from __future__ import annotations
@@ -40,10 +17,11 @@ from __future__ import annotations
 import json
 import math
 import random
+import re
 import warnings
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import DefaultDict, Dict, Iterable, List, Tuple
+from typing import Any, DefaultDict, Dict, Iterable, List, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -51,12 +29,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    set_seed,
-)
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, set_seed
 
 from ambient.llada_loader import load_llada_model
 
@@ -65,7 +38,9 @@ warnings.filterwarnings("ignore")
 LLADA_MASK_ID = 126336
 VALID_BINARY_LABELS = {"entailment", "contradiction"}
 DATASET_MODE_CHOICES = ("side_reconstructed", "fully_disambiguated")
+PROBE_CONTROL_MODE_CHOICES = ("unambiguous_length_matched",)
 VNE_INPUT_MODE_CHOICES = ("sentence_only", "pair_prompt")
+VNE_CONTROL_CONDITION_CHOICES = ("distractor_rewrite", "random_matched_rewrite")
 
 
 def set_all_seeds(seed: int) -> None:
@@ -89,6 +64,12 @@ def build_prompt(premise: str, hypothesis: str) -> str:
     )
 
 
+def approx_token_count(text: str) -> int:
+    """Cheap token count proxy used for deterministic control matching."""
+    tokens = re.findall(r"\w+|[^\w\s]", text or "", flags=re.UNICODE)
+    return len(tokens)
+
+
 def ambiguity_type_name(premise_ambiguous: bool, hypothesis_ambiguous: bool) -> str:
     if premise_ambiguous and hypothesis_ambiguous:
         return "both"
@@ -99,247 +80,590 @@ def ambiguity_type_name(premise_ambiguous: bool, hypothesis_ambiguous: bool) -> 
     return "none"
 
 
-def load_probe_dataset(
-    path: Path,
+def load_examples(path: Path) -> List[dict]:
+    examples: List[dict] = []
+    if not path.exists():
+        print(f"[error] Dataset not found at {path}")
+        return examples
+
+    with open(path, "r", encoding="utf-8") as handle:
+        for line in handle:
+            if line.strip():
+                examples.append(json.loads(line))
+    return examples
+
+
+def iter_ambiguous_sides(ex: dict) -> Iterable[str]:
+    if ex.get("premise_ambiguous", False):
+        yield "premise"
+    if ex.get("hypothesis_ambiguous", False):
+        yield "hypothesis"
+
+
+def build_side_text(
+    original_premise: str,
+    original_hypothesis: str,
+    side: str,
+    replacement_text: str,
+    input_mode: str,
+) -> str:
+    if input_mode == "sentence_only":
+        return replacement_text
+    if side == "premise":
+        return build_prompt(replacement_text, original_hypothesis)
+    return build_prompt(original_premise, replacement_text)
+
+
+def choose_primary_disambiguation(disambiguations: Sequence[dict], side: str) -> dict | None:
+    """Pick one gold rewrite deterministically for control matching."""
+    valid: List[dict] = []
+    for disambig in disambiguations:
+        text = (disambig.get(side) or "").strip()
+        if not text:
+            continue
+        valid.append(
+            {
+                "text": text,
+                "label": (disambig.get("label") or "unknown").lower(),
+            }
+        )
+
+    if not valid:
+        return None
+
+    entailments = [row for row in valid if row["label"] == "entailment"]
+    if entailments:
+        return sorted(entailments, key=lambda row: (len(row["text"]), row["text"]))[0]
+
+    return sorted(valid, key=lambda row: (row["label"], len(row["text"]), row["text"]))[0]
+
+
+def choose_disambiguation_closest_to_length(
+    disambiguations: Sequence[dict],
+    side: str,
+    target_length: int,
+    length_fn=approx_token_count,
+) -> dict | None:
+    """Choose the side-specific gold rewrite closest in length to a control text."""
+    candidates: List[dict] = []
+    for disambig in disambiguations:
+        text = (disambig.get(side) or "").strip()
+        if not text:
+            continue
+        candidates.append(
+            {
+                "text": text,
+                "label": (disambig.get("label") or "unknown").lower(),
+                "length_tokens": int(length_fn(text)),
+            }
+        )
+
+    if not candidates:
+        return None
+
+    return min(
+        candidates,
+        key=lambda row: (abs(row["length_tokens"] - target_length), row["length_tokens"], row["label"], row["text"]),
+    )
+
+
+def build_probe_records_from_examples(
+    examples: Sequence[dict],
     mode: str,
     max_examples: int = 600,
-) -> Tuple[List[str], List[str], List[str], List[str], Dict[str, object]]:
-    """
-    Parse AMBIENT into binary probe datasets.
-
-    Modes:
-    - side_reconstructed:
-        If premise is ambiguous, use the disambiguated premise with the original
-        hypothesis. If hypothesis is ambiguous, use the original premise with the
-        disambiguated hypothesis. If both are ambiguous, include both variants.
-
-    - fully_disambiguated:
-        Use the fully disambiguated premise-hypothesis pair from each
-        disambiguation entry.
-    """
+    length_fn=approx_token_count,
+) -> tuple[List[dict], Dict[str, object]]:
+    """Parse ambiguous AMBIENT rows into binary probe records."""
     if mode not in DATASET_MODE_CHOICES:
         raise ValueError(f"Unsupported dataset mode: {mode}")
 
-    texts: List[str] = []
-    labels: List[str] = []
-    groups: List[str] = []
-    source_types: List[str] = []
-
+    records: List[dict] = []
     side_counter = Counter()
     pair_counter = Counter()
     used_instance_ids = set()
 
-    if not path.exists():
-        print(f"[error] Dataset not found at {path}")
-        return texts, labels, groups, source_types, {}
+    for ex in examples:
+        disambiguations = ex.get("disambiguations", [])
+        if not disambiguations:
+            continue
 
-    with open(path, "r", encoding="utf-8") as handle:
-        for line in handle:
-            ex = json.loads(line)
-            disambiguations = ex.get("disambiguations", [])
-            if not disambiguations:
+        premise_ambiguous = bool(ex.get("premise_ambiguous", False))
+        hypothesis_ambiguous = bool(ex.get("hypothesis_ambiguous", False))
+        if not (premise_ambiguous or hypothesis_ambiguous):
+            continue
+
+        original_premise = ex.get("premise", "")
+        original_hypothesis = ex.get("hypothesis", "")
+        instance_id = str(ex.get("id", f"{original_premise} || {original_hypothesis}"))
+        ambiguity_type = ambiguity_type_name(premise_ambiguous, hypothesis_ambiguous)
+
+        instance_records = []
+        seen_in_instance = set()
+
+        for disambig in disambiguations:
+            label = (disambig.get("label") or "").lower()
+            if label not in VALID_BINARY_LABELS:
                 continue
 
-            premise_ambiguous = bool(ex.get("premise_ambiguous", False))
-            hypothesis_ambiguous = bool(ex.get("hypothesis_ambiguous", False))
-            if not (premise_ambiguous or hypothesis_ambiguous):
-                continue
-
-            original_premise = ex.get("premise", "")
-            original_hypothesis = ex.get("hypothesis", "")
-            instance_id = str(ex.get("id", f"{original_premise} || {original_hypothesis}"))
-            ambiguity_type = ambiguity_type_name(premise_ambiguous, hypothesis_ambiguous)
-
-            instance_pairs = []
-            seen_in_instance = set()
-
-            for disambig in disambiguations:
-                label = disambig.get("label", "")
-                if label not in VALID_BINARY_LABELS:
-                    continue
-
-                if mode == "side_reconstructed":
-                    if premise_ambiguous:
-                        premise = disambig.get("premise", "")
-                        hypothesis = original_hypothesis
-                        if premise and hypothesis:
-                            prompt = build_prompt(premise, hypothesis)
-                            key = (prompt, label, instance_id, ambiguity_type)
-                            if key not in seen_in_instance:
-                                instance_pairs.append(key)
-                                seen_in_instance.add(key)
-
-                    if hypothesis_ambiguous:
-                        premise = original_premise
-                        hypothesis = disambig.get("hypothesis", "")
-                        if premise and hypothesis:
-                            prompt = build_prompt(premise, hypothesis)
-                            key = (prompt, label, instance_id, ambiguity_type)
-                            if key not in seen_in_instance:
-                                instance_pairs.append(key)
-                                seen_in_instance.add(key)
-
-                elif mode == "fully_disambiguated":
-                    premise = disambig.get("premise", original_premise)
-                    hypothesis = disambig.get("hypothesis", original_hypothesis)
+            if mode == "side_reconstructed":
+                if premise_ambiguous:
+                    premise = disambig.get("premise", "")
+                    hypothesis = original_hypothesis
                     if premise and hypothesis:
                         prompt = build_prompt(premise, hypothesis)
                         key = (prompt, label, instance_id, ambiguity_type)
                         if key not in seen_in_instance:
-                            instance_pairs.append(key)
+                            instance_records.append(key)
                             seen_in_instance.add(key)
 
-            if not instance_pairs:
-                continue
+                if hypothesis_ambiguous:
+                    premise = original_premise
+                    hypothesis = disambig.get("hypothesis", "")
+                    if premise and hypothesis:
+                        prompt = build_prompt(premise, hypothesis)
+                        key = (prompt, label, instance_id, ambiguity_type)
+                        if key not in seen_in_instance:
+                            instance_records.append(key)
+                            seen_in_instance.add(key)
 
-            if instance_id not in used_instance_ids:
-                if len(used_instance_ids) >= max_examples:
-                    break
-                used_instance_ids.add(instance_id)
+            else:
+                premise = disambig.get("premise", original_premise)
+                hypothesis = disambig.get("hypothesis", original_hypothesis)
+                if premise and hypothesis:
+                    prompt = build_prompt(premise, hypothesis)
+                    key = (prompt, label, instance_id, ambiguity_type)
+                    if key not in seen_in_instance:
+                        instance_records.append(key)
+                        seen_in_instance.add(key)
 
-            texts.extend([p[0] for p in instance_pairs])
-            labels.extend([p[1] for p in instance_pairs])
-            groups.extend([p[2] for p in instance_pairs])
-            source_types.extend([p[3] for p in instance_pairs])
+        if not instance_records:
+            continue
 
-            side_counter[ambiguity_type] += 1
-            for _, label, _, source_type in instance_pairs:
-                pair_counter[(source_type, label)] += 1
+        if instance_id not in used_instance_ids:
+            if len(used_instance_ids) >= max_examples:
+                break
+            used_instance_ids.add(instance_id)
+
+        side_counter[ambiguity_type] += 1
+        for prompt, label, group, source_type in instance_records:
+            records.append(
+                {
+                    "text": prompt,
+                    "label": label,
+                    "group": group,
+                    "source_type": source_type,
+                    "prompt_length_tokens": int(length_fn(prompt)),
+                }
+            )
+            pair_counter[(source_type, label)] += 1
 
     metadata = {
         "mode": mode,
-        "num_pairs": len(texts),
-        "num_unique_instances": len(set(groups)),
-        "label_distribution": dict(Counter(labels)),
+        "num_pairs": len(records),
+        "num_unique_instances": len({record["group"] for record in records}),
+        "label_distribution": dict(Counter(record["label"] for record in records)),
         "source_ambiguity_distribution_instances": dict(side_counter),
-        "source_ambiguity_distribution_pairs": dict(Counter(source_types)),
+        "source_ambiguity_distribution_pairs": dict(Counter(record["source_type"] for record in records)),
         "pair_distribution_by_source_type_and_label": {
-            f"{k[0]}::{k[1]}": v for k, v in pair_counter.items()
+            f"{key[0]}::{key[1]}": value for key, value in pair_counter.items()
         },
     }
+    return records, metadata
 
-    print(f"[info] Dataset mode: {mode}")
-    print(
-        f"[info] Source ambiguity distribution (instances used): "
-        f"{metadata['source_ambiguity_distribution_instances']}"
-    )
-    print(
-        "[info] Pair distribution by source-type/label: "
-        + json.dumps(metadata["pair_distribution_by_source_type_and_label"], indent=2)
-    )
+
+def probe_records_to_dataset(
+    records: Sequence[dict],
+    metadata: Dict[str, object],
+) -> Tuple[List[str], List[str], List[str], List[str], Dict[str, object]]:
+    texts = [record["text"] for record in records]
+    labels = [record["label"] for record in records]
+    groups = [record["group"] for record in records]
+    source_types = [record["source_type"] for record in records]
     return texts, labels, groups, source_types, metadata
+
+
+def build_unambiguous_length_matched_probe_control(
+    examples: Sequence[dict],
+    reference_records: Sequence[dict],
+    length_fn=approx_token_count,
+) -> tuple[List[dict], Dict[str, object]]:
+    """Match unambiguous binary NLI rows to a reference ambiguous-derived probe set."""
+    candidates: Dict[str, List[dict]] = defaultdict(list)
+    for ex in examples:
+        if bool(ex.get("premise_ambiguous", False)) or bool(ex.get("hypothesis_ambiguous", False)):
+            continue
+
+        label = (ex.get("labels") or "").lower()
+        if label not in VALID_BINARY_LABELS:
+            continue
+
+        premise = ex.get("premise", "")
+        hypothesis = ex.get("hypothesis", "")
+        if not premise or not hypothesis:
+            continue
+
+        prompt = build_prompt(premise, hypothesis)
+        instance_id = str(ex.get("id", f"{premise} || {hypothesis}"))
+        candidates[label].append(
+            {
+                "text": prompt,
+                "label": label,
+                "group": instance_id,
+                "source_type": "none",
+                "prompt_length_tokens": int(length_fn(prompt)),
+            }
+        )
+
+    for label in list(candidates.keys()):
+        candidates[label] = sorted(
+            candidates[label],
+            key=lambda row: (row["prompt_length_tokens"], row["group"], row["text"]),
+        )
+
+    used_candidates: set[tuple[str, str]] = set()
+    matched_records: List[dict] = []
+    length_gaps: List[int] = []
+    unmatched = 0
+
+    for ref in reference_records:
+        label = ref["label"]
+        pool = [
+            candidate
+            for candidate in candidates.get(label, [])
+            if (candidate["label"], candidate["group"]) not in used_candidates
+        ]
+        if not pool:
+            unmatched += 1
+            continue
+
+        chosen = min(
+            pool,
+            key=lambda candidate: (
+                abs(candidate["prompt_length_tokens"] - ref["prompt_length_tokens"]),
+                candidate["prompt_length_tokens"],
+                candidate["group"],
+                candidate["text"],
+            ),
+        )
+        used_candidates.add((chosen["label"], chosen["group"]))
+        matched_records.append(chosen)
+        length_gaps.append(abs(chosen["prompt_length_tokens"] - ref["prompt_length_tokens"]))
+
+    metadata = {
+        "mode": "unambiguous_length_matched",
+        "matched_to_num_reference_pairs": len(reference_records),
+        "num_pairs": len(matched_records),
+        "num_unique_instances": len({record["group"] for record in matched_records}),
+        "label_distribution": dict(Counter(record["label"] for record in matched_records)),
+        "source_ambiguity_distribution_instances": {"none": len({record["group"] for record in matched_records})},
+        "source_ambiguity_distribution_pairs": {"none": len(matched_records)},
+        "pair_distribution_by_source_type_and_label": {
+            f"none::{key}": value
+            for key, value in Counter(record["label"] for record in matched_records).items()
+        },
+        "unmatched_reference_pairs": unmatched,
+        "mean_length_gap_tokens": float(np.mean(length_gaps)) if length_gaps else None,
+        "median_length_gap_tokens": float(np.median(length_gaps)) if length_gaps else None,
+        "max_length_gap_tokens": int(max(length_gaps)) if length_gaps else None,
+    }
+    return matched_records, metadata
+
+
+def load_probe_dataset(
+    path: Path,
+    mode: str,
+    max_examples: int = 600,
+    return_records: bool = False,
+):
+    """Load an ambiguous-derived probe dataset from disk."""
+    examples = load_examples(path)
+    records, metadata = build_probe_records_from_examples(examples, mode=mode, max_examples=max_examples)
+    dataset = probe_records_to_dataset(records, metadata)
+    if return_records:
+        return (*dataset, records)
+    return dataset
+
+
+def load_probe_control_dataset(
+    path: Path,
+    control_mode: str,
+    reference_records: Sequence[dict],
+):
+    """Load a probe-control dataset derived from the existing AMBIENT rows."""
+    if control_mode not in PROBE_CONTROL_MODE_CHOICES:
+        raise ValueError(f"Unsupported probe control mode: {control_mode}")
+
+    examples = load_examples(path)
+    if control_mode == "unambiguous_length_matched":
+        records, metadata = build_unambiguous_length_matched_probe_control(examples, reference_records)
+        return (*probe_records_to_dataset(records, metadata), records)
+
+    raise ValueError(f"Unsupported probe control mode: {control_mode}")
+
+
+def build_gold_vne_pairs(
+    examples: Sequence[dict],
+    input_mode: str,
+    max_examples: int = 580,
+) -> tuple[List[Dict[str, Any]], Dict[str, object]]:
+    """Build the original ambiguous-vs-disambiguated VNE dataset."""
+    if input_mode not in VNE_INPUT_MODE_CHOICES:
+        raise ValueError(f"Unsupported vne input mode: {input_mode}")
+
+    pairs: List[Dict[str, Any]] = []
+    side_counter = Counter()
+    label_counter = Counter()
+    used_instance_ids = set()
+
+    for ex in examples:
+        disambiguations = ex.get("disambiguations", [])
+        if not disambiguations:
+            continue
+
+        original_premise = ex.get("premise", "")
+        original_hypothesis = ex.get("hypothesis", "")
+        instance_id = str(ex.get("id", f"{original_premise} || {original_hypothesis}"))
+
+        if not any(iter_ambiguous_sides(ex)):
+            continue
+
+        if instance_id not in used_instance_ids:
+            if len(used_instance_ids) >= max_examples:
+                break
+            used_instance_ids.add(instance_id)
+
+        seen = set()
+        for disambig in disambiguations:
+            label = str(disambig.get("label", "unknown"))
+            for side in iter_ambiguous_sides(ex):
+                ambiguous_text = (ex.get(side) or "").strip()
+                disambiguated_side = (disambig.get(side) or "").strip()
+                if not ambiguous_text or not disambiguated_side:
+                    continue
+
+                key = (instance_id, side, label, ambiguous_text, disambiguated_side)
+                if key in seen:
+                    continue
+
+                pairs.append(
+                    {
+                        "instance_id": instance_id,
+                        "side": side,
+                        "label": label,
+                        "ambiguous_text": build_side_text(
+                            original_premise,
+                            original_hypothesis,
+                            side,
+                            ambiguous_text,
+                            input_mode,
+                        ),
+                        "disambiguated_text": build_side_text(
+                            original_premise,
+                            original_hypothesis,
+                            side,
+                            disambiguated_side,
+                            input_mode,
+                        ),
+                    }
+                )
+                seen.add(key)
+                side_counter[side] += 1
+                label_counter[label] += 1
+
+    metadata = {
+        "input_mode": input_mode,
+        "num_pairs": len(pairs),
+        "num_unique_instances": len({pair["instance_id"] for pair in pairs}),
+        "side_distribution": dict(side_counter),
+        "label_distribution": dict(label_counter),
+    }
+    return pairs, metadata
+
+
+def build_vne_control_pairs(
+    examples: Sequence[dict],
+    input_mode: str,
+    condition: str,
+    max_examples: int = 580,
+    length_fn=approx_token_count,
+) -> tuple[List[Dict[str, Any]], Dict[str, object]]:
+    """Build dataset-only VNE negative controls."""
+    if condition not in VNE_CONTROL_CONDITION_CHOICES:
+        raise ValueError(f"Unsupported VNE control condition: {condition}")
+
+    pools: Dict[str, Dict[str, List[dict]]] = defaultdict(lambda: defaultdict(list))
+    for ex in examples:
+        for side in iter_ambiguous_sides(ex):
+            for disambig in ex.get("disambiguations", []):
+                text = (disambig.get(side) or "").strip()
+                label = (disambig.get("label") or "unknown").lower()
+                if not text:
+                    continue
+                pools[side][label].append(
+                    {
+                        "source_instance_id": str(ex.get("id")),
+                        "text": text,
+                        "label": label,
+                        "length_tokens": int(length_fn(text)),
+                    }
+                )
+
+    for side in list(pools.keys()):
+        for label in list(pools[side].keys()):
+            pools[side][label] = sorted(
+                pools[side][label],
+                key=lambda row: (row["length_tokens"], row["source_instance_id"], row["text"]),
+            )
+
+    pairs: List[Dict[str, Any]] = []
+    side_counter = Counter()
+    label_counter = Counter()
+    used_instance_ids = set()
+    length_gaps: List[int] = []
+
+    for ex in examples:
+        instance_id = str(ex.get("id"))
+        if not any(iter_ambiguous_sides(ex)):
+            continue
+
+        if instance_id not in used_instance_ids:
+            if len(used_instance_ids) >= max_examples:
+                break
+            used_instance_ids.add(instance_id)
+
+        original_premise = ex.get("premise", "")
+        original_hypothesis = ex.get("hypothesis", "")
+
+        for side in iter_ambiguous_sides(ex):
+            ambiguous_side_text = (ex.get(side) or "").strip()
+            if not ambiguous_side_text:
+                continue
+
+            if condition == "distractor_rewrite":
+                control_side_text = (ex.get(f"distractor_{side}") or "").strip()
+                if not control_side_text:
+                    continue
+
+                matched_gold = choose_disambiguation_closest_to_length(
+                    ex.get("disambiguations", []),
+                    side=side,
+                    target_length=int(length_fn(control_side_text)),
+                    length_fn=length_fn,
+                )
+                if matched_gold is None:
+                    continue
+
+                length_gap = abs(int(length_fn(control_side_text)) - matched_gold["length_tokens"])
+                pair = {
+                    "instance_id": instance_id,
+                    "side": side,
+                    "label": matched_gold["label"],
+                    "ambiguous_text": build_side_text(
+                        original_premise,
+                        original_hypothesis,
+                        side,
+                        ambiguous_side_text,
+                        input_mode,
+                    ),
+                    "disambiguated_text": build_side_text(
+                        original_premise,
+                        original_hypothesis,
+                        side,
+                        control_side_text,
+                        input_mode,
+                    ),
+                    "control_source_instance_id": instance_id,
+                    "selection_rule": "same_instance_distractor_closest_gold_length_anchor",
+                    "length_gap_tokens": length_gap,
+                }
+            else:
+                anchor = choose_primary_disambiguation(ex.get("disambiguations", []), side=side)
+                if anchor is None:
+                    continue
+
+                anchor_length = int(length_fn(anchor["text"]))
+                pool = [
+                    candidate
+                    for candidate in pools[side].get(anchor["label"], [])
+                    if candidate["source_instance_id"] != instance_id
+                ]
+                if not pool:
+                    continue
+
+                chosen = min(
+                    pool,
+                    key=lambda candidate: (
+                        abs(candidate["length_tokens"] - anchor_length),
+                        candidate["length_tokens"],
+                        candidate["source_instance_id"],
+                        candidate["text"],
+                    ),
+                )
+                length_gap = abs(chosen["length_tokens"] - anchor_length)
+                pair = {
+                    "instance_id": instance_id,
+                    "side": side,
+                    "label": anchor["label"],
+                    "ambiguous_text": build_side_text(
+                        original_premise,
+                        original_hypothesis,
+                        side,
+                        ambiguous_side_text,
+                        input_mode,
+                    ),
+                    "disambiguated_text": build_side_text(
+                        original_premise,
+                        original_hypothesis,
+                        side,
+                        chosen["text"],
+                        input_mode,
+                    ),
+                    "control_source_instance_id": chosen["source_instance_id"],
+                    "selection_rule": "other_instance_same_label_nearest_length",
+                    "length_gap_tokens": length_gap,
+                }
+
+            pairs.append(pair)
+            side_counter[side] += 1
+            label_counter[pair["label"]] += 1
+            length_gaps.append(pair["length_gap_tokens"])
+
+    metadata = {
+        "condition": condition,
+        "input_mode": input_mode,
+        "num_pairs": len(pairs),
+        "num_unique_instances": len({pair["instance_id"] for pair in pairs}),
+        "side_distribution": dict(side_counter),
+        "label_distribution": dict(label_counter),
+        "mean_length_gap_tokens": float(np.mean(length_gaps)) if length_gaps else None,
+        "median_length_gap_tokens": float(np.median(length_gaps)) if length_gaps else None,
+        "max_length_gap_tokens": int(max(length_gaps)) if length_gaps else None,
+    }
+    return pairs, metadata
 
 
 def load_vne_dataset(
     path: Path,
     input_mode: str,
     max_examples: int = 580,
-) -> Tuple[List[Dict[str, str]], Dict[str, object]]:
-    """
-    Build paired ambiguous/disambiguated inputs for the von Neumann analysis.
+) -> Tuple[List[Dict[str, Any]], Dict[str, object]]:
+    examples = load_examples(path)
+    return build_gold_vne_pairs(examples, input_mode=input_mode, max_examples=max_examples)
 
-    sentence_only:
-        Compare the ambiguous sentence directly to the corresponding same-side
-        disambiguation.
 
-    pair_prompt:
-        Keep the full NLI prompt template and replace only the ambiguous side.
-    """
-    if input_mode not in VNE_INPUT_MODE_CHOICES:
-        raise ValueError(f"Unsupported vne input mode: {input_mode}")
-
-    pairs: List[Dict[str, str]] = []
-    side_counter = Counter()
-    label_counter = Counter()
-    used_instance_ids = set()
-
-    if not path.exists():
-        print(f"[error] Dataset not found at {path}")
-        return pairs, {}
-
-    with open(path, "r", encoding="utf-8") as handle:
-        for line in handle:
-            ex = json.loads(line)
-            disambiguations = ex.get("disambiguations", [])
-            if not disambiguations:
-                continue
-
-            premise_ambiguous = bool(ex.get("premise_ambiguous", False))
-            hypothesis_ambiguous = bool(ex.get("hypothesis_ambiguous", False))
-            if not (premise_ambiguous or hypothesis_ambiguous):
-                continue
-
-            original_premise = ex.get("premise", "")
-            original_hypothesis = ex.get("hypothesis", "")
-            instance_id = str(ex.get("id", f"{original_premise} || {original_hypothesis}"))
-
-            if instance_id not in used_instance_ids:
-                if len(used_instance_ids) >= max_examples:
-                    break
-                used_instance_ids.add(instance_id)
-
-            seen = set()
-            for disambig in disambiguations:
-                label = str(disambig.get("label", "unknown"))
-
-                if premise_ambiguous:
-                    amb = (original_premise or "").strip()
-                    dis = (disambig.get("premise") or "").strip()
-                    if amb and dis:
-                        if input_mode == "sentence_only":
-                            ambiguous_text = amb
-                            disambiguated_text = dis
-                        else:
-                            ambiguous_text = build_prompt(amb, original_hypothesis)
-                            disambiguated_text = build_prompt(dis, original_hypothesis)
-                        key = (instance_id, "premise", label, ambiguous_text, disambiguated_text)
-                        if key not in seen:
-                            pairs.append(
-                                {
-                                    "instance_id": instance_id,
-                                    "side": "premise",
-                                    "label": label,
-                                    "ambiguous_text": ambiguous_text,
-                                    "disambiguated_text": disambiguated_text,
-                                }
-                            )
-                            seen.add(key)
-                            side_counter["premise"] += 1
-                            label_counter[label] += 1
-
-                if hypothesis_ambiguous:
-                    amb = (original_hypothesis or "").strip()
-                    dis = (disambig.get("hypothesis") or "").strip()
-                    if amb and dis:
-                        if input_mode == "sentence_only":
-                            ambiguous_text = amb
-                            disambiguated_text = dis
-                        else:
-                            ambiguous_text = build_prompt(original_premise, amb)
-                            disambiguated_text = build_prompt(original_premise, dis)
-                        key = (instance_id, "hypothesis", label, ambiguous_text, disambiguated_text)
-                        if key not in seen:
-                            pairs.append(
-                                {
-                                    "instance_id": instance_id,
-                                    "side": "hypothesis",
-                                    "label": label,
-                                    "ambiguous_text": ambiguous_text,
-                                    "disambiguated_text": disambiguated_text,
-                                }
-                            )
-                            seen.add(key)
-                            side_counter["hypothesis"] += 1
-                            label_counter[label] += 1
-
-    metadata = {
-        "input_mode": input_mode,
-        "num_pairs": len(pairs),
-        "num_unique_instances": len({p['instance_id'] for p in pairs}),
-        "side_distribution": dict(side_counter),
-        "label_distribution": dict(label_counter),
-    }
-    return pairs, metadata
+def load_vne_control_dataset(
+    path: Path,
+    input_mode: str,
+    condition: str,
+    max_examples: int = 580,
+) -> Tuple[List[Dict[str, Any]], Dict[str, object]]:
+    examples = load_examples(path)
+    return build_vne_control_pairs(
+        examples,
+        input_mode=input_mode,
+        condition=condition,
+        max_examples=max_examples,
+    )
 
 
 def load_model_and_tokenizer(model_id: str, is_llada: bool, use_4bit: bool):
@@ -488,12 +812,7 @@ def run_layerwise_probe(
     groups: List[str],
     seed: int,
 ) -> Dict[int, Dict[str, object]]:
-    """
-    Run the same grouped CV probe on each layer independently.
-
-    Besides accuracy, this also returns per-layer probe entropy derived from
-    held-out logistic-regression class probabilities.
-    """
+    """Run grouped CV logistic probes on each layer independently."""
     y = np.array([1 if label == "entailment" else 0 for label in labels], dtype=np.int64)
     groups_arr = np.array(groups)
     dummy_x = np.zeros(len(y), dtype=np.int64)
@@ -554,17 +873,17 @@ def summarize_results(model_name: str, results: Dict[int, Dict[str, object]]) ->
     print(
         f"  best layer:   {best_layer} | "
         f"{results[best_layer]['mean_accuracy'] * 100:.2f}% "
-        f"(± {results[best_layer]['std_accuracy'] * 100:.2f}%)"
+        f"(+- {results[best_layer]['std_accuracy'] * 100:.2f}%)"
     )
     print(
         f"  middle layer: {middle_layer} | "
         f"{results[middle_layer]['mean_accuracy'] * 100:.2f}% "
-        f"(± {results[middle_layer]['std_accuracy'] * 100:.2f}%)"
+        f"(+- {results[middle_layer]['std_accuracy'] * 100:.2f}%)"
     )
     print(
         f"  final layer:  {ordered_layers[-1]} | "
         f"{results[ordered_layers[-1]]['mean_accuracy'] * 100:.2f}% "
-        f"(± {results[ordered_layers[-1]]['std_accuracy'] * 100:.2f}%)"
+        f"(+- {results[ordered_layers[-1]]['std_accuracy'] * 100:.2f}%)"
     )
     print(
         f"  lowest probe-entropy layer: {lowest_entropy_layer} | "
@@ -577,9 +896,7 @@ def von_neumann_entropy_from_token_matrix(
     center_tokens: bool = False,
     eps: float = 1e-12,
 ) -> Dict[str, float]:
-    """
-    Compute von Neumann entropy from the token hidden-state matrix H.
-    """
+    """Compute von Neumann entropy from the token hidden-state matrix H."""
     if token_matrix.ndim != 2:
         raise ValueError(f"Expected 2D token matrix, got shape={token_matrix.shape}")
 
@@ -634,22 +951,14 @@ def von_neumann_entropy_from_token_matrix(
 
 def extract_vne_comparison(
     model_id: str,
-    pairs: List[Dict[str, str]],
+    pairs: List[Dict[str, Any]],
     is_llada: bool,
     batch_size: int,
     use_4bit: bool,
     include_embedding_layer: bool = False,
     center_tokens: bool = False,
 ) -> Dict[int, Dict[str, object]]:
-    """
-    Compute layerwise von Neumann entropy summaries for ambiguous vs.
-    disambiguated paired inputs.
-
-    For the VNE analysis, both AR and LLaDA are run on the observed token string
-    as-is. Unlike the probing path, LLaDA does not receive an appended [MASK]
-    summary token here because we want the token-token representation matrix of
-    the actual input.
-    """
+    """Compute layerwise VNE summaries for paired inputs."""
     print(f"[info] Initializing von Neumann extraction pipeline for: {model_id}")
     model, tokenizer = load_model_and_tokenizer(model_id, is_llada=is_llada, use_4bit=use_4bit)
 
@@ -795,6 +1104,73 @@ def summarize_vne_results(model_name: str, results: Dict[int, Dict[str, object]]
         )
 
 
+def evaluate_probe_dataset(
+    mode_key: str,
+    records: Sequence[dict],
+    dataset_metadata: Dict[str, object],
+    llama_model: str,
+    llada_model: str,
+    args: Any,
+) -> Dict[str, Dict[str, object]] | None:
+    texts, labels, groups, source_types, dataset_metadata = probe_records_to_dataset(records, dataset_metadata)
+    print("=" * 72)
+    print(f"[info] Preparing probing dataset mode: {mode_key}")
+    print(
+        f"[info] Extracted {len(texts)} binary NLI pairs across "
+        f"{len(set(groups))} unique source instances."
+    )
+    print(f"[info] Label distribution: {dict(Counter(labels))}")
+    print(f"[info] Source ambiguity distribution (pairs): {dict(Counter(source_types))}")
+
+    if len(texts) == 0:
+        print(f"[warn] No valid NLI pairs found for dataset mode '{mode_key}'. Skipping.")
+        return None
+
+    llama_embeddings = extract_hidden_states(
+        llama_model,
+        texts,
+        is_llada=False,
+        batch_size=args.batch_size,
+        use_4bit=args.use_4bit,
+        include_embedding_layer=args.include_embedding_layer,
+    )
+    llada_embeddings = extract_hidden_states(
+        llada_model,
+        texts,
+        is_llada=True,
+        batch_size=args.batch_size,
+        use_4bit=args.use_4bit,
+        include_embedding_layer=args.include_embedding_layer,
+    )
+
+    llama_results = run_layerwise_probe(
+        llama_embeddings,
+        labels,
+        groups,
+        seed=args.seed,
+    )
+    llada_results = run_layerwise_probe(
+        llada_embeddings,
+        labels,
+        groups,
+        seed=args.seed,
+    )
+
+    print("-" * 72)
+    print(f"=== PROBING RESULTS FOR DATASET MODE: {mode_key} ===")
+    summarize_results("LLaMA-3.1-8B (AR)", llama_results)
+    summarize_results("LLaDA-8B (Diffusion)", llada_results)
+    print("-" * 72)
+
+    return {
+        "dataset_metadata": dataset_metadata,
+        "results": {
+            "llama": {str(k): v for k, v in llama_results.items()},
+            "llada": {str(k): v for k, v in llada_results.items()},
+        },
+    }
+
+
 def run(args) -> int:
     llama_model = args.llama_model_id
     llada_model = args.llada_model_id
@@ -805,12 +1181,15 @@ def run(args) -> int:
     print(f"[info] 4-bit quantization: {args.use_4bit}")
     print(f"[info] Include embedding layer: {args.include_embedding_layer}")
     print(f"[info] Probe dataset modes: {args.dataset_modes}")
+    print(f"[info] Probe control modes: {args.probe_control_modes}")
     print(f"[info] Compute von Neumann entropy: {not args.skip_vne}")
     if not args.skip_vne:
         print(f"[info] VNE input mode: {args.vne_input_mode}")
+        print(f"[info] VNE control conditions: {args.vne_control_conditions}")
         print(f"[info] VNE token centering: {args.vne_center_tokens}")
 
     set_all_seeds(args.seed)
+    examples = load_examples(args.data_path)
 
     output = {
         "config": {
@@ -823,81 +1202,55 @@ def run(args) -> int:
             "use_4bit": args.use_4bit,
             "include_embedding_layer": args.include_embedding_layer,
             "dataset_modes": args.dataset_modes,
+            "probe_control_modes": args.probe_control_modes,
             "vne_input_mode": args.vne_input_mode,
+            "vne_control_conditions": args.vne_control_conditions,
             "vne_center_tokens": args.vne_center_tokens,
             "compute_vne": not args.skip_vne,
         },
-        "datasets": {},
+        "datasets": {
+            "von_neumann_entropy_controls": {},
+        },
         "results": {},
         "von_neumann_entropy": {},
+        "von_neumann_entropy_controls": {},
     }
 
+    reference_probe_records: Dict[str, List[dict]] = {}
     for mode in args.dataset_modes:
-        print("=" * 72)
-        print(f"[info] Preparing probing dataset mode: {mode}")
-        texts, labels, groups, source_types, dataset_metadata = load_probe_dataset(
-            args.data_path,
+        records, metadata = build_probe_records_from_examples(
+            examples,
             mode=mode,
             max_examples=args.max_examples,
         )
-        print(
-            f"[info] Extracted {len(texts)} binary NLI pairs across "
-            f"{len(set(groups))} unique source instances."
-        )
-        print(f"[info] Label distribution: {dict(Counter(labels))}")
-        print(f"[info] Source ambiguity distribution (pairs): {dict(Counter(source_types))}")
-
-        if len(texts) == 0:
-            print(f"[warn] No valid NLI pairs found for dataset mode '{mode}'. Skipping.")
+        reference_probe_records[mode] = records
+        bundle = evaluate_probe_dataset(mode, records, metadata, llama_model, llada_model, args)
+        if bundle is None:
             continue
+        output["datasets"][mode] = bundle["dataset_metadata"]
+        output["results"][mode] = bundle["results"]
 
-        llama_embeddings = extract_hidden_states(
-            llama_model,
-            texts,
-            is_llada=False,
-            batch_size=args.batch_size,
-            use_4bit=args.use_4bit,
-            include_embedding_layer=args.include_embedding_layer,
-        )
-        llada_embeddings = extract_hidden_states(
-            llada_model,
-            texts,
-            is_llada=True,
-            batch_size=args.batch_size,
-            use_4bit=args.use_4bit,
-            include_embedding_layer=args.include_embedding_layer,
-        )
-
-        llama_results = run_layerwise_probe(
-            llama_embeddings,
-            labels,
-            groups,
-            seed=args.seed,
-        )
-        llada_results = run_layerwise_probe(
-            llada_embeddings,
-            labels,
-            groups,
-            seed=args.seed,
-        )
-
-        print("-" * 72)
-        print(f"=== PROBING RESULTS FOR DATASET MODE: {mode} ===")
-        summarize_results("LLaMA-3.1-8B (AR)", llama_results)
-        summarize_results("LLaDA-8B (Diffusion)", llada_results)
-        print("-" * 72)
-
-        output["datasets"][mode] = dataset_metadata
-        output["results"][mode] = {
-            "llama": {str(k): v for k, v in llama_results.items()},
-            "llada": {str(k): v for k, v in llada_results.items()},
-        }
+    for control_mode in args.probe_control_modes:
+        if control_mode != "unambiguous_length_matched":
+            continue
+        for reference_mode, reference_records in reference_probe_records.items():
+            control_key = f"{control_mode}__matched_to__{reference_mode}"
+            records, metadata = build_unambiguous_length_matched_probe_control(
+                examples,
+                reference_records=reference_records,
+            )
+            metadata["matched_to_mode"] = reference_mode
+            bundle = evaluate_probe_dataset(control_key, records, metadata, llama_model, llada_model, args)
+            if bundle is None:
+                continue
+            output["datasets"][control_key] = bundle["dataset_metadata"]
+            output["results"][control_key] = bundle["results"]
 
     if not args.skip_vne:
         print("=" * 72)
         print("[info] Preparing ambiguous vs. disambiguated VNE dataset...")
-        vne_pairs, vne_metadata = load_vne_dataset(
-            args.data_path,
+        vne_pairs, vne_metadata = build_gold_vne_pairs(
+            examples,
             input_mode=args.vne_input_mode,
             max_examples=args.max_examples,
         )
@@ -941,6 +1294,57 @@ def run(args) -> int:
             }
         else:
             print("[warn] No valid ambiguous/disambiguated pairs found for VNE analysis.")
+
+        for condition in args.vne_control_conditions:
+            print("=" * 72)
+            print(f"[info] Preparing VNE control condition: {condition}")
+            control_pairs, control_metadata = build_vne_control_pairs(
+                examples,
+                input_mode=args.vne_input_mode,
+                condition=condition,
+                max_examples=args.max_examples,
+            )
+            print(
+                f"[info] Extracted {len(control_pairs)} VNE control pairs across "
+                f"{control_metadata.get('num_unique_instances', 0)} unique source instances."
+            )
+            print(f"[info] Control side distribution: {control_metadata.get('side_distribution', {})}")
+            print(f"[info] Control label distribution: {control_metadata.get('label_distribution', {})}")
+
+            if not control_pairs:
+                print(f"[warn] No valid pairs found for VNE control condition '{condition}'.")
+                continue
+
+            llama_control_vne = extract_vne_comparison(
+                llama_model,
+                control_pairs,
+                is_llada=False,
+                batch_size=args.batch_size,
+                use_4bit=args.use_4bit,
+                include_embedding_layer=args.include_embedding_layer,
+                center_tokens=args.vne_center_tokens,
+            )
+            llada_control_vne = extract_vne_comparison(
+                llada_model,
+                control_pairs,
+                is_llada=True,
+                batch_size=args.batch_size,
+                use_4bit=args.use_4bit,
+                include_embedding_layer=args.include_embedding_layer,
+                center_tokens=args.vne_center_tokens,
+            )
+
+            print("-" * 72)
+            print(f"=== VON NEUMANN ENTROPY RESULTS ({condition}) ===")
+            summarize_vne_results("LLaMA-3.1-8B (AR)", llama_control_vne)
+            summarize_vne_results("LLaDA-8B (Diffusion)", llada_control_vne)
+            print("-" * 72)
+
+            output["datasets"]["von_neumann_entropy_controls"][condition] = control_metadata
+            output["von_neumann_entropy_controls"][condition] = {
+                "llama": {str(k): v for k, v in llama_control_vne.items()},
+                "llada": {str(k): v for k, v in llada_control_vne.items()},
+            }
 
     args.output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(args.output_path, "w", encoding="utf-8") as handle:

@@ -15,10 +15,17 @@ from ambient.constants import (
     LLAMA_INSTRUCT_MODEL_ID,
     MODEL_FAMILY_CHOICES,
     TASK1_JUDGE_MODEL_ID,
+    TASK1_SECONDARY_JUDGE_MODEL_ID,
     TASK2_EMBED_MODEL_ID,
     TASK3_NLI_MODEL_ID,
 )
-from ambient.paths import dataset_similarity_default_paths, plots_root, task4_output_path, task5_plot_dir
+from ambient.paths import (
+    dataset_similarity_default_paths,
+    plots_root,
+    task1_judge_output_path,
+    task4_output_path,
+    task5_plot_dir,
+)
 
 
 Handler = Callable[[argparse.Namespace], int | None]
@@ -111,9 +118,18 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     judge_parser = subparsers.add_parser("judge", help="Run the Task-1 LLM-as-a-judge evaluation.")
     judge_parser.add_argument("--llada-file", type=Path, default=Path("results/task1/llada8b_n100.json"))
     judge_parser.add_argument("--llama-file", type=Path, default=Path("results/task1/llama8b_n100.json"))
-    judge_parser.add_argument("--judge-model", type=str, default=TASK1_JUDGE_MODEL_ID)
+    judge_parser.add_argument("--judge-models", nargs="+", type=str, default=None)
+    judge_parser.add_argument("--judge-model", type=str, default=None)
     judge_parser.add_argument("--seed", type=int, default=42)
     judge_parser.add_argument("--disable-4bit", action="store_true")
+    judge_parser.add_argument(
+        "--output-path",
+        type=Path,
+        default=task1_judge_output_path(),
+    )
+    judge_parser.set_defaults(
+        default_judge_models=[TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID]
+    )
     _set_handler(judge_parser, "ambient.evaluation.task1_evaluation:run")
 
 
@@ -178,7 +194,19 @@ def _add_task4_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
         default=["side_reconstructed", "fully_disambiguated"],
         choices=["side_reconstructed", "fully_disambiguated"],
     )
+    evaluate_parser.add_argument(
+        "--probe-control-modes",
+        nargs="+",
+        default=[],
+        choices=["unambiguous_length_matched"],
+    )
     evaluate_parser.add_argument("--vne-input-mode", type=str, default="sentence_only", choices=["sentence_only", "pair_prompt"])
+    evaluate_parser.add_argument(
+        "--vne-control-conditions",
+        nargs="+",
+        default=[],
+        choices=["distractor_rewrite", "random_matched_rewrite"],
+    )
     evaluate_parser.add_argument("--vne-center-tokens", action="store_true")
     evaluate_parser.add_argument("--skip-vne", action="store_true")
     evaluate_parser.add_argument("--output-path", type=Path, default=task4_output_path())
@@ -199,6 +227,12 @@ def _add_task5_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--max-steps", type=int, default=20)
     generate_parser.add_argument("--mc-num", type=int, default=8)
     generate_parser.add_argument("--cfg-scale", type=float, default=0.0)
+    generate_parser.add_argument(
+        "--condition",
+        type=str,
+        default="gold_disambiguation",
+        choices=["gold_disambiguation", "distractor_rewrite", "random_matched_rewrite"],
+    )
     generate_parser.add_argument("--output-path", type=Path, default=None)
     _set_handler(generate_parser, "ambient.generation.task5_superposition_decay:run")
 
