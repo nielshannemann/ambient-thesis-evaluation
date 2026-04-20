@@ -1,0 +1,69 @@
+Wenn du nur das Neue laufen lassen willst, um die Arbeit methodisch wasserdicht zu machen, würde ich genau diese Aufrufe aus cli.py (line 1) machen.
+
+1. Task 1 mit zwei Judges
+Nimm deine echten Task-1-Generationsdateien explizit rein, statt auf die Defaults zu vertrauen.
+
+ambient task1 judge \
+  --llada-file results/task1/llada8b_n1.json \
+  --llama-file results/task1/llama8b_n1.json \
+  --judge-models meta-llama/Meta-Llama-3.1-70B-Instruct Qwen/Qwen2.5-72B-Instruct \
+  --output-path results/task1/judge_evaluation_two_judges.json
+Wenn Qwen bei dir nicht praktikabel ist, als Fallback:
+
+ambient task1 judge \
+  --llada-file results/task1/llada8b_n1.json \
+  --llama-file results/task1/llama8b_n1.json \
+  --judge-models meta-llama/Meta-Llama-3.1-70B-Instruct meta-llama/Llama-3.3-70B-Instruct \
+  --output-path results/task1/judge_evaluation_two_judges.json
+2. Task 4 mit den neuen Negativkontrollen
+Wichtig: wegen paths.py (line 1) würde ich hier bewusst --output-path setzen, damit du dein altes Standard-Task-4-File nicht überschreibst.
+
+ambient task4 evaluate llama-model-id meta-llama/Meta-Llama-3.1-8B llada-model-id GSAI-ML/LLaDA-8B-Base data-path data/test_baked.jsonl dataset-modes side_reconstructed fully_disambiguated probe-control-modes unambiguous_length_matched vne-input-mode sentence_only vne-control-conditions distractor_rewrite random_matched_rewrite batch-size 16 seed 42 output-path results/task4/layerwise_probe_results_with_vne_controls.json
+Danach direkt die Plots:
+
+plots task4 --input results/task4/layerwise_probe_results_with_vne_controls.json --output-dir results/task4/plots_controls
+
+3. Task 5 Kontrollbedingungen für beide Modelle
+Gold musst du nicht neu generieren, wenn deine alten Dateien schon da sind. Neu laufen sollten nur die zwei Kontrollbedingungen.
+
+distractor_rewrite:
+
+ambient task5 generate --data-path data/test_baked.jsonl --model-family llama --model-name llama8b --condition distractor_rewrite --max-examples 580 --max-steps 20 --seed 42
+
+!!!
+task5 generate data-path data/test_baked.jsonl model-family llada model-name llada8b condition distractor_rewrite max-examples 580 max-steps 20 --mc-num 128 cfg-scale 0.0 seed 42
+
+random_matched_rewrite:
+
+ambient task5 generate --data-path data/test_baked.jsonl --model-family llama --model-name llama8b --condition random_matched_rewrite --max-examples 580 --max-steps 20 --seed 42
+
+!!!
+task5 generate --data-path data/test_baked.jsonl --model-family llada --model-name llada8b --condition random_matched_rewrite --max-examples 580 --max-steps 20 --mc-num 8 --cfg-scale 0.0 --seed 42
+
+Dann jeweils Metriken und Plots:
+
+ambient task5 metrics \
+  --llama-file results/task5/llama8b_distractor_rewrite.json \
+  --llada-file results/task5/llada8b_distractor_rewrite.json \
+  --output-path results/task5/distractor_rewrite_metrics.json
+
+ambient plots task5 \
+  --llama-file results/task5/llama8b_distractor_rewrite.json \
+  --llada-file results/task5/llada8b_distractor_rewrite.json \
+  --output-dir results/task5/plots_distractor_rewrite
+ambient task5 metrics \
+  --llama-file results/task5/llama8b_random_matched_rewrite.json \
+  --llada-file results/task5/llada8b_random_matched_rewrite.json \
+  --output-path results/task5/random_matched_rewrite_metrics.json
+
+ambient plots task5 \
+  --llama-file results/task5/llama8b_random_matched_rewrite.json \
+  --llada-file results/task5/llada8b_random_matched_rewrite.json \
+  --output-dir results/task5/plots_random_matched_rewrite
+Meine klare Empfehlung
+Wenn du nur die wirklich wichtigen neuen Dinge machen willst, dann diese drei Blöcke:
+
+task1 judge mit zwei Judges
+task4 evaluate plus plots task4
+task5 generate/metrics/plots für distractor_rewrite und random_matched_rewrite
+Task 0, Task 1 Generation, Task 2 und Task 3 musst du dafür nicht neu rechnen.

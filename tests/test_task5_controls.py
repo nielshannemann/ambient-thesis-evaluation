@@ -1,5 +1,6 @@
 from ambient.generation.task5_superposition_decay import build_task5_instances
 from ambient.evaluation.task5_compute_decay_metrics import _extract_trajectory_map
+from ambient.evaluation.task5_compute_decay_metrics import _trajectory_to_instance_metrics
 from ambient.paths import task5_output_path
 from ambient.visualization.task5_plot_decay import _extract_trajectory_records
 
@@ -70,3 +71,19 @@ def test_task5_metrics_and_plot_helpers_accept_current_trajectory_shape() -> Non
 
     assert list(trajectory_map.keys()) == ["a1"]
     assert len(trajectory_records) == 1
+
+
+def test_task5_instance_metrics_compute_auc_across_numpy_versions() -> None:
+    trajectory = [
+        {"step": 0, "entropy": 0.0},
+        {"step": 1, "entropy": 1.0},
+        {"step": 2, "entropy": 0.0},
+    ]
+
+    metrics = _trajectory_to_instance_metrics(trajectory)
+
+    assert metrics is not None
+    assert metrics["Mean Start Entropy (H_0)"] == 0.0
+    assert metrics["Mean End Entropy (H_100)"] == 0.0
+    assert metrics["Mean Peak Entropy (H_max)"] == 1.0
+    assert metrics["Area Under Entropy Curve (AUC)"] == 0.5

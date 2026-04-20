@@ -117,6 +117,11 @@ TASK2_METRICS_TO_PLOT = [
     "num_evaluated_instances",
 ]
 
+PERPLEXITY_METRICS = {
+    "perplexity_median",
+    "perplexity_mean",
+}
+
 
 def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
@@ -266,6 +271,23 @@ def set_x_ticks(ax: plt.Axes, values: List[int], label: str) -> None:
     ax.set_xlabel(label)
     ax.set_xticks(values)
     ax.set_xticklabels([str(v) for v in values])
+
+
+def maybe_set_log_scale(ax: plt.Axes, metric: str, axis: str = "y") -> None:
+    if metric not in PERPLEXITY_METRICS:
+        return
+    if axis == "x":
+        ax.set_xscale("log")
+    else:
+        ax.set_yscale("log")
+
+
+def save_paper_figure(fig: plt.Figure, png_path: Path) -> None:
+    ensure_dir(png_path.parent)
+    fig.savefig(png_path, dpi=300, bbox_inches="tight")
+    fig.savefig(png_path.with_suffix(".pdf"), bbox_inches="tight")
+    print(f"[INFO] Saved paper figure: {png_path}")
+    print(f"[INFO] Saved paper figure: {png_path.with_suffix('.pdf')}")
 
 
 def maybe_add_baseline_line(ax: plt.Axes, baseline_df: pd.DataFrame, section: str, metric: str, label: str = "LLaMA n=100") -> None:
@@ -438,6 +460,7 @@ def plot_task2(llada_df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
 
         ax.set_title(f"Task-2: {TASK2_METRIC_LABELS[metric]} across diffusion steps")
         ax.set_ylabel(TASK2_METRIC_LABELS[metric])
+        maybe_set_log_scale(ax, metric)
         set_x_ticks(ax, diffusion_values, "Diffusion steps")
         ax.legend(frameon=True)
         fig.tight_layout()
@@ -463,6 +486,7 @@ def plot_task2(llada_df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
             base_val = float(baseline_df.iloc[0][metric])
             ax.axhline(base_val, linestyle="--", linewidth=1.5, alpha=0.85, label="LLaMA n=100")
         ax.set_title(TASK2_METRIC_LABELS[metric])
+        maybe_set_log_scale(ax, metric)
         set_x_ticks(ax, diffusion_values, "Diffusion steps")
 
     axes[-1].axis("off")
@@ -475,6 +499,110 @@ def plot_task2(llada_df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
     print(f"[INFO] Saved plot: {out_path}")
+
+
+def plot_paper_task0_task2_tradeoff(
+    task0_df: pd.DataFrame,
+    task0_baseline_df: pd.DataFrame,
+    task2_llada_df: pd.DataFrame,
+    task2_baseline_df: pd.DataFrame,
+    out_dir: Path,
+    *,
+    section: str = "Normalized_Cleaned",
+    task0_metric: str = "rank_acc_all",
+    task2_metric: str = "perplexity_median",
+    mc: int = 128,
+) -> None:
+    ensure_dir(out_dir)
+    if task0_df.empty or task2_llada_df.empty:
+        print("[WARN] Skipping paper tradeoff figure because Task-0 or Task-2 data is missing.")
+        return
+
+    task0_subset = task0_df[
+        (task0_df["section"] == section) &
+        (task0_df["mc"] == mc)
+    ].copy()
+    if task0_subset.empty:
+        print(f"[WARN] Skipping paper tradeoff figure because no Task-0 rows were found for section={section} and mc={mc}.")
+        return
+
+    if task0_metric not in task0_subset.columns or task2_metric not in task2_llada_df.columns:
+        print("[WARN] Skipping paper tradeoff figure because the required metrics are missing.")
+        return
+
+    merged = task0_subset[["diffusion_steps", task0_metric]].merge(
+        task2_llada_df[["diffusion_steps", task2_metric]],
+        on="diffusion_steps",
+        how="inner",
+    ).sort_values(task2_metric)
+    if merged.empty:
+        print("[WARN] Skipping paper tradeoff figure because no merged Task-0/Task-2 rows were found.")
+        return
+
+    fig, ax = plt.subplots(figsize=(7.2, 4.8))
+
+    xs = merged[task2_metric].astype(float).tolist()
+    ys = merged[task0_metric].astype(float).tolist()
+    steps = merged["diffusion_steps"].astype(int).tolist()
+
+    ax.plot(xs, ys, color="#2c7fb8", linewidth=1.8, alpha=0.85)
+    ax.scatter(
+        xs,
+        ys,
+        color="#2c7fb8",
+        edgecolors="white",
+        linewidth=0.9,
+        s=52,
+        zorder=3,
+        label=f"LLaDA (mc={mc})",
+    )
+
+    for x_val, y_val, step in zip(xs, ys, steps):
+        ax.annotate(
+            f"d={step}",
+            xy=(x_val, y_val),
+            xytext=(5, 5),
+            textcoords="offset points",
+            fontsize=9,
+        )
+
+    baseline_subset = task0_baseline_df[task0_baseline_df["section"] == section]
+    if (
+        not baseline_subset.empty and
+        not task2_baseline_df.empty and
+        task0_metric in baseline_subset.columns and
+        task2_metric in task2_baseline_df.columns
+    ):
+        baseline_x = float(task2_baseline_df.iloc[0][task2_metric])
+        baseline_y = float(baseline_subset.iloc[0][task0_metric])
+        ax.scatter(
+            [baseline_x],
+            [baseline_y],
+            marker="*",
+            s=170,
+            color="#f28e2b",
+            edgecolors="black",
+            linewidth=0.8,
+            zorder=4,
+            label="LLaMA baseline",
+        )
+        ax.annotate(
+            "LLaMA",
+            xy=(baseline_x, baseline_y),
+            xytext=(8, -14),
+            textcoords="offset points",
+            fontsize=9,
+        )
+
+    maybe_set_log_scale(ax, task2_metric, axis="x")
+    ax.set_xlabel("Task 2 median perplexity (lower is better)")
+    ax.set_ylabel("Task 0 rank accuracy (all valid < distractor)")
+    ax.legend(frameon=True, loc="best")
+    fig.tight_layout()
+
+    out_path = out_dir / f"task0_task2_tradeoff__{section}__mc{mc}.png"
+    save_paper_figure(fig, out_path)
+    plt.close(fig)
 
 
 def run(args) -> int:
@@ -512,6 +640,15 @@ def run(args) -> int:
     plot_task0_by_mc(task0_df, llama_task0_df, out_dir / "task0" / "by_mc")
     plot_task0_overview_grids(task0_df, llama_task0_df, out_dir / "task0" / "overviews")
     plot_task2(task2_llada_df, task2_llama_df, out_dir / "task2")
+    if not getattr(args, "skip_paper_figures", False):
+        plot_paper_task0_task2_tradeoff(
+            task0_df,
+            llama_task0_df,
+            task2_llada_df,
+            task2_llama_df,
+            out_dir / "paper",
+            mc=args.paper_mc,
+        )
 
     print(f"\n[INFO] Done. All plots saved under: {out_dir}")
     return 0

@@ -255,6 +255,8 @@ def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentPa
     sweep_parser.add_argument("--output-dir", type=Path, default=None)
     sweep_parser.add_argument("--llada-pattern", type=str, default=r"llada8b-n10-d(\d+)")
     sweep_parser.add_argument("--llama-dir", type=str, default="llama8b-n100")
+    sweep_parser.add_argument("--paper-mc", type=int, default=128)
+    sweep_parser.add_argument("--skip-paper-figures", action="store_true")
     _set_handler(sweep_parser, "ambient.visualization.task0_plot_results:run")
 
     task4_parser = subparsers.add_parser("task4", help="Plot Task-4 probing and entropy outputs.")
@@ -266,6 +268,12 @@ def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentPa
     task5_parser = subparsers.add_parser("task5", help="Plot Task-5 trajectory summaries.")
     task5_parser.add_argument("--llama-file", type=Path, default=None)
     task5_parser.add_argument("--llada-file", type=Path, default=None)
+    task5_parser.add_argument("--llama-distractor-file", type=Path, default=None)
+    task5_parser.add_argument("--llama-random-file", type=Path, default=None)
+    task5_parser.add_argument("--llada-distractor-file", type=Path, default=None)
+    task5_parser.add_argument("--llada-random-file", type=Path, default=None)
+    task5_parser.add_argument("--band", choices=["std", "sem", "none"], default="std")
+    task5_parser.add_argument("--num-points", type=int, default=101)
     task5_parser.add_argument("--output-dir", type=Path, default=task5_plot_dir())
     _set_handler(task5_parser, "ambient.visualization.task5_plot_decay:run")
 

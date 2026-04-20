@@ -41,6 +41,20 @@ METRIC_ORDER = [
 ]
 
 
+def _trapezoid_area(y: np.ndarray, x: np.ndarray) -> float:
+    """
+    NumPy compatibility wrapper for trapezoidal integration.
+
+    NumPy 2.x provides ``np.trapezoid`` while older environments still expose
+    ``np.trapz``. We support both so the Task-5 metrics CLI works across
+    environments.
+    """
+    trapezoid = getattr(np, "trapezoid", None)
+    if trapezoid is not None:
+        return float(trapezoid(y, x))
+    return float(np.trapz(y, x))
+
+
 def _extract_trajectory_map(raw_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
     """
     Extract trajectory lists keyed by instance id from supported Task-5 JSON formats.
@@ -97,7 +111,7 @@ def _trajectory_to_instance_metrics(trajectory: List[Dict[str, Any]]) -> Dict[st
         "Mean Start Entropy (H_0)": float(entropies_arr[0]),
         "Mean End Entropy (H_100)": float(entropies_arr[-1]),
         "Mean Peak Entropy (H_max)": float(np.max(entropies_arr)),
-        "Area Under Entropy Curve (AUC)": float(np.trapz(entropies_arr, norm_steps)),
+        "Area Under Entropy Curve (AUC)": _trapezoid_area(entropies_arr, norm_steps),
         "Collapse Rate (End H < 0.05)": float(entropies_arr[-1] < 0.05),
     }
 

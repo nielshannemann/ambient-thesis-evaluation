@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: ambient-local
+Version: 0.1.0
+Summary: Local packaged version of the Colab ambient workflow
+Author: Niels Hannemann

@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "bootstrap_reps": 5000,
+    "ci_level": 95.0,
+    "seed": 42
+  },
+  "models": {
+    "Autoregressive (LLaMA-8B)": {
+      "input_file": "results\\task5\\llama.json",
+      "valid_trajectories": 543,
+      "metrics": {
+        "Mean Start Entropy (H_0)": 0.2520397196728928,
+        "Mean End Entropy (H_100)": 0.24247077016878493,
+        "Mean Peak Entropy (H_max)": 0.45297662793856475,
+        "Area Under Entropy Curve (AUC)": 0.24943596060153275,
+        "Collapse Rate (End H < 0.05)": 0.5322283609576427
+      },
+      "confidence_intervals": {
+        "Mean Start Entropy (H_0)": {
+          "lower": 0.22376612172660254,
+          "upper": 0.2811495104960862
+        },
+        "Mean End Entropy (H_100)": {
+          "lower": 0.21431739179076467,
+          "upper": 0.2717022193372564
+        },
+        "Mean Peak Entropy (H_max)": {
+          "lower": 0.41719089568279305,
+          "upper": 0.4895795590192933
+        },
+        "Area Under Entropy Curve (AUC)": {
+          "lower": 0.22438397501530974,
+          "upper": 0.2757063328812571
+        },
+        "Collapse Rate (End H < 0.05)": {
+          "lower": 0.48987108655616945,
+          "upper": 0.574585635359116
+        }
+      }
+    },
+    "Discrete Diffusion (LLaDA-8B)": {
+      "input_file": "results\\task5\\llada.json",
+      "valid_trajectories": 543,
+      "metrics": {
+        "Mean Start Entropy (H_0)": 0.17733148712956082,
+        "Mean End Entropy (H_100)": 0.3190666328586552,
+        "Mean Peak Entropy (H_max)": 0.8260721128272849,
+        "Area Under Entropy Curve (AUC)": 0.2398747650075568,
+        "Collapse Rate (End H < 0.05)": 0.3848987108655617
+      },
+      "confidence_intervals": {
+        "Mean Start Entropy (H_0)": {
+          "lower": 0.15065728350102067,
+          "upper": 0.20450423514686691
+        },
+        "Mean End Entropy (H_100)": {
+          "lower": 0.2904277935015009,
+          "upper": 0.3481932599064602
+        },
+        "Mean Peak Entropy (H_max)": {
+          "lower": 0.8028594830038758,
+          "upper": 0.849646925846239
+        },
+        "Area Under Entropy Curve (AUC)": {
+          "lower": 0.2235393949823093,
+          "upper": 0.256619958420458
+        },
+        "Collapse Rate (End H < 0.05)": {
+          "lower": 0.3425414364640884,
+          "upper": 0.425414364640884
+        }
+      }
+    }
+  },
+  "paired_differences": {
+    "definition": "LLaDA - LLaMA",
+    "shared_trajectories": 543,
+    "metrics": {
+      "Mean Start Entropy (H_0)": -0.074708232543332,
+      "Mean End Entropy (H_100)": 0.07659586268987024,
+      "Mean Peak Entropy (H_max)": 0.3730954848887201,
+      "Area Under Entropy Curve (AUC)": -0.009561195593975934,
+      "Collapse Rate (End H < 0.05)": -0.14732965009208104
+    },
+    "confidence_intervals": {
+      "Mean Start Entropy (H_0)": {
+        "lower": -0.10611736760994155,
+        "upper": -0.04417942540712688
+      },
+      "Mean End Entropy (H_100)": {
+        "lower": 0.038164631974155615,
+        "upper": 0.11494969676916317
+      },
+      "Mean Peak Entropy (H_max)": {
+        "lower": 0.33636568524280713,
+        "upper": 0.40923247997800266
+      },
+      "Area Under Entropy Curve (AUC)": {
+        "lower": -0.031153822205423693,
+        "upper": 0.011168418525668227
+      },
+      "Collapse Rate (End H < 0.05)": {
+        "lower": -0.2007366482504604,
+        "upper": -0.09208103130755065
+      }
+    }
+  }
+}
