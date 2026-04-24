@@ -18,7 +18,7 @@ This remains a controlled proxy analysis rather than a literal traced diffusion
 sampling trajectory. The diffusion side is evaluated at fixed mask-ratio
 checkpoints rather than by logging internal denoising states.
 
-Thesis references:
+Method references:
 - Section 4.1: Standardized Evaluation Framework
 - Section 4.7: Task 5: Temporal Semantic Commitment
 """

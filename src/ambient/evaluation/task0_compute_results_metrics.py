@@ -11,7 +11,7 @@ Restored Features from Original Codebase:
 - Advanced Deduplication (Instance-level vs. Row-level).
 - Robust handling of generation failures (None-type scores).
 
-[Thesis Ref: Section 2.4 - Evaluation Metrics & Aggregation]
+[Method Ref: Section 2.4 - Evaluation Metrics & Aggregation]
 =============================================================================
 """
 
@@ -37,7 +37,7 @@ def read_jsonl(path: Path):
 def dedupe_results(results: list, dedupe_strategy: str = "instance"):
     """
     Safely deduplicates results in case of resume-aborts or overlaps.
-    [Thesis Ref: Section 2.4.2 - Instance-Level Deduplication]
+    [Method Ref: Section 2.4.2 - Instance-Level Deduplication]
     """
     if dedupe_strategy == "row":
         key_fn = lambda r: str(r.get("row_id") or r.get("id"))
@@ -57,7 +57,7 @@ def dedupe_results(results: list, dedupe_strategy: str = "instance"):
 def compute_metrics(results: list, metric_key: str = "empirical_KL_div"):
     """
     Calculates the Ranking Accuracy based on empirical KL divergence (Log-Odds).
-    [Thesis Ref: Equation 7 - Ranking Accuracy Condition]
+    [Method Ref: Equation 7 - Ranking Accuracy Condition]
     """
     total_examples = len(results)
     evaluated_examples = 0

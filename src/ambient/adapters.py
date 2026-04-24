@@ -15,7 +15,7 @@ Restored Features from Original Codebase:
 - Chunk-based micro-batching to prevent OOM errors on consumer GPUs 
   while preserving strict cryptographic reproducibility.
 
-[Thesis Reference: Section 3.1.2 - Standardizing the Interface: Adapter Design]
+[Method Reference: Section 3.1.2 - Standardizing the Interface: Adapter Design]
 =============================================================================
 """
 
@@ -67,7 +67,7 @@ def _filter_kwargs_for_call(fn: Callable, kwargs: dict) -> dict:
 def _post_process_generation(g: str, stop_at_sentence: bool) -> str:
     """
     Applies strict text normalization and formatting rules.
-    [Thesis Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+    [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
     """
     if g is None:
         return ""
@@ -101,7 +101,7 @@ class ARAdapter(BaseAdapter):
     """
     Adapter for Autoregressive (AR) Models like LLaMA.
     Executes standard left-to-right causal decoding.
-    [Thesis Reference: Section 3.1.2 - The ARAdapter]
+    [Method Reference: Section 3.1.2 - The ARAdapter]
     """
     def __init__(self, model_name: str, model, tokenizer, ar_score_fn: Callable):
         self.model_name = model_name
@@ -181,7 +181,7 @@ class ARAdapter(BaseAdapter):
     def score_continuations(self, prompts: List[str], continuations: List[str], **kwargs) -> List[Optional[float]]:
         """
         Calculates exact Sequence Negative Log-Likelihood (NLL).
-        [Thesis Reference: Equation 2 (AR Exact Likelihood)]
+        [Method Reference: Equation 2 (AR Exact Likelihood)]
         """
         return self.ar_score_fn(prompts, continuations)
 
@@ -194,7 +194,7 @@ class LLaDaAdapter(BaseAdapter):
     """
     Adapter for Discrete Text Diffusion Models (LLaDA).
     Executes iterative mask-based bidirectional refinement.
-    [Thesis Reference: Section 3.1.2 - The LLaDaAdapter]
+    [Method Reference: Section 3.1.2 - The LLaDaAdapter]
     """
     def __init__(self, model_name: str, model, tokenizer, diff_mc_nll: Callable):
         self.model_name = model_name
@@ -208,7 +208,7 @@ class LLaDaAdapter(BaseAdapter):
         Implements chunked micro-batching to prevent OOM errors on consumer GPUs 
         while preserving exact cryptographic reproducibility via chunk-level seeding.
         
-        [Thesis Reference: Section 3.2.1 - Configuring the Generation Process]
+        [Method Reference: Section 3.2.1 - Configuring the Generation Process]
         """
         final_gens = []
         base_seed = kwargs.get("seed", 42)
@@ -269,6 +269,6 @@ class LLaDaAdapter(BaseAdapter):
     def score_continuations(self, prompts: List[str], continuations: List[str], **kwargs) -> List[Optional[float]]:
         """
         Approximates Sequence Negative Log-Likelihood via Monte Carlo (MC) estimation.
-        [Thesis Reference: Equation 10 (MC NLL Estimator) & Section 3.3.1]
+        [Method Reference: Equation 10 (MC NLL Estimator) & Section 3.3.1]
         """
         return self.diff_mc_nll(prompts, continuations)

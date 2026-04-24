@@ -11,16 +11,20 @@
 # =========================
 # Python Build / Cache
 # =========================
-/ambient_local.egg-info/
+*.egg-info/
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # =========================
 # Models and HuggingFace Cache
 # =========================
 /hf_cache/
 /models/
+.cache/
 
 # =========================
 # Data and Caches
@@ -38,3 +42,12 @@ __pycache__/
 /logs/
 example_dirs/
 /paper/
+
+# =========================
+# Local / private files
+# =========================
+.env
+.env.*
+/todo.txt
+*codex_labels.csv
+wandb/

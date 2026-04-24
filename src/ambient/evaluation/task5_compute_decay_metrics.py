@@ -4,7 +4,7 @@
 Compute scalar summary metrics for Task 5: Temporal Semantic Commitment.
 
 This script aggregates per-instance entropy trajectories into the summary
-statistics reported in the thesis:
+statistics reported in the paper:
 - Mean Start Entropy (H_0)
 - Mean End Entropy (H_100)
 - Mean Peak Entropy (H_max)
@@ -278,11 +278,11 @@ def _format_metric_line(key: str, value: float, ci: Dict[str, float], ci_level: 
 def _format_delta_line(key: str, value: float, ci: Dict[str, float], ci_level: float) -> str:
     if "Rate" in key:
         return (
-            f"  Δ {key} (LLaDA - LLaMA): {value * 100:+.2f} pp "
+            f"  Î” {key} (LLaDA - LLaMA): {value * 100:+.2f} pp "
             f"[{ci_level:.0f}% paired bootstrap CI: {ci['lower'] * 100:+.2f}, {ci['upper'] * 100:+.2f} pp]"
         )
     return (
-        f"  Δ {key} (LLaDA - LLaMA): {value:+.4f} "
+        f"  Î” {key} (LLaDA - LLaMA): {value:+.4f} "
         f"[{ci_level:.0f}% paired bootstrap CI: {ci['lower']:+.4f}, {ci['upper']:+.4f}]"
     )
 

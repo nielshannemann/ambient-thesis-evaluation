@@ -14,7 +14,7 @@ Restored Features from Original Codebase:
 - Graceful Zero-Continuation fallbacks to maintain dataset alignment.
 - Hardware-agnostic generation via Adapter micro-batching.
 
-[Thesis Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
+[Method Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
 =============================================================================
 """
 
@@ -35,9 +35,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# [Thesis Reference: Section 3.1.2 - The Adapter Framework]
+# [Method Reference: Section 3.1.2 - The Adapter Framework]
 from ambient.adapters import get_adapter, BaseAdapter, ARAdapter
-# [Thesis Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+# [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
 from ambient.utils import (
     read_jsonl, ensure_dir,
     clean_continuation_text, is_suspicious, _num_tokens,
@@ -83,7 +83,7 @@ def save_example_results(ambiguous_sent: str, continuation_stats: dict, out_dir:
         ax.legend()
         short_title = (ambiguous_sent[:100] + "...") if len(ambiguous_sent) > 100 else ambiguous_sent
         ax.set_title(short_title)
-        # [Thesis Reference: Equation 4 - Unbiased Log-Odds Estimator]
+        # [Method Reference: Equation 4 - Unbiased Log-Odds Estimator]
         ax.set_xlabel("log P(c | d_i) - log P(c | a)")
         plt.tight_layout()
         try:
@@ -109,7 +109,7 @@ def create_test_instances(test_df):
 def canonicalize_continuation(continuation_text: str, adapter: BaseAdapter) -> tuple[str, int, bool]:
     """
     Cleans the generated text and flags artifacts (e.g., CJK characters, repetitions).
-    [Thesis Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+    [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
     """
     cleaned = clean_continuation_text(continuation_text)
     tokenizer = getattr(adapter, "tokenizer", getattr(adapter, "ar_tokenizer", None))
@@ -134,7 +134,7 @@ def continuation_evaluation(
 ):
     """
     Main evaluation loop for the AMBIENT dataset supporting multiple MC levels.
-    [Thesis Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
+    [Method Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
     """
     if len(mc_nums) != len(summary_names):
         raise ValueError("mc_nums and summary_names must have identical lengths.")

@@ -1,19 +1,18 @@
 # src/ambient/evaluation/get_log_likelihood.py
 """
 =============================================================================
-ORIGINAL AUTHORSHIP ACKNOWLEDGEMENT & ADAPTATION
+UPSTREAM CODE ACKNOWLEDGEMENT & ADAPTATION
 =============================================================================
 This script is directly adapted from the official LLaDA repository:
 Repository: https://github.com/ML-GSAI/LLaDA
 Paper: "LLaDA: A Simple, Scalable and General Purpose Text Diffusion Model" 
 (Nie et al., 2024).
 
-Modifications for this thesis:
+Adaptations for this project:
 - Adapted for AMBIENT dataset scoring (handling prompt + continuation splits).
 - Integrated into the Adapter Framework as the MC NLL backend.
 - Implemented deterministic local hashing for strictly reproducible MC sampling.
-- Added academic cross-references mapping the code to the theoretical 
-  mathematical equations established in the methodology chapter.
+- Added method cross-references linking the code to the scoring setup.
 =============================================================================
 """
 
@@ -26,7 +25,7 @@ def forward_process(batch, prompt_index, mask_id, rng=None):
     """
     Creates the corrupted sequence \tilde{X}^{(m)} for the diffusion process.
     
-    [Thesis Ref: Section 2.3.1 - Variance Reduction via Stratified Sampling]
+    [Method Ref: Section 2.3.1 - Variance Reduction via Stratified Sampling]
     Utilizes stratified sampling (via torch.linspace) across the batch dimension 
     to evenly distribute masking ratios. This significantly reduces the variance 
     of the Monte Carlo estimator compared to independent uniform sampling.
@@ -61,7 +60,7 @@ def forward_process(batch, prompt_index, mask_id, rng=None):
 def get_logits(model, batch, prompt_index, cfg_scale, mask_id):
     """
     Computes model logits, optionally applying Classifier-Free Guidance (CFG).
-    [Thesis Ref: Equation 8 - Classifier-Free Guidance for Diffusion]
+    [Method Ref: Equation 8 - Classifier-Free Guidance for Diffusion]
     """
     if cfg_scale > 0.:
         assert len(prompt_index) == batch.shape[1]

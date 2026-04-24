@@ -13,7 +13,7 @@ strict architectural consistency. It implements chunk-based micro-batching to
 prevent VRAM exhaustion on consumer hardware while guaranteeing exact 
 cryptographic reproducibility via chunk-level deterministic seeding.
 
-[Thesis Reference: Section 3.4.1 - Unconstrained Continuation Sampling]
+[Method Reference: Section 3.4.1 - Unconstrained Continuation Sampling]
 =============================================================================
 """
 

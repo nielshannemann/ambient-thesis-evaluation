@@ -49,7 +49,7 @@ def _set_handler(parser: argparse.ArgumentParser, import_path: str) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ambient",
-        description="Unified thesis- and paper-ready CLI for the AMBIENT experiment suite.",
+        description="Unified paper-ready CLI for the AMBIENT experiment suite.",
     )
     top_level = parser.add_subparsers(dest="command_group", required=True)
 

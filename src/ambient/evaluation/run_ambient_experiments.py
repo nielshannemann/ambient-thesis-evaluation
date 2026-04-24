@@ -8,13 +8,13 @@ This script orchestrates the generation and scoring of continuations for the
 AMBIENT dataset. It dynamically loads either an Autoregressive (AR) or 
 a Diffusion (LLaDA) base model.
 
-Key architectural features for this thesis:
+Key architectural features for this project:
 - Single-Load Policy: The model is loaded exactly once into VRAM and serves 
   as both generator and scorer to prevent memory collisions.
 - Batched Exact NLL (for AR) & Batched MC NLL (for Diffusion).
 - Strict Determinism for reproducible Ablation Studies.
 
-[Thesis Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
+[Method Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
 =============================================================================
 """
 
@@ -32,7 +32,7 @@ import torch
 import numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# [Thesis Reference: Section 3.1.2 - The Adapter Framework]
+# [Method Reference: Section 3.1.2 - The Adapter Framework]
 from ambient.adapters import LLaDaAdapter, ARAdapter, register_adapter
 from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
 from ambient.llada_loader import load_llada_model
@@ -49,7 +49,7 @@ LLAMA_MODEL_ID = LLAMA_BASE_MODEL_ID
 def set_seed(seed_val: int):
     """
     Enforces strict reproducibility across CPU, GPU, and NumPy runtimes.
-    [Thesis Reference: Section 3.3.2 - Experimental Setup and Reproducibility]
+    [Method Reference: Section 3.3.2 - Experimental Setup and Reproducibility]
     """
     os.environ['PYTHONHASHSEED'] = str(seed_val)
     random.seed(seed_val)
@@ -88,7 +88,7 @@ def batched_exact_nll_score(model, tokenizer, prompts: List[str], continuations:
     Computes the exact Sequence Negative Log-Likelihood for Autoregressive models.
     Utilizes left-aligned manual padding to allow for high-throughput batched inference.
     
-    [Thesis Reference: Equation 2 (AR Exact Likelihood)]
+    [Method Reference: Equation 2 (AR Exact Likelihood)]
     """
     model.eval()
     results = []
@@ -185,7 +185,7 @@ def batched_exact_nll_score(model, tokenizer, prompts: List[str], continuations:
 def auto_detect_4bit(model_id: str) -> bool:
     """
     Dynamically decides whether 4-bit quantization is required based on available VRAM.
-    [Thesis Reference: Section 3.1.1 - 4-bit Quantization via BitsAndBytes]
+    [Method Reference: Section 3.1.1 - 4-bit Quantization via BitsAndBytes]
     """
     if not torch.cuda.is_available():
         return False

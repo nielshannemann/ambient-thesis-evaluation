@@ -13,7 +13,7 @@ Restored Features from Original Codebase:
 - Dynamic repetitive-character truncation (salvaging generations).
 - Advanced LLaDA artifact filtering (CJK, placeholders, empty content).
 
-[Thesis Ref: Section 2.2.2 - Output Sanitization and Artifact Filtering]
+[Method Ref: Section 2.2.2 - Output Sanitization and Artifact Filtering]
 =============================================================================
 """
 
@@ -26,18 +26,18 @@ from pathlib import Path
 from typing import Optional, List, Any, Dict
 
 # --- Pre-compiled Regular Expressions for Output Sanitization ---
-# [Thesis Ref: Section 2.2.2 - Rule 2: Consecutive Repetitions]
+# [Method Ref: Section 2.2.2 - Rule 2: Consecutive Repetitions]
 _RE_REPEAT = re.compile(r'([^\w\s])\1{3,}')  # e.g., "...." or "????"
 _RE_LONG_CHAR = re.compile(r'(.)\1{20,}')    # Extravagant character repetition
 _RE_TRAILING_SAME = re.compile(r'([^\w\s])\1+$') # Trailing punctuation spam
 
-# [Thesis Ref: Section 2.2.2 - Rule 4: CJK Character Masking Artifacts]
+# [Method Ref: Section 2.2.2 - Rule 4: CJK Character Masking Artifacts]
 _RE_CJK = re.compile(r'[\u4e00-\u9fff\u3400-\u4dbf]')
 
 # Orphaned or trailing punctuation removal
 _RE_TRAILING_PUNCT = re.compile(r'[\)\]\}\s]+$')
 
-# [Thesis Ref: Section 2.2.2 - Rule 3: Stray Multiple Choice Patterns]
+# [Method Ref: Section 2.2.2 - Rule 3: Stray Multiple Choice Patterns]
 _RE_MCQ_PATTERN = re.compile(r'^\s*[A-D][\.\s\)]')
 
 
@@ -76,7 +76,7 @@ def write_json_atomic(path: str | Path, data: dict):
     """
     Safely writes metadata to disk. Uses os.fsync to ensure data clears 
     the OS buffer and hits the physical disk (crucial for NFS cluster setups).
-    [Thesis Ref: Section 2.1.1 - Aggregation & Provenance]
+    [Method Ref: Section 2.1.1 - Aggregation & Provenance]
     """
     path = Path(path)
     tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
@@ -101,7 +101,7 @@ def write_json_atomic(path: str | Path, data: dict):
 def make_instance_id(row: dict) -> str:
     """
     Generates a deterministic hash for deduplication.
-    [Thesis Ref: Section 2.4.2 - Instance-Level Deduplication]
+    [Method Ref: Section 2.4.2 - Instance-Level Deduplication]
     """
     try:
         row_json = json.dumps(row, sort_keys=True, default=str)
@@ -119,7 +119,7 @@ def clean_continuation_text(text: str) -> str:
     """
     Standardizes whitespace, caps repeating artifacts, and removes orphaned punctuation.
     Instead of discarding repetitive sequences, it truncates them to a reasonable length.
-    [Thesis Ref: Section 2.2.2 - Output Sanitization and Artifact Filtering]
+    [Method Ref: Section 2.2.2 - Output Sanitization and Artifact Filtering]
     """
     if not text:
         return ""
@@ -151,7 +151,7 @@ def is_suspicious(text: str, max_non_alnum_ratio: float = 0.35, max_consec_repea
     Heuristic filter to actively discard degenerated sequences produced by the diffusion process.
     Returns True if the continuation should be flagged and excluded from metric aggregation.
     
-    [Thesis Ref: Section 2.2.2 - Artifact Filtering Heuristics]
+    [Method Ref: Section 2.2.2 - Artifact Filtering Heuristics]
     """
     if not text or len(text.strip()) < 2:
         return True

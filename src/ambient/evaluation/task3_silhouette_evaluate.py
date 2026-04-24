@@ -17,7 +17,7 @@ Methodological Integration:
 Extracts the exact random seed from the generation metadata to guarantee 
 100% deterministic k-means clustering and evaluation parity.
 
-[Thesis Reference: Section 3.4.2 - Semantic Clustering Evaluation]
+[Method Reference: Section 3.4.2 - Semantic Clustering Evaluation]
 =============================================================================
 """
 
@@ -32,7 +32,7 @@ import torch
 warnings.filterwarnings("ignore", category=UserWarning)
 
 if "HF_HOME" not in os.environ:
-    os.environ["HF_HOME"] = "/mnt/storage2/student_data/nhannemann/hf_cache"
+    os.environ["HF_HOME"] = os.environ.get("AMBIENT_HF_HOME", "hf_cache")
 
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans

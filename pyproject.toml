@@ -3,10 +3,10 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ambient-local"
+name = "ambient-artifact"
 version = "0.1.0"
-description = "Local packaged version of the Colab ambient workflow"
-authors = [{name="Niels Hannemann"}]
+description = "Artifact package for AMBIENT-style ambiguity experiments"
+authors = [{name="Anonymous Authors"}]
 dependencies = []
 
 [project.scripts]

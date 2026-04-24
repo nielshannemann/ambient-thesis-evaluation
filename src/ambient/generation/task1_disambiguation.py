@@ -15,7 +15,7 @@ Methodological Integration:
 - Features dynamic 4-bit quantization detection and comprehensive metadata 
   serialization for strict experimental reproducibility.
 
-[Thesis Reference: Section 3.2.1 - Task 1: Explicit Generative Disambiguation]
+[Method Reference: Section 3.2.1 - Task 1: Explicit Generative Disambiguation]
 =============================================================================
 """
 
@@ -108,7 +108,7 @@ def build_task1_context_claim(row: dict):
 def clean_generated_interpretations(raw_text: str) -> str:
     """
     Cleans the raw output to strictly extract the enumerated interpretations.
-    [Thesis Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+    [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
     """
     for cutoff_string in ["\nuser:", "user:", "\nContext:", "<|", "We don't know"]:
         if cutoff_string in raw_text:

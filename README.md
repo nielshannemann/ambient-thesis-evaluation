@@ -1,6 +1,8 @@
-# ambient-local
+# AMBIENT-style ambiguity evaluation artifact
 
-Local thesis and paper workflow for the AMBIENT experiments.
+Anonymous artifact repository for the AMBIENT-style ambiguity experiments in
+the accompanying EMNLP submission. The repository contains the experiment CLI,
+evaluation code, tests, and selected generated outputs used by the paper.
 
 ## CLI
 
