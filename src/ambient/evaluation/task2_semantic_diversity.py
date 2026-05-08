@@ -31,6 +31,7 @@ import numpy as np
 from pathlib import Path
 from tqdm import tqdm
 import warnings
+from typing import List, Optional
 
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
@@ -65,27 +66,86 @@ def set_global_determinism(seed: int):
     set_seed(seed)
 
 
-def calculate_perplexity(text: str, model, tokenizer) -> float:
-    """
-    Calculates the exact perplexity of a given text sequence using a causal LM.
-    Perplexity = exp(CrossEntropyLoss)
-    """
-    if not text.strip():
+def calculate_perplexities_batch(
+    texts: List[str],
+    model,
+    tokenizer,
+    batch_size: int = 16,
+    max_length: Optional[int] = None,
+) -> List[Optional[float]]:
+    """Compute per-text causal-LM perplexities in batches, excluding padding tokens."""
+    if not texts:
+        return []
+
+    results: List[Optional[float]] = []
+    device = model.device
+    pad_id = tokenizer.pad_token_id
+
+    for start in tqdm(range(0, len(texts), batch_size), desc="PPL batches", leave=False):
+        batch_texts = texts[start : start + batch_size]
+        clean_texts = [text if text and text.strip() else "" for text in batch_texts]
+        short_mask = [not bool(text.strip()) for text in clean_texts]
+
+        enc_kwargs = {
+            "return_tensors": "pt",
+            "padding": True,
+            "truncation": max_length is not None,
+        }
+        if max_length is not None:
+            enc_kwargs["max_length"] = max_length
+
+        encodings = tokenizer(clean_texts, **enc_kwargs)
+        input_ids = encodings.input_ids.to(device)
+        attention_mask = encodings.attention_mask.to(device)
+
+        if input_ids.shape[1] < 2:
+            results.extend([None] * len(batch_texts))
+            continue
+
+        with torch.no_grad():
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+
+        shift_logits = outputs.logits[:, :-1, :].contiguous()
+        shift_labels = input_ids[:, 1:].contiguous()
+        shift_mask = attention_mask[:, 1:].contiguous()
+
+        loss_fct = torch.nn.CrossEntropyLoss(reduction="none")
+        token_losses = loss_fct(
+            shift_logits.view(-1, shift_logits.size(-1)),
+            shift_labels.view(-1),
+        ).view(shift_labels.shape)
+
+        token_losses = token_losses * shift_mask
+        token_counts = shift_mask.sum(dim=1)
+        seq_losses = token_losses.sum(dim=1) / token_counts.clamp(min=1)
+
+        for idx, loss in enumerate(seq_losses):
+            if short_mask[idx] or token_counts[idx].item() < 1:
+                results.append(None)
+                continue
+            loss_value = float(loss.detach().cpu().item())
+            if not math.isfinite(loss_value):
+                results.append(None)
+                continue
+            try:
+                results.append(float(math.exp(loss_value)))
+            except OverflowError:
+                results.append(float("inf"))
+
+    return results
+
+
+def sanitize_suffix(suffix: Optional[str]) -> Optional[str]:
+    if not suffix:
         return None
-        
-    encodings = tokenizer(text, return_tensors="pt")
-    input_ids = encodings.input_ids.to(model.device)
-    
-    # Exclude extremely short or empty generations
-    if input_ids.shape[1] < 2:
-        return None
-        
-    with torch.no_grad():
-        outputs = model(input_ids, labels=input_ids)
-        loss = outputs.loss
-        
-    ppl = torch.exp(loss).item()
-    return ppl
+    safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", suffix.strip())
+    return safe.strip("._-") or None
+
+
+def task2_metrics_output_path(model_root_dir: Path, suffix: Optional[str]) -> Path:
+    if not suffix:
+        return task2_metrics_path(model_root_dir)
+    return model_root_dir / f"task2_semantic_metrics__{suffix}.json"
 
 
 def calculate_word_overlap(prompt: str, continuation: str) -> float:
@@ -111,25 +171,39 @@ def run(args) -> int:
     
     # Enforce reproducibility
     set_global_determinism(args.seed)
+    output_suffix = sanitize_suffix(getattr(args, "output_suffix", None))
+    skip_diversity = bool(getattr(args, "skip_diversity", False))
+    skip_ppl = bool(getattr(args, "skip_ppl", False))
+    ppl_batch_size = int(getattr(args, "ppl_batch_size", 16))
+    ppl_max_length = getattr(args, "ppl_max_length", None)
     
     # 1. LOAD MODELS
-    print(f"[info] Loading Embedding Model ({args.embed_model}) for Diversity...")
-    embedder = SentenceTransformer(args.embed_model, cache_folder=CACHE_DIR)
-    
-    print(f"[info] Loading Oracle PPL Model ({args.ppl_model}) for Fluency...")
-    load_kwargs = {"device_map": "auto", "torch_dtype": torch.float16, "cache_dir": CACHE_DIR}
-    if args.use_4bit:
-        from transformers import BitsAndBytesConfig
-        load_kwargs["quantization_config"] = BitsAndBytesConfig(
-            load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_quant_type="nf4"
-        )
-        
-    ppl_tokenizer = AutoTokenizer.from_pretrained(args.ppl_model, cache_dir=CACHE_DIR)
-    if getattr(ppl_tokenizer, "pad_token_id", None) is None:
-        ppl_tokenizer.pad_token_id = ppl_tokenizer.eos_token_id
-        
-    ppl_model = AutoModelForCausalLM.from_pretrained(args.ppl_model, **load_kwargs)
-    ppl_model.eval()
+    embedder = None
+    if not skip_diversity:
+        print(f"[info] Loading Embedding Model ({args.embed_model}) for Diversity...")
+        embedder = SentenceTransformer(args.embed_model, cache_folder=CACHE_DIR)
+    else:
+        print("[info] Skipping embedding diversity metrics (--skip-diversity).")
+
+    ppl_model = None
+    ppl_tokenizer = None
+    if not skip_ppl:
+        print(f"[info] Loading Oracle PPL Model ({args.ppl_model}) for Fluency...")
+        load_kwargs = {"device_map": "auto", "torch_dtype": torch.float16, "cache_dir": CACHE_DIR}
+        if args.use_4bit:
+            from transformers import BitsAndBytesConfig
+            load_kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_quant_type="nf4"
+            )
+            
+        ppl_tokenizer = AutoTokenizer.from_pretrained(args.ppl_model, cache_dir=CACHE_DIR)
+        if getattr(ppl_tokenizer, "pad_token_id", None) is None:
+            ppl_tokenizer.pad_token_id = ppl_tokenizer.eos_token_id
+            
+        ppl_model = AutoModelForCausalLM.from_pretrained(args.ppl_model, **load_kwargs)
+        ppl_model.eval()
+    else:
+        print("[info] Skipping perplexity metrics (--skip-ppl).")
 
     all_results = {}
     missing_prompt_warned = False # Flag to avoid spamming the console
@@ -152,6 +226,7 @@ def run(args) -> int:
             "perplexity_scores": [],
             "overlap_scores": []
         }
+        ppl_texts = []
         
         instance_dirs = [d for d in model_dir.iterdir() if d.is_dir()]
         
@@ -220,7 +295,7 @@ def run(args) -> int:
                             pass
             
             # --- C. Compute Metrics PER INSTANCE ---
-            if len(continuations_for_div) >= 2:
+            if embedder is not None and len(continuations_for_div) >= 2:
                 embeddings = embedder.encode(continuations_for_div, show_progress_bar=False, convert_to_numpy=True)
                 dists = cosine_distances(embeddings)
                 upper_triangle_indices = np.triu_indices_from(dists, k=1)
@@ -230,19 +305,42 @@ def run(args) -> int:
                     metrics["diversity_scores"].append(float(mean_pairwise_distance))
 
             for text in continuations_for_div:
-                ppl = calculate_perplexity(text, ppl_model, ppl_tokenizer)
                 overlap = calculate_word_overlap(ambig_prompt, text)
-                
-                if ppl is not None and not math.isnan(ppl) and not math.isinf(ppl): 
-                    metrics["perplexity_scores"].append(ppl)
+                if ppl_model is not None:
+                    ppl_texts.append(text)
                 if overlap is not None: 
                     metrics["overlap_scores"].append(overlap)
+
+        if ppl_model is not None and ppl_tokenizer is not None:
+            ppl_eval_texts = ppl_texts
+            sample_size = getattr(args, "max_ppl_texts_per_dir", None)
+            if sample_size is not None and sample_size > 0 and len(ppl_eval_texts) > sample_size:
+                rng = random.Random(args.seed)
+                sample_indices = sorted(rng.sample(range(len(ppl_eval_texts)), sample_size))
+                ppl_eval_texts = [ppl_eval_texts[idx] for idx in sample_indices]
+                print(
+                    f"\n[info] {model_name}: sampled {len(ppl_eval_texts):,} of "
+                    f"{len(ppl_texts):,} continuations for external PPL."
+                )
+            else:
+                print(f"\n[info] {model_name}: scoring {len(ppl_eval_texts):,} continuations for PPL.")
+
+            ppl_values = calculate_perplexities_batch(
+                ppl_eval_texts,
+                ppl_model,
+                ppl_tokenizer,
+                batch_size=ppl_batch_size,
+                max_length=ppl_max_length,
+            )
+            for ppl in ppl_values:
+                if ppl is not None and not math.isnan(ppl) and not math.isinf(ppl):
+                    metrics["perplexity_scores"].append(ppl)
 
         if valid_files_found == 0:
              print(f"\n[warn] Looked in {len(instance_dirs)} folders inside {model_dir}, but found ZERO valid continuation files (y*.jsonl).")
 
         # --- D. Aggregate and Print Individual Results ---
-        individual_json_path = task2_metrics_path(model_root_dir)
+        individual_json_path = task2_metrics_output_path(model_root_dir, output_suffix)
 
         model_stats = {
             "diversity_mean_cosine_dist": float(np.mean(metrics["diversity_scores"])) if metrics["diversity_scores"] else None,
@@ -250,6 +348,12 @@ def run(args) -> int:
             "perplexity_mean": float(np.mean(metrics["perplexity_scores"])) if metrics["perplexity_scores"] else None,
             "overlap_mean": float(np.mean(metrics["overlap_scores"])) if metrics["overlap_scores"] else None,
             "num_evaluated_instances": len(instance_dirs),
+            "num_ppl_texts_available": len(ppl_texts),
+            "num_ppl_texts_scored": len(metrics["perplexity_scores"]),
+            "ppl_model": None if skip_ppl else args.ppl_model,
+            "ppl_batch_size": None if skip_ppl else ppl_batch_size,
+            "ppl_max_length": None if skip_ppl else ppl_max_length,
+            "embed_model": None if skip_diversity else args.embed_model,
             "seed_used": args.seed,
             "local_save_path": str(individual_json_path)
         }
@@ -295,4 +399,9 @@ def run(args) -> int:
             print(f"  -> Local Summary:   {stats['local_save_path']}")
             
     print("="*60)
+    if args.summary_output is not None:
+        args.summary_output.parent.mkdir(parents=True, exist_ok=True)
+        with args.summary_output.open("w", encoding="utf-8") as f:
+            json.dump(sorted_results, f, indent=4, ensure_ascii=False)
+        print(f"[info] Wrote combined Task-2 summary: {args.summary_output}")
     return 0
