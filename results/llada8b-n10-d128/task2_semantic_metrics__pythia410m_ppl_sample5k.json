@@ -1,0 +1,17 @@
+{
+    "llada8b-n10-d128": {
+        "diversity_mean_cosine_dist": null,
+        "perplexity_median": 19.128356641900336,
+        "perplexity_mean": 71.52700974879392,
+        "overlap_mean": 0.27262747600977266,
+        "num_evaluated_instances": 543,
+        "num_ppl_texts_available": 10195,
+        "num_ppl_texts_scored": 10193,
+        "ppl_model": "EleutherAI/pythia-410m-deduped",
+        "ppl_batch_size": 64,
+        "ppl_max_length": 128,
+        "embed_model": null,
+        "seed_used": 42,
+        "local_save_path": "results/llada8b-n10-d128/task2_semantic_metrics__pythia410m_ppl_sample5k.json"
+    }
+}
