@@ -1,0 +1,17 @@
+{
+  "run_dirs": [
+    "results\\llama8b-n100",
+    "results\\llada8b-n10-d128"
+  ],
+  "summary_glob": "summary*.jsonl",
+  "dedupe": "instance",
+  "metric_key": "empirical_KL_div_normalized_clean",
+  "bootstrap_reps": 20,
+  "ci_level": 95.0,
+  "seed": 42,
+  "subsample_n": 10,
+  "subsample_reps": 5,
+  "subsample_with_replacement": false,
+  "filter_non_alnum_ratios": "0.25,0.35,0.45",
+  "filter_repeat_thresholds": "8,12,20"
+}

@@ -62,6 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_plot_commands(top_level)
     _add_dataset_commands(top_level)
     _add_diagnostic_commands(top_level)
+    _add_robustness_commands(top_level)
 
     return parser
 
@@ -172,6 +173,10 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     evaluate_parser.add_argument("--results-path", type=Path, required=True)
     evaluate_parser.add_argument("--embed-model", type=str, default=TASK2_EMBED_MODEL_ID)
     evaluate_parser.add_argument("--nli-model", type=str, default=TASK3_NLI_MODEL_ID)
+    evaluate_parser.add_argument("--nli-thresholds", type=str, default="argmax")
+    evaluate_parser.add_argument("--nli-batch-size", type=int, default=16)
+    evaluate_parser.add_argument("--skip-nli", action="store_true")
+    evaluate_parser.add_argument("--output-path", type=Path, default=None)
     _set_handler(evaluate_parser, "ambient.evaluation.task3_silhouette_evaluate:run")
 
 
@@ -250,11 +255,12 @@ def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentPa
     plots = top_level.add_parser("plots", help="Plot existing experiment outputs without recomputing them.")
     subparsers = plots.add_subparsers(dest="plots_command", required=True)
 
-    sweep_parser = subparsers.add_parser("sweep-overview", help="Plot Task-0/2 result sweeps.")
+    sweep_parser = subparsers.add_parser("sweep-overview", help="Plot Task-1/2 result sweeps.")
     sweep_parser.add_argument("--results-dir", type=Path, default=Path("results"))
     sweep_parser.add_argument("--output-dir", type=Path, default=None)
     sweep_parser.add_argument("--llada-pattern", type=str, default=r"llada8b-n10-d(\d+)")
     sweep_parser.add_argument("--llama-dir", type=str, default="llama8b-n100")
+    sweep_parser.add_argument("--llama-extra-dirs", nargs="*", type=str, default=[])
     sweep_parser.add_argument("--paper-mc", type=int, default=128)
     sweep_parser.add_argument("--skip-paper-figures", action="store_true")
     _set_handler(sweep_parser, "ambient.visualization.task0_plot_results:run")
@@ -308,6 +314,37 @@ def _add_diagnostic_commands(top_level: argparse._SubParsersAction[argparse.Argu
     lengths_parser.add_argument("--roots", nargs="+", type=Path, required=True)
     lengths_parser.add_argument("--output-dir", type=Path, default=Path("."))
     _set_handler(lengths_parser, "ambient.evaluate_example_dirs:run")
+
+
+def _add_robustness_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    robustness = top_level.add_parser("robustness", help="Read-only robustness analyses over existing outputs.")
+    subparsers = robustness.add_subparsers(dest="robustness_command", required=True)
+
+    task1_parser = subparsers.add_parser(
+        "task1-ranking",
+        help="Task-1 ranking robustness: bootstrap CIs, K sensitivity, matched-count subsampling, and filter sensitivity.",
+    )
+    task1_parser.add_argument("--run-dirs", nargs="+", type=Path, required=True)
+    task1_parser.add_argument("--summary-glob", type=str, default="summary*.jsonl")
+    task1_parser.add_argument("--dedupe", choices=["instance", "row"], default="instance")
+    task1_parser.add_argument(
+        "--metric-key",
+        type=str,
+        default="normalized_cleaned",
+        help="Metric key or alias: normalized_cleaned, normalized_unfiltered, unnormalized_cleaned, unnormalized_unfiltered.",
+    )
+    task1_parser.add_argument("--bootstrap-reps", type=int, default=5000)
+    task1_parser.add_argument("--ci-level", type=float, default=95.0)
+    task1_parser.add_argument("--seed", type=int, default=42)
+    task1_parser.add_argument("--example-dir-name", type=str, default="example_dirs")
+    task1_parser.add_argument("--subsample-n", type=int, default=None)
+    task1_parser.add_argument("--subsample-reps", type=int, default=1000)
+    task1_parser.add_argument("--subsample-with-replacement", action="store_true")
+    task1_parser.add_argument("--filter-non-alnum-ratios", type=str, default="0.25,0.35,0.45")
+    task1_parser.add_argument("--filter-repeat-thresholds", type=str, default="8,12,20")
+    task1_parser.add_argument("--write-replicates", action="store_true")
+    task1_parser.add_argument("--output-dir", type=Path, default=Path("results/robustness/task1"))
+    _set_handler(task1_parser, "ambient.evaluation.task0_ranking_robustness:run")
 
 
 def main(argv: list[str] | None = None) -> int | None:

@@ -16,6 +16,9 @@ results/
   llama8b-n100/
     metrics_summary.json
     task2_semantic_metrics.json
+  llama8b-n100-t2.0/
+    metrics_summary.json
+    task2_semantic_metrics.json
 
 Outputs:
 results/plots/
@@ -226,7 +229,18 @@ def build_llama_task0_baseline(results_dir: Path, llama_dir_name: str) -> pd.Dat
     return pd.DataFrame(rows)
 
 
-def build_task2_dataframe(llada_dirs: List[Tuple[int, Path]], results_dir: Path, llama_dir_name: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def build_llama_task0_baselines(results_dir: Path, llama_dir_names: List[str]) -> pd.DataFrame:
+    frames = [
+        build_llama_task0_baseline(results_dir, llama_dir_name)
+        for llama_dir_name in llama_dir_names
+    ]
+    frames = [frame for frame in frames if not frame.empty]
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
+
+
+def build_task2_dataframe(llada_dirs: List[Tuple[int, Path]], results_dir: Path, llama_dir_names: List[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     llada_rows: List[Dict[str, Any]] = []
     for d_step, model_dir in llada_dirs:
         raw = load_json(model_dir / "task2_semantic_metrics.json")
@@ -236,12 +250,14 @@ def build_task2_dataframe(llada_dirs: List[Tuple[int, Path]], results_dir: Path,
         row.update(extract_task2_metrics(raw))
         llada_rows.append(row)
 
-    baseline_raw = load_json(results_dir / llama_dir_name / "task2_semantic_metrics.json")
-    baseline_df = pd.DataFrame()
-    if baseline_raw:
-        base_row = {"model": llama_dir_name}
-        base_row.update(extract_task2_metrics(baseline_raw))
-        baseline_df = pd.DataFrame([base_row])
+    baseline_rows: List[Dict[str, Any]] = []
+    for llama_dir_name in llama_dir_names:
+        baseline_raw = load_json(results_dir / llama_dir_name / "task2_semantic_metrics.json")
+        if baseline_raw:
+            base_row = {"model": llama_dir_name}
+            base_row.update(extract_task2_metrics(baseline_raw))
+            baseline_rows.append(base_row)
+    baseline_df = pd.DataFrame(baseline_rows)
 
     llada_df = pd.DataFrame(llada_rows)
     if not llada_df.empty:
@@ -253,6 +269,15 @@ def save_dataframe(df: pd.DataFrame, path: Path) -> None:
     ensure_dir(path.parent)
     df.to_csv(path, index=False)
     print(f"[INFO] Saved table: {path}")
+
+
+def llama_display_label(model_name: str) -> str:
+    if model_name == "llama8b-n100":
+        return "LLaMA temp=1.0"
+    temp_match = re.search(r"-t([0-9.]+)$", model_name)
+    if temp_match:
+        return f"LLaMA temp={temp_match.group(1)}"
+    return model_name
 
 
 def finite_series(values: Iterable[Any]) -> List[float]:
@@ -515,7 +540,7 @@ def plot_paper_task0_task2_tradeoff(
 ) -> None:
     ensure_dir(out_dir)
     if task0_df.empty or task2_llada_df.empty:
-        print("[WARN] Skipping paper tradeoff figure because Task-0 or Task-2 data is missing.")
+        print("[WARN] Skipping paper tradeoff figure because Task-1 or Task-2 data is missing.")
         return
 
     task0_subset = task0_df[
@@ -523,7 +548,7 @@ def plot_paper_task0_task2_tradeoff(
         (task0_df["mc"] == mc)
     ].copy()
     if task0_subset.empty:
-        print(f"[WARN] Skipping paper tradeoff figure because no Task-0 rows were found for section={section} and mc={mc}.")
+        print(f"[WARN] Skipping paper tradeoff figure because no Task-1 rows were found for section={section} and mc={mc}.")
         return
 
     if task0_metric not in task0_subset.columns or task2_metric not in task2_llada_df.columns:
@@ -536,7 +561,7 @@ def plot_paper_task0_task2_tradeoff(
         how="inner",
     ).sort_values(task2_metric)
     if merged.empty:
-        print("[WARN] Skipping paper tradeoff figure because no merged Task-0/Task-2 rows were found.")
+        print("[WARN] Skipping paper tradeoff figure because no merged Task-1/Task-2 rows were found.")
         return
 
     fig, ax = plt.subplots(figsize=(7.2, 4.8))
@@ -554,12 +579,12 @@ def plot_paper_task0_task2_tradeoff(
         linewidth=0.9,
         s=52,
         zorder=3,
-        label=f"LLaDA (mc={mc})",
+        label=f"LLaDA (K={mc})",
     )
 
     for x_val, y_val, step in zip(xs, ys, steps):
         ax.annotate(
-            f"d={step}",
+            f"T={step}",
             xy=(x_val, y_val),
             xytext=(5, 5),
             textcoords="offset points",
@@ -573,34 +598,44 @@ def plot_paper_task0_task2_tradeoff(
         task0_metric in baseline_subset.columns and
         task2_metric in task2_baseline_df.columns
     ):
-        baseline_x = float(task2_baseline_df.iloc[0][task2_metric])
-        baseline_y = float(baseline_subset.iloc[0][task0_metric])
-        ax.scatter(
-            [baseline_x],
-            [baseline_y],
-            marker="*",
-            s=170,
-            color="#f28e2b",
-            edgecolors="black",
-            linewidth=0.8,
-            zorder=4,
-            label="LLaMA baseline",
-        )
-        ax.annotate(
-            "LLaMA",
-            xy=(baseline_x, baseline_y),
-            xytext=(8, -14),
-            textcoords="offset points",
-            fontsize=9,
-        )
+        markers = ["*", "X", "P", "D"]
+        colors = ["#f28e2b", "#d62728", "#9467bd", "#8c564b"]
+        for idx, (_, baseline_row) in enumerate(baseline_subset.iterrows()):
+            model_name = str(baseline_row["model"])
+            task2_rows = task2_baseline_df[task2_baseline_df["model"] == model_name]
+            if task2_rows.empty:
+                continue
+            baseline_x = float(task2_rows.iloc[0][task2_metric])
+            baseline_y = float(baseline_row[task0_metric])
+            if not math.isfinite(baseline_x) or not math.isfinite(baseline_y):
+                continue
+            label = llama_display_label(model_name)
+            ax.scatter(
+                [baseline_x],
+                [baseline_y],
+                marker=markers[idx % len(markers)],
+                s=170 if idx == 0 else 95,
+                color=colors[idx % len(colors)],
+                edgecolors="black",
+                linewidth=0.8,
+                zorder=4,
+                label=label,
+            )
+            ax.annotate(
+                label,
+                xy=(baseline_x, baseline_y),
+                xytext=(8, -14 if idx == 0 else 7),
+                textcoords="offset points",
+                fontsize=9,
+            )
 
     maybe_set_log_scale(ax, task2_metric, axis="x")
     ax.set_xlabel("Task 2 median perplexity (lower is better)")
-    ax.set_ylabel("Task 0 rank accuracy (all valid < distractor)")
+    ax.set_ylabel("Task 1 rank accuracy (all valid < distractor)")
     ax.legend(frameon=True, loc="best")
     fig.tight_layout()
 
-    out_path = out_dir / f"task0_task2_tradeoff__{section}__mc{mc}.png"
+    out_path = out_dir / f"task1_task2_tradeoff__{section}__mc{mc}.png"
     save_paper_figure(fig, out_path)
     plt.close(fig)
 
@@ -625,9 +660,12 @@ def run(args) -> int:
     for d_step, path in llada_dirs:
         print(f"  - d={d_step}: {path}")
 
+    llama_dirs = [args.llama_dir] + list(getattr(args, "llama_extra_dirs", []) or [])
+    llama_task0_df = build_llama_task0_baselines(results_dir, llama_dirs)
+    llama_task0_main_df = llama_task0_df[llama_task0_df["model"] == args.llama_dir].copy()
     task0_df = build_task0_dataframe(llada_dirs)
-    llama_task0_df = build_llama_task0_baseline(results_dir, args.llama_dir)
-    task2_llada_df, task2_llama_df = build_task2_dataframe(llada_dirs, results_dir, args.llama_dir)
+    task2_llada_df, task2_llama_df = build_task2_dataframe(llada_dirs, results_dir, llama_dirs)
+    task2_llama_main_df = task2_llama_df[task2_llama_df["model"] == args.llama_dir].copy()
 
     save_dataframe(task0_df, out_dir / "tables" / "task0_llada_long.csv")
     if not llama_task0_df.empty:
@@ -636,10 +674,10 @@ def run(args) -> int:
     if not task2_llama_df.empty:
         save_dataframe(task2_llama_df, out_dir / "tables" / "task2_llama_baseline.csv")
 
-    plot_task0_by_diffusion_steps(task0_df, llama_task0_df, out_dir / "task0" / "by_diffusion_steps")
-    plot_task0_by_mc(task0_df, llama_task0_df, out_dir / "task0" / "by_mc")
-    plot_task0_overview_grids(task0_df, llama_task0_df, out_dir / "task0" / "overviews")
-    plot_task2(task2_llada_df, task2_llama_df, out_dir / "task2")
+    plot_task0_by_diffusion_steps(task0_df, llama_task0_main_df, out_dir / "task0" / "by_diffusion_steps")
+    plot_task0_by_mc(task0_df, llama_task0_main_df, out_dir / "task0" / "by_mc")
+    plot_task0_overview_grids(task0_df, llama_task0_main_df, out_dir / "task0" / "overviews")
+    plot_task2(task2_llada_df, task2_llama_main_df, out_dir / "task2")
     if not getattr(args, "skip_paper_figures", False):
         plot_paper_task0_task2_tradeoff(
             task0_df,

@@ -42,6 +42,7 @@ __pycache__/
 /logs/
 example_dirs/
 /paper/
+/paper_changes_backup/
 
 # =========================
 # Local / private files
