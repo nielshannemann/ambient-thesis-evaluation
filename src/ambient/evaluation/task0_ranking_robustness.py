@@ -325,15 +325,27 @@ def write_csv(path: Path, rows: Iterable[dict[str, Any]]) -> None:
     print(f"[info] wrote {path}")
 
 
+def log(message: str) -> None:
+    print(message, flush=True)
+
+
 def summarize_summary_files(args) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
+    total_summary_files = 0
     for run_dir in args.run_dirs:
-        for summary_path in sorted(run_dir.glob(args.summary_glob)):
+        summary_paths = sorted(run_dir.glob(args.summary_glob))
+        total_summary_files += len(summary_paths)
+        log(f"[summary] {run_dir}: found {len(summary_paths)} files matching {args.summary_glob!r}")
+        for file_idx, summary_path in enumerate(summary_paths, start=1):
+            log(f"[summary] {run_dir.name}: loading {summary_path.name} ({file_idx}/{len(summary_paths)})")
             raw = read_jsonl(summary_path)
             if not raw:
+                log(f"[summary] {summary_path}: empty or unreadable, skipping")
                 continue
             deduped = dedupe_results(raw, args.dedupe)
+            log(f"[summary] {summary_path.name}: raw={len(raw)}, deduped={len(deduped)}")
             for variant_name, metric_key in METRIC_VARIANTS.items():
+                log(f"[summary] {summary_path.name}: metric={variant_name}, bootstrap={args.bootstrap_reps}")
                 records = outcome_records_from_summary(deduped, metric_key)
                 aggregate = aggregate_outcomes(records)
                 boot = bootstrap_accuracy(
@@ -353,6 +365,7 @@ def summarize_summary_files(args) -> list[dict[str, Any]]:
                         **boot,
                     }
                 )
+    log(f"[summary] completed {total_summary_files} summary-file slots; wrote {len(rows)} metric rows in memory")
     return rows
 
 
@@ -363,16 +376,24 @@ def summarize_matched_subsampling(args, metric_key: str) -> tuple[list[dict[str,
         return summary_rows, replicate_rows
 
     for run_dir in args.run_dirs:
+        log(f"[subsample] {run_dir}: loading {args.example_dir_name}/")
         examples = load_example_dirs(run_dir, args.example_dir_name)
         if not examples:
             print(f"[warn] no example_dirs found for {run_dir}; skipping matched-count subsampling")
             continue
 
+        log(
+            f"[subsample] {run_dir.name}: examples={len(examples)}, "
+            f"n={args.subsample_n}, reps={args.subsample_reps}, metric={metric_key}"
+        )
         all_acc: list[float] = []
         any_acc: list[float] = []
         evaluated_counts: list[int] = []
         artifact_rates: list[float] = []
+        progress_every = max(1, args.subsample_reps // 10)
         for rep in range(args.subsample_reps):
+            if rep == 0 or (rep + 1) % progress_every == 0 or rep + 1 == args.subsample_reps:
+                log(f"[subsample] {run_dir.name}: replicate {rep + 1}/{args.subsample_reps}")
             records = outcome_records_from_example_dirs(
                 examples,
                 metric_key=metric_key,
@@ -415,6 +436,7 @@ def summarize_matched_subsampling(args, metric_key: str) -> tuple[list[dict[str,
                 "artifact_rate_mean": mean_finite(artifact_rates),
             }
         )
+        log(f"[subsample] {run_dir.name}: done")
     return summary_rows, replicate_rows
 
 
@@ -426,12 +448,21 @@ def summarize_filter_sensitivity(args, metric_key: str) -> list[dict[str, Any]]:
         return rows
 
     for run_dir in args.run_dirs:
+        log(f"[filter] {run_dir}: loading {args.example_dir_name}/")
         examples = load_example_dirs(run_dir, args.example_dir_name)
         if not examples:
             print(f"[warn] no example_dirs found for {run_dir}; skipping threshold-level filter sensitivity")
             continue
+        total_grid = len(non_alnum_values) * len(repeat_values)
+        grid_idx = 0
+        log(f"[filter] {run_dir.name}: examples={len(examples)}, grid={total_grid}, metric={metric_key}")
         for non_alnum in non_alnum_values:
             for repeat in repeat_values:
+                grid_idx += 1
+                log(
+                    f"[filter] {run_dir.name}: threshold {grid_idx}/{total_grid} "
+                    f"(non_alnum={non_alnum}, repeat={repeat})"
+                )
                 config = FilterConfig(non_alnum_ratio=non_alnum, max_consec_repeat=repeat)
                 records = outcome_records_from_example_dirs(
                     examples,
@@ -451,6 +482,7 @@ def summarize_filter_sensitivity(args, metric_key: str) -> list[dict[str, Any]]:
                         **boot,
                     }
                 )
+        log(f"[filter] {run_dir.name}: done")
     return rows
 
 
@@ -461,14 +493,23 @@ def run(args) -> int:
     if metric_key in METRIC_VARIANTS:
         metric_key = METRIC_VARIANTS[metric_key]
 
+    log("[task1-robustness] starting")
+    log(f"[task1-robustness] run_dirs={len(args.run_dirs)}, output_dir={args.output_dir}")
+    log(
+        f"[task1-robustness] summary_glob={args.summary_glob!r}, dedupe={args.dedupe}, "
+        f"metric={metric_key}, bootstrap_reps={args.bootstrap_reps}"
+    )
     summary_rows = summarize_summary_files(args)
     write_csv(args.output_dir / "task1_summary_and_k_sensitivity.csv", summary_rows)
 
+    if args.subsample_n is not None and args.subsample_reps > 0:
+        log("[task1-robustness] starting matched-count subsampling")
     subsample_summary, subsample_reps = summarize_matched_subsampling(args, metric_key)
     write_csv(args.output_dir / f"task1_matched_subsample_n{args.subsample_n or 'none'}_summary.csv", subsample_summary)
     if args.write_replicates:
         write_csv(args.output_dir / f"task1_matched_subsample_n{args.subsample_n or 'none'}_replicates.csv", subsample_reps)
 
+    log("[task1-robustness] starting filter sensitivity")
     filter_rows = summarize_filter_sensitivity(args, metric_key)
     write_csv(args.output_dir / "task1_filter_threshold_sensitivity.csv", filter_rows)
 
@@ -489,4 +530,5 @@ def run(args) -> int:
     with (args.output_dir / "task1_robustness_config.json").open("w", encoding="utf-8") as handle:
         json.dump(config, handle, indent=2)
     print(f"[info] wrote {args.output_dir / 'task1_robustness_config.json'}")
+    log("[task1-robustness] done")
     return 0

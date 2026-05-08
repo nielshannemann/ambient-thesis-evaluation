@@ -1,0 +1,24 @@
+{
+  "run_dirs": [
+    "results/llama8b-n100",
+    "results/llama8b-n100-t2.0",
+    "results/llada8b-n10-d2",
+    "results/llada8b-n10-d4",
+    "results/llada8b-n10-d8",
+    "results/llada8b-n10-d16",
+    "results/llada8b-n10-d32",
+    "results/llada8b-n10-d64",
+    "results/llada8b-n10-d128"
+  ],
+  "summary_glob": "summary*.jsonl",
+  "dedupe": "instance",
+  "metric_key": "empirical_KL_div_normalized_clean",
+  "bootstrap_reps": 5000,
+  "ci_level": 95.0,
+  "seed": 42,
+  "subsample_n": 10,
+  "subsample_reps": 1000,
+  "subsample_with_replacement": false,
+  "filter_non_alnum_ratios": "0.25,0.35,0.45",
+  "filter_repeat_thresholds": "8,12,20"
+}

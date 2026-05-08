@@ -23,6 +23,7 @@ Extracts the exact random seed from the generation metadata to guarantee
 
 import json
 import os
+import time
 import warnings
 from pathlib import Path
 from typing import Any
@@ -162,6 +163,10 @@ def metric_summary(values: list[float], scale: float = 1.0) -> dict[str, float |
     }
 
 
+def log(message: str) -> None:
+    print(message, flush=True)
+
+
 def run(args) -> int:
     if not args.results_path.exists():
         print(f"[ERROR] Target file not found: {args.results_path}")
@@ -172,20 +177,25 @@ def run(args) -> int:
 
     metadata = full_data.get("metadata", {})
     results_list = full_data.get("results", [])
+    log(f"[INFO] Loaded {len(results_list)} generated examples from {args.results_path}")
 
     extracted_seed = metadata.get("hyperparameters", {}).get("seed", 42)
-    print(f"[INFO] Extracted deterministic seed {extracted_seed} from metadata. Locking environment...")
+    log(f"[INFO] Extracted deterministic seed {extracted_seed} from metadata. Locking environment...")
     set_global_determinism(extracted_seed)
 
-    print(f"[INFO] Loading Semantic Embedding Model: '{args.embed_model}'...")
+    log(f"[INFO] Loading Semantic Embedding Model: '{args.embed_model}'...")
     embedder = SentenceTransformer(args.embed_model)
 
     nli_thresholds = parse_nli_thresholds(args.nli_thresholds)
     nli_pipe = None
     if not args.skip_nli:
-        print(f"[INFO] Loading Natural Language Inference (NLI) Model: '{args.nli_model}' (This may take a moment)...")
+        log(f"[INFO] Loading Natural Language Inference (NLI) Model: '{args.nli_model}' (This may take a moment)...")
         device = 0 if torch.cuda.is_available() else -1
         nli_pipe = pipeline("text-classification", model=args.nli_model, device=device)
+        log(
+            f"[INFO] NLI ready. thresholds={','.join(str(t) for t in nli_thresholds)}, "
+            f"batch_size={args.nli_batch_size}, full_scores={any(t != 'argmax' for t in nli_thresholds)}"
+        )
     needs_full_nli_scores = any(threshold != "argmax" for threshold in nli_thresholds)
 
     mcd_scores = []
@@ -197,9 +207,13 @@ def run(args) -> int:
     skipped_side_unknown = 0
     side_counter = {"premise": 0, "hypothesis": 0}
 
-    print("\n[INFO] Commencing deterministic evaluation pipeline...\n")
+    log("\n[INFO] Commencing deterministic evaluation pipeline...\n")
 
-    for data in results_list:
+    start_time = time.time()
+    total_nli_pairs = 0
+    progress_every = max(1, int(args.progress_every or 1))
+
+    for input_idx, data in enumerate(results_list, start=1):
         continuations = [c.strip() for c in data.get("continuations", []) if c and c.strip()]
         gold_disambigs, side = extract_gold_texts(data)
 
@@ -243,6 +257,13 @@ def run(args) -> int:
         # 4: NLI Target Coverage (Strict Entailment Filter)
         if nli_pipe is not None:
             nli_pairs = [{"text": cont, "text_pair": gold} for cont in continuations for gold in gold_disambigs]
+            total_nli_pairs += len(nli_pairs)
+            if valid_examples < 5 or input_idx % progress_every == 0:
+                log(
+                    f"[NLI] scoring input {input_idx}/{len(results_list)} "
+                    f"(valid_so_far={valid_examples}, pairs={len(nli_pairs)}, "
+                    f"total_pairs={total_nli_pairs})"
+                )
             if needs_full_nli_scores:
                 results = nli_pipe(
                     nli_pairs,
@@ -274,6 +295,13 @@ def run(args) -> int:
                 nli_coverage_scores[str(threshold)].append(min(nli_percentages))
 
         valid_examples += 1
+        if valid_examples <= 5 or valid_examples % progress_every == 0:
+            elapsed = time.time() - start_time
+            rate = valid_examples / elapsed if elapsed > 0 else 0.0
+            log(
+                f"[progress] valid={valid_examples}, input={input_idx}/{len(results_list)}, "
+                f"elapsed={elapsed/60:.1f}m, rate={rate:.2f} examples/s"
+            )
 
     print("=" * 65)
     print(f"=== EVALUATION RESULTS FOR: {args.results_path.name} ===")

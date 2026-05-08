@@ -1,0 +1,40 @@
+{
+  "results_path": "results/task3/no_trailing_quotes/llada8b_disambiguated_control.json",
+  "embed_model": "sentence-transformers/all-mpnet-base-v2",
+  "nli_model": "roberta-large-mnli",
+  "skip_nli": true,
+  "nli_thresholds": [
+    "argmax"
+  ],
+  "seed": 42,
+  "processed_inputs": 543,
+  "ambiguity_sides_seen": {
+    "premise": 402,
+    "hypothesis": 141
+  },
+  "skipped_side_unknown": 0,
+  "metrics": {
+    "mcd": {
+      "mean": 0.6397023451262416,
+      "std": 0.1218001215601437,
+      "n": 543
+    },
+    "silhouette": {
+      "mean": 0.23861251718280613,
+      "std": 0.1417134207035097,
+      "n": 543
+    },
+    "mtc_cos_percent": {
+      "mean": 27.145665984458407,
+      "std": 13.566991554921586,
+      "n": 543
+    },
+    "mtc_nli_percent": {
+      "argmax": {
+        "mean": null,
+        "std": null,
+        "n": 0
+      }
+    }
+  }
+}
