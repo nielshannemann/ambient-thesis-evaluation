@@ -88,10 +88,12 @@ formal project license before broad reuse.
 
 The experiments use an existing benchmark-derived dataset and model-generated
 continuations. No new personal data was collected, and the artifact is not
-intended to identify individuals. Some generated continuations may contain named
-entities or web-like snippets because they are raw model outputs. We did not
-perform a dedicated PII/offensive-content audit beyond the heuristic artifact
-filtering described in the paper and implemented in the evaluation code.
+intended to identify individuals. The paper itself does not include offensive
+content. Some generated continuations and released output files may contain
+named entities, web-like snippets, or otherwise unfiltered model text because
+they are raw model outputs. We did not perform a dedicated PII/offensive-content
+audit beyond the heuristic artifact filtering described in the paper and
+implemented in the evaluation code.
 
 ## Compute
 
