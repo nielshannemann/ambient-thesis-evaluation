@@ -10,7 +10,7 @@ to ensure that models (especially discrete diffusion architectures) do not
 suffer from mode collapse, repetition, or ungrammatical generation.
 
 Metrics Computed:
-1. Oracle Perplexity (PPL): Uses a frozen AR model (e.g., LLaMA-8B) to assess 
+1. External-LM Perplexity (PPL): Uses a frozen AR model (e.g., LLaMA-8B) to assess 
    the fluency and grammatical correctness of the generations.
 2. Mean Cosine Distance (MCD): Uses SBERT to evaluate the intra-prompt 
    semantic diversity (avoidance of mode collapse).
@@ -188,7 +188,7 @@ def run(args) -> int:
     ppl_model = None
     ppl_tokenizer = None
     if not skip_ppl:
-        print(f"[info] Loading Oracle PPL Model ({args.ppl_model}) for Fluency...")
+        print(f"[info] Loading external-LM PPL model ({args.ppl_model}) for fluency...")
         load_kwargs = {"device_map": "auto", "torch_dtype": torch.float16, "cache_dir": CACHE_DIR}
         if args.use_4bit:
             from transformers import BitsAndBytesConfig

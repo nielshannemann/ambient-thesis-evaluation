@@ -37,7 +37,7 @@ from ambient.adapters import LLaDaAdapter, ARAdapter, register_adapter
 from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
 from ambient.llada_loader import load_llada_model
 from ambient.evaluation.continuation_evaluation_adapted import continuation_evaluation
-from ambient.paths import task0_run_dir
+from ambient.paths import task1_run_dir
 from ambient.utils import write_json_atomic
 
 # ==========================================
@@ -241,7 +241,7 @@ def run(args) -> int:
         mc_list = [1] 
         summary_names = ["summary.jsonl"]
         
-    out_dir = args.output_dir or task0_run_dir(
+    out_dir = args.output_dir or task1_run_dir(
         model_name=model_name,
         num_generations=num_generations,
         model_family=args.model_family,

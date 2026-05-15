@@ -1,4 +1,4 @@
-"""AMBIENT artifact package."""
+"""AmbiEnt-style artifact package."""
 
 __all__ = [
     "adapters",

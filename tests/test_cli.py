@@ -3,23 +3,23 @@ from pathlib import Path
 import pytest
 
 from ambient.cli import build_parser, main
-from ambient.constants import TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID
-from ambient.paths import plots_root, task1_judge_output_path, task4_output_path, task5_output_path, task5_plot_dir
+from ambient.constants import TASK6_JUDGE_MODEL_ID, TASK6_SECONDARY_JUDGE_MODEL_ID
+from ambient.paths import plots_root, task4_output_path, task5_output_path, task5_plot_dir, task6_judge_output_path
 
 
 def test_help_entrypoints_exit_cleanly() -> None:
     commands = [
         [],
-        ["task0", "run"],
-        ["task0", "metrics"],
-        ["task1", "generate"],
-        ["task1", "judge"],
+        ["task1", "run"],
+        ["task1", "metrics"],
         ["task2", "evaluate"],
         ["task3", "generate"],
         ["task3", "evaluate"],
         ["task4", "evaluate"],
         ["task5", "generate"],
         ["task5", "metrics"],
+        ["task6", "generate"],
+        ["task6", "judge"],
         ["plots", "sweep-overview"],
         ["plots", "task4"],
         ["plots", "task5"],
@@ -34,11 +34,11 @@ def test_help_entrypoints_exit_cleanly() -> None:
         assert excinfo.value.code == 0
 
 
-def test_task0_run_parser_uses_new_flag_names() -> None:
+def test_task1_run_parser_uses_new_flag_names() -> None:
     parser = build_parser()
     args = parser.parse_args(
         [
-            "task0",
+            "task1",
             "run",
             "--model-family",
             "llada",
@@ -76,14 +76,14 @@ def test_task5_and_plot_commands_use_llama_llada_file_flags() -> None:
     assert plot_args.output_dir == task5_plot_dir()
 
 
-def test_task1_judge_defaults_to_multi_judge_output_path() -> None:
+def test_task6_judge_defaults_to_multi_judge_output_path() -> None:
     parser = build_parser()
-    args = parser.parse_args(["task1", "judge"])
+    args = parser.parse_args(["task6", "judge"])
 
     assert args.judge_models is None
     assert args.judge_model is None
-    assert args.default_judge_models == [TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID]
-    assert args.output_path == task1_judge_output_path()
+    assert args.default_judge_models == [TASK6_JUDGE_MODEL_ID, TASK6_SECONDARY_JUDGE_MODEL_ID]
+    assert args.output_path == task6_judge_output_path()
 
 
 def test_task4_and_plot_defaults_match_contract_paths() -> None:
@@ -101,4 +101,5 @@ def test_task4_and_plot_defaults_match_contract_paths() -> None:
     sweep_args = parser.parse_args(["plots", "sweep-overview"])
     assert sweep_args.results_dir == Path("results")
     assert sweep_args.output_dir is None
+    assert sweep_args.paper_mc == 256
     assert plots_root(sweep_args.results_dir) == Path("results/plots")

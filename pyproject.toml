@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ambient-artifact"
 version = "0.1.0"
-description = "Artifact package for AMBIENT-style ambiguity experiments"
+description = "Artifact package for AmbiEnt-style ambiguity experiments"
 authors = [{name="Anonymous Authors"}]
 dependencies = []
 

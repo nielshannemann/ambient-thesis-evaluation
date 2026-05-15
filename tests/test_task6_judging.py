@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from ambient.evaluation.task1_evaluation import (
+from ambient.evaluation.task6_evaluation import (
     build_consensus_label,
     build_pairwise_agreement,
     compute_cohens_kappa,

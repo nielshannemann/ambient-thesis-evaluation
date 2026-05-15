@@ -4,12 +4,12 @@ from pathlib import Path
 from ambient.paths import (
     TASK4_RESULT_FILENAME,
     TASK5_PLOT_FILENAME,
-    task0_run_dir,
-    task1_judge_output_path,
-    task1_output_path,
+    task1_run_dir,
     task4_output_path,
     task5_output_path,
     task5_plot_dir,
+    task6_judge_output_path,
+    task6_output_path,
 )
 
 
@@ -19,27 +19,27 @@ def load_json(path: Path) -> dict:
 
 
 def test_core_paths_match_existing_results() -> None:
-    assert task0_run_dir("llama8b", 100, "llama", 64) == Path("results/llama8b-n100")
-    assert task0_run_dir("llada8b", 10, "llada", 64) == Path("results/llada8b-n10-d64")
-    assert task1_output_path("llama8b", 1) == Path("results/task1/llama8b_n1.json")
-    assert task1_judge_output_path() == Path("results/task1/judge_evaluation.json")
+    assert task1_run_dir("llama8b", 100, "llama", 64) == Path("results/llama8b-n100")
+    assert task1_run_dir("llada8b", 10, "llada", 64) == Path("results/llada8b-n10-d64")
+    assert task6_output_path("llama8b", 1) == Path("results/task6/llama8b_n1.json")
+    assert task6_judge_output_path() == Path("results/task6/judge_evaluation.json")
     assert task4_output_path() == Path(f"results/task4/{TASK4_RESULT_FILENAME}")
     assert task5_output_path("llada") == Path("results/task5/llada.json")
     assert task5_output_path("llada", condition="distractor_rewrite") == Path("results/task5/llada_distractor_rewrite.json")
 
-    assert task0_run_dir("llama8b", 100, "llama", 64).exists()
-    assert task0_run_dir("llada8b", 10, "llada", 64).exists()
-    assert task1_output_path("llama8b", 1).exists()
+    assert task1_run_dir("llama8b", 100, "llama", 64).exists()
+    assert task1_run_dir("llada8b", 10, "llada", 64).exists()
+    assert task6_output_path("llama8b", 1).exists()
     assert task4_output_path().exists()
     assert task5_output_path("llada").exists()
     assert (task5_plot_dir() / TASK5_PLOT_FILENAME).exists()
 
 
 def test_existing_task_artifacts_keep_expected_json_contracts() -> None:
-    task1 = load_json(Path("results/task1/llama8b_n1.json"))
-    assert {"metadata", "results"} <= set(task1.keys())
-    assert {"task", "model_type", "model_id", "hyperparameters"} <= set(task1["metadata"].keys())
-    assert {"id", "generated_raw", "generated_clean"} <= set(task1["results"][0].keys())
+    task6 = load_json(Path("results/task6/llama8b_n1.json"))
+    assert {"metadata", "results"} <= set(task6.keys())
+    assert {"task", "model_type", "model_id", "hyperparameters"} <= set(task6["metadata"].keys())
+    assert {"id", "generated_raw", "generated_clean"} <= set(task6["results"][0].keys())
 
     task3 = load_json(Path("results/task3/llama8b_without_ambiguous.json"))
     assert {"metadata", "results"} <= set(task3.keys())

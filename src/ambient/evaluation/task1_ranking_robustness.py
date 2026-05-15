@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Robustness checks for the AMBIENT continuation-ranking experiment.
+"""Robustness checks for the AmbiEnt continuation-ranking experiment.
 
-The module is intentionally read-only: it consumes existing Task-0/Task-1
-ranking outputs and writes aggregate CSV/JSON files. It supports both summary
+The module is intentionally read-only: it consumes existing T1 ranking outputs
+and writes aggregate CSV/JSON files. It supports both summary
 JSONL files and the per-example `example_dirs` written by the evaluation loop.
 """
 
@@ -19,7 +19,7 @@ from typing import Any, Iterable
 
 import numpy as np
 
-from ambient.evaluation.task0_compute_results_metrics import dedupe_results, read_jsonl
+from ambient.evaluation.task1_compute_results_metrics import dedupe_results, read_jsonl
 from ambient.utils import is_suspicious
 
 

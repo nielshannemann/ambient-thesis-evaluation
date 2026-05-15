@@ -1,4 +1,4 @@
-"""Canonical command-line interface for the AMBIENT experiment suite."""
+"""Canonical command-line interface for the AmbiEnt-style experiment suite."""
 
 from __future__ import annotations
 
@@ -14,17 +14,17 @@ from ambient.constants import (
     LLAMA_BASE_MODEL_ID,
     LLAMA_INSTRUCT_MODEL_ID,
     MODEL_FAMILY_CHOICES,
-    TASK1_JUDGE_MODEL_ID,
-    TASK1_SECONDARY_JUDGE_MODEL_ID,
     TASK2_EMBED_MODEL_ID,
     TASK3_NLI_MODEL_ID,
+    TASK6_JUDGE_MODEL_ID,
+    TASK6_SECONDARY_JUDGE_MODEL_ID,
 )
 from ambient.paths import (
     dataset_similarity_default_paths,
     plots_root,
-    task1_judge_output_path,
     task4_output_path,
     task5_plot_dir,
+    task6_judge_output_path,
 )
 
 
@@ -49,16 +49,16 @@ def _set_handler(parser: argparse.ArgumentParser, import_path: str) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ambient",
-        description="Unified paper-ready CLI for the AMBIENT experiment suite.",
+        description="Unified paper-ready CLI for the AmbiEnt-style experiment suite.",
     )
     top_level = parser.add_subparsers(dest="command_group", required=True)
 
-    _add_task0_commands(top_level)
     _add_task1_commands(top_level)
     _add_task2_commands(top_level)
     _add_task3_commands(top_level)
     _add_task4_commands(top_level)
     _add_task5_commands(top_level)
+    _add_task6_commands(top_level)
     _add_plot_commands(top_level)
     _add_dataset_commands(top_level)
     _add_diagnostic_commands(top_level)
@@ -67,11 +67,11 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _add_task0_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    task0 = top_level.add_parser("task0", help="Task 0: core AMBIENT generation and ranking benchmark.")
-    subparsers = task0.add_subparsers(dest="task0_command", required=True)
+def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    task1 = top_level.add_parser("task1", help="Task 1: reading-specific continuation ranking.")
+    subparsers = task1.add_subparsers(dest="task1_command", required=True)
 
-    run_parser = subparsers.add_parser("run", help="Run the main Task-0 benchmark.")
+    run_parser = subparsers.add_parser("run", help="Run the Task-1 reading-ranking benchmark.")
     run_parser.add_argument("--data-path", type=Path, default=DEFAULT_DATA_PATH)
     run_parser.add_argument("--model-family", choices=MODEL_FAMILY_CHOICES, required=True)
     run_parser.add_argument("--model-name", type=str, required=True)
@@ -89,17 +89,17 @@ def _add_task0_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     run_parser.add_argument("--output-dir", type=Path, default=None)
     _set_handler(run_parser, "ambient.evaluation.run_ambient_experiments:run")
 
-    metrics_parser = subparsers.add_parser("metrics", help="Aggregate Task-0 metrics for one summary file.")
-    metrics_parser.add_argument("results_path", type=Path, help="Path to a Task-0 summary JSONL file.")
+    metrics_parser = subparsers.add_parser("metrics", help="Aggregate Task-1 metrics for one summary file.")
+    metrics_parser.add_argument("results_path", type=Path, help="Path to a Task-1 summary JSONL file.")
     metrics_parser.add_argument("--dedupe", choices=["instance", "row"], default="instance")
-    _set_handler(metrics_parser, "ambient.evaluation.task0_compute_results_metrics:run")
+    _set_handler(metrics_parser, "ambient.evaluation.task1_compute_results_metrics:run")
 
 
-def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    task1 = top_level.add_parser("task1", help="Task 1: explicit generative disambiguation.")
-    subparsers = task1.add_subparsers(dest="task1_command", required=True)
+def _add_task6_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    task6 = top_level.add_parser("task6", help="Task 6: auxiliary explicit generative disambiguation.")
+    subparsers = task6.add_subparsers(dest="task6_command", required=True)
 
-    generate_parser = subparsers.add_parser("generate", help="Generate Task-1 disambiguations.")
+    generate_parser = subparsers.add_parser("generate", help="Generate Task-6 disambiguations.")
     generate_parser.add_argument("--model-family", choices=MODEL_FAMILY_CHOICES, required=True)
     generate_parser.add_argument("--model-name", type=str, required=True)
     generate_parser.add_argument("--model-id", type=str, default=None)
@@ -114,11 +114,11 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--cfg-scale", type=float, default=0.0)
     generate_parser.add_argument("--diffusion-steps", type=int, default=128)
     generate_parser.add_argument("--output-path", type=Path, default=None)
-    _set_handler(generate_parser, "ambient.generation.task1_disambiguation:run")
+    _set_handler(generate_parser, "ambient.generation.task6_disambiguation:run")
 
-    judge_parser = subparsers.add_parser("judge", help="Run the Task-1 LLM-as-a-judge evaluation.")
-    judge_parser.add_argument("--llada-file", type=Path, default=Path("results/task1/llada8b_n100.json"))
-    judge_parser.add_argument("--llama-file", type=Path, default=Path("results/task1/llama8b_n100.json"))
+    judge_parser = subparsers.add_parser("judge", help="Run the Task-6 LLM-as-a-judge evaluation.")
+    judge_parser.add_argument("--llada-file", type=Path, default=Path("results/task6/llada8b_n100.json"))
+    judge_parser.add_argument("--llama-file", type=Path, default=Path("results/task6/llama8b_n100.json"))
     judge_parser.add_argument("--judge-models", nargs="+", type=str, default=None)
     judge_parser.add_argument("--judge-model", type=str, default=None)
     judge_parser.add_argument("--seed", type=int, default=42)
@@ -126,12 +126,12 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     judge_parser.add_argument(
         "--output-path",
         type=Path,
-        default=task1_judge_output_path(),
+        default=task6_judge_output_path(),
     )
     judge_parser.set_defaults(
-        default_judge_models=[TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID]
+        default_judge_models=[TASK6_JUDGE_MODEL_ID, TASK6_SECONDARY_JUDGE_MODEL_ID]
     )
-    _set_handler(judge_parser, "ambient.evaluation.task1_evaluation:run")
+    _set_handler(judge_parser, "ambient.evaluation.task6_evaluation:run")
 
 
 def _add_task2_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -269,9 +269,10 @@ def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentPa
     sweep_parser.add_argument("--llada-pattern", type=str, default=r"llada8b-n10-d(\d+)")
     sweep_parser.add_argument("--llama-dir", type=str, default="llama8b-n100")
     sweep_parser.add_argument("--llama-extra-dirs", nargs="*", type=str, default=[])
-    sweep_parser.add_argument("--paper-mc", type=int, default=128)
+    sweep_parser.add_argument("--paper-mc", type=int, default=256)
     sweep_parser.add_argument("--skip-paper-figures", action="store_true")
-    _set_handler(sweep_parser, "ambient.visualization.task0_plot_results:run")
+    sweep_parser.add_argument("--paper-graphics-dir", type=Path, default=None)
+    _set_handler(sweep_parser, "ambient.visualization.task1_plot_results:run")
 
     task4_parser = subparsers.add_parser("task4", help="Plot Task-4 probing and entropy outputs.")
     task4_parser.add_argument("--input", type=Path, required=True)
@@ -289,6 +290,7 @@ def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentPa
     task5_parser.add_argument("--band", choices=["std", "sem", "none"], default="std")
     task5_parser.add_argument("--num-points", type=int, default=101)
     task5_parser.add_argument("--output-dir", type=Path, default=task5_plot_dir())
+    task5_parser.add_argument("--paper-graphics-dir", type=Path, default=None)
     _set_handler(task5_parser, "ambient.visualization.task5_plot_decay:run")
 
 
@@ -352,7 +354,7 @@ def _add_robustness_commands(top_level: argparse._SubParsersAction[argparse.Argu
     task1_parser.add_argument("--filter-repeat-thresholds", type=str, default="8,12,20")
     task1_parser.add_argument("--write-replicates", action="store_true")
     task1_parser.add_argument("--output-dir", type=Path, default=Path("results/robustness/task1"))
-    _set_handler(task1_parser, "ambient.evaluation.task0_ranking_robustness:run")
+    _set_handler(task1_parser, "ambient.evaluation.task1_ranking_robustness:run")
 
 
 def main(argv: list[str] | None = None) -> int | None:

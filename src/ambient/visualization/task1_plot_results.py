@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Visualize Task-0 and Task-2 results across LLaDA diffusion steps and Monte-Carlo
-sample counts, with optional LLaMA baseline overlays.
+Visualize T1 ranking results and T2 quality-control results across LLaDA
+diffusion steps and Monte-Carlo sample counts, with optional LLaMA baseline
+overlays.
 
 Expected directory structure:
 results/
@@ -22,9 +23,9 @@ results/
 
 Outputs:
 results/plots/
-  task0/by_diffusion_steps/*.png
-  task0/by_mc/*.png
-  task0/overviews/*.png
+  task1/by_diffusion_steps/*.png
+  task1/by_mc/*.png
+  task1/overviews/*.png
   task2/*.png
   tables/*.csv
 
@@ -40,6 +41,9 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -56,20 +60,20 @@ plt.rcParams.update({
     "grid.alpha": 0.25,
     "axes.spines.top": False,
     "axes.spines.right": False,
-    "font.size": 11,
+    "font.size": 12,
     "axes.titlesize": 12,
-    "axes.labelsize": 11,
-    "legend.fontsize": 9,
+    "axes.labelsize": 12,
+    "legend.fontsize": 10,
 })
 
-TASK0_SECTION_NAME_MAP = {
+TASK1_SECTION_NAME_MAP = {
     "Unnormalized_Unfiltered (Strict Math)": "Unnormalized_Unfiltered",
     "Unnormalized_Cleaned (Math + Heuristic Filter)": "Unnormalized_Cleaned",
     "Normalized_Unfiltered (Length-Penalized)": "Normalized_Unfiltered",
     "Normalized_Cleaned (Original Script Baseline)": "Normalized_Cleaned",
 }
 
-TASK0_METRIC_NAME_MAP = {
+TASK1_METRIC_NAME_MAP = {
     "Total Instances (Deduped)": "total_instances",
     "Total Evaluated (No generation failures)": "total_evaluated",
     "Artifact Rate (Garbage Generations)": "artifact_rate",
@@ -79,7 +83,7 @@ TASK0_METRIC_NAME_MAP = {
     "Mean KL Divergence (Distractor)": "mean_kl_distractor",
 }
 
-TASK0_METRIC_LABELS = {
+TASK1_METRIC_LABELS = {
     "total_instances": "Total instances",
     "total_evaluated": "Total evaluated",
     "artifact_rate": "Artifact rate",
@@ -123,6 +127,7 @@ TASK2_METRICS_TO_PLOT = [
 PERPLEXITY_METRICS = {
     "perplexity_median",
     "perplexity_mean",
+    "perplexity_median_avg_scorer",
 }
 
 
@@ -162,15 +167,15 @@ def discover_mc_files(model_dir: Path) -> List[Tuple[int, Path]]:
     return sorted(found, key=lambda x: x[0])
 
 
-def normalize_task0_summary(raw: Dict[str, Any]) -> Dict[str, Dict[str, float]]:
+def normalize_task1_summary(raw: Dict[str, Any]) -> Dict[str, Dict[str, float]]:
     out: Dict[str, Dict[str, float]] = {}
     for raw_section, section_values in raw.items():
-        section_name = TASK0_SECTION_NAME_MAP.get(raw_section, raw_section)
+        section_name = TASK1_SECTION_NAME_MAP.get(raw_section, raw_section)
         if not isinstance(section_values, dict):
             continue
         normalized_metrics: Dict[str, float] = {}
         for raw_metric, value in section_values.items():
-            metric_name = TASK0_METRIC_NAME_MAP.get(raw_metric, raw_metric)
+            metric_name = TASK1_METRIC_NAME_MAP.get(raw_metric, raw_metric)
             if isinstance(value, (int, float)) and not isinstance(value, bool):
                 normalized_metrics[metric_name] = float(value)
         if normalized_metrics:
@@ -192,14 +197,14 @@ def extract_task2_metrics(raw: Dict[str, Any]) -> Dict[str, float]:
     return out
 
 
-def build_task0_dataframe(llada_dirs: List[Tuple[int, Path]]) -> pd.DataFrame:
+def build_task1_dataframe(llada_dirs: List[Tuple[int, Path]]) -> pd.DataFrame:
     rows: List[Dict[str, Any]] = []
     for d_step, model_dir in llada_dirs:
         for mc, path in discover_mc_files(model_dir):
             raw = load_json(path)
             if not raw:
                 continue
-            norm = normalize_task0_summary(raw)
+            norm = normalize_task1_summary(raw)
             for section, metrics in norm.items():
                 row: Dict[str, Any] = {
                     "model": model_dir.name,
@@ -215,12 +220,12 @@ def build_task0_dataframe(llada_dirs: List[Tuple[int, Path]]) -> pd.DataFrame:
     return df
 
 
-def build_llama_task0_baseline(results_dir: Path, llama_dir_name: str) -> pd.DataFrame:
+def build_llama_task1_baseline(results_dir: Path, llama_dir_name: str) -> pd.DataFrame:
     path = results_dir / llama_dir_name / "metrics_summary.json"
     raw = load_json(path)
     if not raw:
         return pd.DataFrame()
-    norm = normalize_task0_summary(raw)
+    norm = normalize_task1_summary(raw)
     rows: List[Dict[str, Any]] = []
     for section, metrics in norm.items():
         row = {"model": llama_dir_name, "section": section}
@@ -229,9 +234,9 @@ def build_llama_task0_baseline(results_dir: Path, llama_dir_name: str) -> pd.Dat
     return pd.DataFrame(rows)
 
 
-def build_llama_task0_baselines(results_dir: Path, llama_dir_names: List[str]) -> pd.DataFrame:
+def build_llama_task1_baselines(results_dir: Path, llama_dir_names: List[str]) -> pd.DataFrame:
     frames = [
-        build_llama_task0_baseline(results_dir, llama_dir_name)
+        build_llama_task1_baseline(results_dir, llama_dir_name)
         for llama_dir_name in llama_dir_names
     ]
     frames = [frame for frame in frames if not frame.empty]
@@ -263,6 +268,39 @@ def build_task2_dataframe(llada_dirs: List[Tuple[int, Path]], results_dir: Path,
     if not llada_df.empty:
         llada_df = llada_df.sort_values("diffusion_steps").reset_index(drop=True)
     return llada_df, baseline_df
+
+
+def add_external_ppl_average(task2_llada_df: pd.DataFrame, task2_llama_df: pd.DataFrame, results_dir: Path) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    external = load_json(results_dir / "robustness" / "task2_external_ppl" / "pythia410m_ppl_summary.json")
+    if not external:
+        print("[WARN] External Pythia perplexity summary missing; paper figure will use the main scorer only.")
+        for frame in (task2_llada_df, task2_llama_df):
+            if not frame.empty and "perplexity_median" in frame.columns:
+                frame["perplexity_median_avg_scorer"] = frame["perplexity_median"]
+        return task2_llada_df, task2_llama_df
+
+    external_median = {
+        model_name: extract_task2_metrics(payload).get("perplexity_median")
+        for model_name, payload in external.items()
+        if isinstance(payload, dict)
+    }
+
+    def add_average(frame: pd.DataFrame) -> pd.DataFrame:
+        if frame.empty or "perplexity_median" not in frame.columns or "model" not in frame.columns:
+            return frame
+        frame = frame.copy()
+        averaged: List[float] = []
+        for _, row in frame.iterrows():
+            main_value = float(row["perplexity_median"])
+            pythia_value = external_median.get(str(row["model"]))
+            if isinstance(pythia_value, (int, float)) and math.isfinite(float(pythia_value)):
+                averaged.append((main_value + float(pythia_value)) / 2.0)
+            else:
+                averaged.append(main_value)
+        frame["perplexity_median_avg_scorer"] = averaged
+        return frame
+
+    return add_average(task2_llada_df), add_average(task2_llama_df)
 
 
 def save_dataframe(df: pd.DataFrame, path: Path) -> None:
@@ -309,8 +347,8 @@ def maybe_set_log_scale(ax: plt.Axes, metric: str, axis: str = "y") -> None:
 
 def save_paper_figure(fig: plt.Figure, png_path: Path) -> None:
     ensure_dir(png_path.parent)
-    fig.savefig(png_path, dpi=300, bbox_inches="tight")
-    fig.savefig(png_path.with_suffix(".pdf"), bbox_inches="tight")
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=0.015)
+    fig.savefig(png_path.with_suffix(".pdf"), bbox_inches="tight", pad_inches=0.015)
     print(f"[INFO] Saved paper figure: {png_path}")
     print(f"[INFO] Saved paper figure: {png_path.with_suffix('.pdf')}")
 
@@ -327,10 +365,10 @@ def maybe_add_baseline_line(ax: plt.Axes, baseline_df: pd.DataFrame, section: st
     ax.axhline(float(val), linestyle="--", linewidth=1.5, alpha=0.8, label=label)
 
 
-def plot_task0_by_diffusion_steps(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path) -> None:
+def plot_task1_by_diffusion_steps(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path) -> None:
     ensure_dir(out_dir)
     if df.empty:
-        print("[WARN] No Task-0 data found for diffusion-step plots.")
+        print("[WARN] No T1 data found for diffusion-step plots.")
         return
 
     diffusion_values = sorted(df["diffusion_steps"].dropna().astype(int).unique().tolist())
@@ -362,8 +400,8 @@ def plot_task0_by_diffusion_steps(df: pd.DataFrame, baseline_df: pd.DataFrame, o
                 )
 
             maybe_add_baseline_line(ax, baseline_df, section, metric)
-            ax.set_title(f"{TASK0_METRIC_LABELS[metric]} across diffusion steps\n[{section}]")
-            ax.set_ylabel(TASK0_METRIC_LABELS[metric])
+            ax.set_title(f"{TASK1_METRIC_LABELS[metric]} across diffusion steps\n[{section}]")
+            ax.set_ylabel(TASK1_METRIC_LABELS[metric])
             set_x_ticks(ax, diffusion_values, "Diffusion steps")
             ax.legend(ncol=3, frameon=True)
             fig.tight_layout()
@@ -373,10 +411,10 @@ def plot_task0_by_diffusion_steps(df: pd.DataFrame, baseline_df: pd.DataFrame, o
             print(f"[INFO] Saved plot: {out_path}")
 
 
-def plot_task0_by_mc(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path) -> None:
+def plot_task1_by_mc(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path) -> None:
     ensure_dir(out_dir)
     if df.empty:
-        print("[WARN] No Task-0 data found for mc plots.")
+        print("[WARN] No T1 data found for mc plots.")
         return
 
     mc_values = sorted(df["mc"].dropna().astype(int).unique().tolist())
@@ -408,8 +446,8 @@ def plot_task0_by_mc(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
                 )
 
             maybe_add_baseline_line(ax, baseline_df, section, metric)
-            ax.set_title(f"{TASK0_METRIC_LABELS[metric]} across mc values\n[{section}]")
-            ax.set_ylabel(TASK0_METRIC_LABELS[metric])
+            ax.set_title(f"{TASK1_METRIC_LABELS[metric]} across mc values\n[{section}]")
+            ax.set_ylabel(TASK1_METRIC_LABELS[metric])
             set_x_ticks(ax, mc_values, "Monte-Carlo samples (mc)")
             ax.legend(ncol=3, frameon=True)
             fig.tight_layout()
@@ -419,7 +457,7 @@ def plot_task0_by_mc(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
             print(f"[INFO] Saved plot: {out_path}")
 
 
-def plot_task0_overview_grids(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path) -> None:
+def plot_task1_overview_grids(df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path) -> None:
     ensure_dir(out_dir)
     if df.empty:
         return
@@ -446,14 +484,14 @@ def plot_task0_overview_grids(df: pd.DataFrame, baseline_df: pd.DataFrame, out_d
                     continue
                 ax.plot(subset["diffusion_steps"], subset[metric], marker="o", linewidth=1.8, label=f"mc={mc}")
             maybe_add_baseline_line(ax, baseline_df, section, metric)
-            ax.set_title(TASK0_METRIC_LABELS[metric])
+            ax.set_title(TASK1_METRIC_LABELS[metric])
             set_x_ticks(ax, diffusion_values, "Diffusion steps")
 
         axes[-1].axis("off")
         handles, labels = axes[0].get_legend_handles_labels()
         if handles:
             fig.legend(handles, labels, loc="lower center", ncol=min(6, len(labels)), frameon=True)
-        fig.suptitle(f"Task-0 overview across diffusion steps [{section}]", y=0.98)
+        fig.suptitle(f"Paper T1 overview across diffusion steps [{section}]", y=0.98)
         fig.tight_layout(rect=(0, 0.05, 1, 0.96))
         out_path = out_dir / f"{section}__overview_by_diffusion_steps.png"
         fig.savefig(out_path, bbox_inches="tight")
@@ -526,36 +564,37 @@ def plot_task2(llada_df: pd.DataFrame, baseline_df: pd.DataFrame, out_dir: Path)
     print(f"[INFO] Saved plot: {out_path}")
 
 
-def plot_paper_task0_task2_tradeoff(
-    task0_df: pd.DataFrame,
-    task0_baseline_df: pd.DataFrame,
+def plot_paper_task1_task2_tradeoff(
+    task1_df: pd.DataFrame,
+    task1_baseline_df: pd.DataFrame,
     task2_llada_df: pd.DataFrame,
     task2_baseline_df: pd.DataFrame,
     out_dir: Path,
     *,
     section: str = "Normalized_Cleaned",
-    task0_metric: str = "rank_acc_all",
-    task2_metric: str = "perplexity_median",
+    task1_metric: str = "rank_acc_all",
+    task2_metric: str = "perplexity_median_avg_scorer",
     mc: int = 128,
+    paper_graphics_dir: Path | None = None,
 ) -> None:
     ensure_dir(out_dir)
-    if task0_df.empty or task2_llada_df.empty:
+    if task1_df.empty or task2_llada_df.empty:
         print("[WARN] Skipping paper tradeoff figure because Task-1 or Task-2 data is missing.")
         return
 
-    task0_subset = task0_df[
-        (task0_df["section"] == section) &
-        (task0_df["mc"] == mc)
+    task1_subset = task1_df[
+        (task1_df["section"] == section) &
+        (task1_df["mc"] == mc)
     ].copy()
-    if task0_subset.empty:
+    if task1_subset.empty:
         print(f"[WARN] Skipping paper tradeoff figure because no Task-1 rows were found for section={section} and mc={mc}.")
         return
 
-    if task0_metric not in task0_subset.columns or task2_metric not in task2_llada_df.columns:
+    if task1_metric not in task1_subset.columns or task2_metric not in task2_llada_df.columns:
         print("[WARN] Skipping paper tradeoff figure because the required metrics are missing.")
         return
 
-    merged = task0_subset[["diffusion_steps", task0_metric]].merge(
+    merged = task1_subset[["diffusion_steps", task1_metric]].merge(
         task2_llada_df[["diffusion_steps", task2_metric]],
         on="diffusion_steps",
         how="inner",
@@ -564,10 +603,10 @@ def plot_paper_task0_task2_tradeoff(
         print("[WARN] Skipping paper tradeoff figure because no merged Task-1/Task-2 rows were found.")
         return
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.8))
+    fig, ax = plt.subplots(figsize=(3.45, 2.65))
 
     xs = merged[task2_metric].astype(float).tolist()
-    ys = merged[task0_metric].astype(float).tolist()
+    ys = merged[task1_metric].astype(float).tolist()
     steps = merged["diffusion_steps"].astype(int).tolist()
 
     ax.plot(xs, ys, color="#2c7fb8", linewidth=1.8, alpha=0.85)
@@ -588,14 +627,14 @@ def plot_paper_task0_task2_tradeoff(
             xy=(x_val, y_val),
             xytext=(5, 5),
             textcoords="offset points",
-            fontsize=9,
+            fontsize=7.5,
         )
 
-    baseline_subset = task0_baseline_df[task0_baseline_df["section"] == section]
+    baseline_subset = task1_baseline_df[task1_baseline_df["section"] == section]
     if (
         not baseline_subset.empty and
         not task2_baseline_df.empty and
-        task0_metric in baseline_subset.columns and
+        task1_metric in baseline_subset.columns and
         task2_metric in task2_baseline_df.columns
     ):
         markers = ["*", "X", "P", "D"]
@@ -606,7 +645,7 @@ def plot_paper_task0_task2_tradeoff(
             if task2_rows.empty:
                 continue
             baseline_x = float(task2_rows.iloc[0][task2_metric])
-            baseline_y = float(baseline_row[task0_metric])
+            baseline_y = float(baseline_row[task1_metric])
             if not math.isfinite(baseline_x) or not math.isfinite(baseline_y):
                 continue
             label = llama_display_label(model_name)
@@ -626,18 +665,32 @@ def plot_paper_task0_task2_tradeoff(
                 xy=(baseline_x, baseline_y),
                 xytext=(8, -14 if idx == 0 else 7),
                 textcoords="offset points",
-                fontsize=9,
+                fontsize=7.5,
             )
 
     maybe_set_log_scale(ax, task2_metric, axis="x")
-    ax.set_xlabel("Task 2 median perplexity (lower is better)")
-    ax.set_ylabel("Task 1 rank accuracy (all valid < distractor)")
-    ax.legend(frameon=True, loc="best")
+    ax.set_xlabel("Task 2 median PPL (2-scorer mean)", fontsize=8.5)
+    ax.set_ylabel("Task 1 rank accuracy", fontsize=8.5)
+    ax.tick_params(axis="both", labelsize=7.5)
+    ax.legend(frameon=True, loc="best", fontsize=7.5)
     fig.tight_layout()
 
     out_path = out_dir / f"task1_task2_tradeoff__{section}__mc{mc}.png"
     save_paper_figure(fig, out_path)
+    save_paper_graphics_copy(fig, paper_graphics_dir, "task1_task2_tradeoff")
     plt.close(fig)
+
+
+def save_paper_graphics_copy(fig: plt.Figure, out_dir: Path | None, stem: str) -> None:
+    if out_dir is None:
+        return
+    ensure_dir(out_dir)
+    pdf_path = out_dir / f"{stem}.pdf"
+    png_path = out_dir / f"{stem}.png"
+    fig.savefig(pdf_path, bbox_inches="tight", pad_inches=0.015)
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=0.015)
+    print(f"[INFO] Saved paper graphics copy: {pdf_path}")
+    print(f"[INFO] Saved paper graphics copy: {png_path}")
 
 
 def run(args) -> int:
@@ -645,9 +698,9 @@ def run(args) -> int:
     out_dir = args.output_dir or plots_root(results_dir)
 
     ensure_dir(out_dir)
-    ensure_dir(out_dir / "task0" / "by_diffusion_steps")
-    ensure_dir(out_dir / "task0" / "by_mc")
-    ensure_dir(out_dir / "task0" / "overviews")
+    ensure_dir(out_dir / "task1" / "by_diffusion_steps")
+    ensure_dir(out_dir / "task1" / "by_mc")
+    ensure_dir(out_dir / "task1" / "overviews")
     ensure_dir(out_dir / "task2")
     ensure_dir(out_dir / "tables")
 
@@ -661,31 +714,33 @@ def run(args) -> int:
         print(f"  - d={d_step}: {path}")
 
     llama_dirs = [args.llama_dir] + list(getattr(args, "llama_extra_dirs", []) or [])
-    llama_task0_df = build_llama_task0_baselines(results_dir, llama_dirs)
-    llama_task0_main_df = llama_task0_df[llama_task0_df["model"] == args.llama_dir].copy()
-    task0_df = build_task0_dataframe(llada_dirs)
+    llama_task1_df = build_llama_task1_baselines(results_dir, llama_dirs)
+    llama_task1_main_df = llama_task1_df[llama_task1_df["model"] == args.llama_dir].copy()
+    task1_df = build_task1_dataframe(llada_dirs)
     task2_llada_df, task2_llama_df = build_task2_dataframe(llada_dirs, results_dir, llama_dirs)
+    task2_llada_df, task2_llama_df = add_external_ppl_average(task2_llada_df, task2_llama_df, results_dir)
     task2_llama_main_df = task2_llama_df[task2_llama_df["model"] == args.llama_dir].copy()
 
-    save_dataframe(task0_df, out_dir / "tables" / "task0_llada_long.csv")
-    if not llama_task0_df.empty:
-        save_dataframe(llama_task0_df, out_dir / "tables" / "task0_llama_baseline.csv")
+    save_dataframe(task1_df, out_dir / "tables" / "task1_llada_long.csv")
+    if not llama_task1_df.empty:
+        save_dataframe(llama_task1_df, out_dir / "tables" / "task1_llama_baseline.csv")
     save_dataframe(task2_llada_df, out_dir / "tables" / "task2_llada.csv")
     if not task2_llama_df.empty:
         save_dataframe(task2_llama_df, out_dir / "tables" / "task2_llama_baseline.csv")
 
-    plot_task0_by_diffusion_steps(task0_df, llama_task0_main_df, out_dir / "task0" / "by_diffusion_steps")
-    plot_task0_by_mc(task0_df, llama_task0_main_df, out_dir / "task0" / "by_mc")
-    plot_task0_overview_grids(task0_df, llama_task0_main_df, out_dir / "task0" / "overviews")
+    plot_task1_by_diffusion_steps(task1_df, llama_task1_main_df, out_dir / "task1" / "by_diffusion_steps")
+    plot_task1_by_mc(task1_df, llama_task1_main_df, out_dir / "task1" / "by_mc")
+    plot_task1_overview_grids(task1_df, llama_task1_main_df, out_dir / "task1" / "overviews")
     plot_task2(task2_llada_df, task2_llama_main_df, out_dir / "task2")
     if not getattr(args, "skip_paper_figures", False):
-        plot_paper_task0_task2_tradeoff(
-            task0_df,
-            llama_task0_df,
+        plot_paper_task1_task2_tradeoff(
+            task1_df,
+            llama_task1_df,
             task2_llada_df,
             task2_llama_df,
             out_dir / "paper",
             mc=args.paper_mc,
+            paper_graphics_dir=getattr(args, "paper_graphics_dir", None),
         )
 
     print(f"\n[INFO] Done. All plots saved under: {out_dir}")

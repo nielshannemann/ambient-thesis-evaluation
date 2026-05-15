@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Task 1: LLM-as-a-judge evaluation for explicit disambiguation outputs.
+Task 6: LLM-as-a-judge evaluation for explicit disambiguation outputs.
 
 This evaluator preserves the original blind A/B setup and extends it with
 optional multi-judge aggregation, agreement statistics, and a saved JSON report.
@@ -8,7 +8,7 @@ optional multi-judge aggregation, agreement statistics, and a saved JSON report.
 Compatibility invariants:
 - supplying one judge model reproduces the old resolved winner counts
 - invalid judge outputs still back off to "Tie" for score aggregation
-- Task-1 generation files are read in the current {"metadata", "results"} shape
+- Task-6 generation files are read in the current {"metadata", "results"} shape
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, set_seed
 
 from ambient.adapters import ARAdapter
-from ambient.constants import TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID
+from ambient.constants import TASK6_JUDGE_MODEL_ID, TASK6_SECONDARY_JUDGE_MODEL_ID
 
 
 WINNER_LABELS = ("LLaDA", "LLaMA-8B", "Tie")
@@ -47,7 +47,7 @@ def set_global_determinism(seed: int) -> None:
 
 
 def load_results(path: Path) -> Dict[str, dict]:
-    """Load generated Task-1 disambiguations keyed by instance id."""
+    """Load generated Task-6 disambiguations keyed by instance id."""
     data: Dict[str, dict] = {}
     if not path.exists():
         print(f"[error] File not found: {path}")
@@ -62,7 +62,7 @@ def load_results(path: Path) -> Dict[str, dict]:
 
 
 def get_context_and_claim(instance: dict) -> tuple[str, str]:
-    """Read the conversational pair used for Task 1, with legacy fallbacks."""
+    """Read the conversational pair used for Task 6, with legacy fallbacks."""
     context = instance.get("context_text")
     claim = instance.get("claim_text")
 
@@ -85,7 +85,7 @@ def resolve_judge_model_ids(args: Any) -> List[str]:
     if default_models:
         return list(default_models)
 
-    return [TASK1_JUDGE_MODEL_ID, TASK1_SECONDARY_JUDGE_MODEL_ID]
+    return [TASK6_JUDGE_MODEL_ID, TASK6_SECONDARY_JUDGE_MODEL_ID]
 
 
 def parse_judge_response(judge_response: str, llada_is_model_a: bool) -> tuple[str, bool]:
@@ -184,7 +184,7 @@ def prepare_evaluation_rows(
     common_ids: Iterable[str],
     base_seed: int,
 ) -> List[Dict[str, Any]]:
-    """Prepare deterministic Task-1 comparison rows before judge inference."""
+    """Prepare deterministic Task-6 comparison rows before judge inference."""
     rows: List[Dict[str, Any]] = []
 
     for idx_num, idx in enumerate(common_ids):
@@ -379,7 +379,7 @@ def summarize_results(
 
 
 def save_payload(payload: Dict[str, Any], output_path: Path) -> None:
-    """Persist the Task-1 judge report to disk."""
+    """Persist the Task-6 judge report to disk."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as handle:
         json.dump(payload, handle, indent=2, ensure_ascii=False)
@@ -448,7 +448,7 @@ def run(args) -> int:
     summary = summarize_results(rows, judge_models, per_judge_scores, invalid_parse_counts)
     payload = {
         "metadata": {
-            "task": "task1_judge_evaluation",
+            "task": "task6_judge_evaluation",
             "llada_file": str(args.llada_file),
             "llama_file": str(args.llama_file),
             "judge_models": judge_models,
@@ -474,6 +474,6 @@ def run(args) -> int:
         print(f"[agreement] raw agreement: {summary['agreement']['raw_agreement']:.4f}")
         print(f"[agreement] Cohen's kappa: {summary['agreement']['cohen_kappa']:.4f}")
 
-    print(f"[info] Saved Task-1 judge report to: {args.output_path}")
+    print(f"[info] Saved Task-6 judge report to: {args.output_path}")
     print("=" * 50)
     return 0

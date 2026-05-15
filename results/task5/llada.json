@@ -10,7 +10,7 @@
     "mc_num": 128,
     "cfg_scale": 0.0,
     "target_selection": "entailment_vs_nonentailment_else_deterministic_sorted_pair",
-    "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task0",
+    "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task1",
     "timestamp": "2026-03-26 13:18:46"
   },
   "results": {

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Analyze continuation lengths in AMBIENT-style result folders and verify that the
+Analyze continuation lengths in AmbiEnt-style result folders and verify that the
 saved `n_tokens` value matches the tokenizer-based recomputation.
 
 Expected folder structure:

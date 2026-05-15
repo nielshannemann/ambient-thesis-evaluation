@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# src/ambient/generation/task1_disambiguation.py
+# src/ambient/generation/task6_disambiguation.py
 """
 =============================================================================
-TASK 1: EXPLICIT GENERATIVE DISAMBIGUATION
+TASK 6: EXPLICIT GENERATIVE DISAMBIGUATION
 =============================================================================
 Evaluates the capability of instruction-tuned models to explicitly identify 
 and verbalize multiple valid semantic interpretations of an ambiguous AMBIENT example.
@@ -15,7 +15,7 @@ Methodological Integration:
 - Features dynamic 4-bit quantization detection and comprehensive metadata 
   serialization for strict experimental reproducibility.
 
-[Method Reference: Section 3.2.1 - Task 1: Explicit Generative Disambiguation]
+[Method Reference: auxiliary Task 6: Explicit Generative Disambiguation]
 =============================================================================
 """
 
@@ -35,7 +35,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from ambient.llada_loader import load_llada_model
 from ambient.adapters import ARAdapter, LLaDaAdapter
 from ambient.constants import LLADA_INSTRUCT_MODEL_ID, LLAMA_INSTRUCT_MODEL_ID
-from ambient.paths import task1_output_path
+from ambient.paths import task6_output_path
 
 # ==========================================
 # CONFIGURATION
@@ -82,7 +82,7 @@ def load_ambient_data(path: Path, max_examples: int = 50) -> list:
 
 
 
-def build_task1_context_claim(row: dict):
+def build_task6_context_claim(row: dict):
     """
     Reconstructs the conversational evaluation pair according to the ambiguity
     side of the AMBIENT instance.
@@ -136,7 +136,7 @@ def clean_generated_interpretations(raw_text: str) -> str:
         return "1. " + clean_text
 
 def run(args) -> int:
-    print(f"=== Starting Task 1: Explicit Disambiguation ===")
+    print(f"=== Starting Task 6: Explicit Disambiguation ===")
     
     # 1. STRICT GLOBAL DETERMINISM
     set_seed(args.seed)
@@ -160,13 +160,13 @@ def run(args) -> int:
     print(f"[INFO] Hyperparameters: Temp={args.temperature}, Top-K={args.top_k}, Top-P={args.top_p}, CFG={args.cfg_scale}, Steps={args.diffusion_steps}")
     
     # Configure output path
-    out_path = args.output_path or task1_output_path(args.model_name, args.num_continuations)
+    out_path = args.output_path or task6_output_path(args.model_name, args.num_continuations)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     
     # --- METADATA RECORDING ---
     run_meta = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "task": "task1_explicit_disambiguation",
+        "task": "task6_explicit_disambiguation",
         "model_type": args.model_family,
         "model_id": model_id,
         "hyperparameters": {
@@ -187,7 +187,7 @@ def run(args) -> int:
     print(f"[INFO] Isolated {len(dataset)} ambiguous instances for evaluation.")
     side_counts = {"premise": 0, "hypothesis": 0, "both": 0, "unknown": 0}
     for row in dataset:
-        side_counts[build_task1_context_claim(row)[0]] += 1
+        side_counts[build_task6_context_claim(row)[0]] += 1
     print(f"[INFO] Ambiguity-side distribution: {side_counts}")
 
     # --- ARCHITECTURE INITIALIZATION & ADAPTER INJECTION ---
@@ -217,7 +217,7 @@ def run(args) -> int:
     
     for prompt_idx, row in enumerate(tqdm(dataset, desc="Generating")):
         row_id = row.get("id") or row.get("_instance_id", "unknown")
-        ambiguity_side, context_text, claim_text = build_task1_context_claim(row)
+        ambiguity_side, context_text, claim_text = build_task6_context_claim(row)
         premise = row.get("premise", "")
         hypothesis = row.get("hypothesis", "")
 
@@ -288,5 +288,5 @@ def run(args) -> int:
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(final_output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n[INFO] Task 1 complete. Results saved to {out_path}")
+    print(f"\n[INFO] Task 6 complete. Results saved to {out_path}")
     return 0

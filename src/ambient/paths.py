@@ -1,4 +1,4 @@
-"""Path helpers that preserve the current on-disk results contract."""
+"""Shared path helpers for paper-facing output locations."""
 
 from pathlib import Path
 
@@ -7,22 +7,22 @@ RESULTS_ROOT = Path("results")
 
 TASK4_RESULT_FILENAME = "layerwise_probe_results_with_vne.json"
 TASK5_PLOT_FILENAME = "temporal_semantic_commitment_comparison.png"
-TASK1_JUDGE_RESULT_FILENAME = "judge_evaluation.json"
+TASK6_JUDGE_RESULT_FILENAME = "judge_evaluation.json"
 
 
-def task0_run_dir(model_name: str, num_generations: int, model_family: str, diffusion_steps: int) -> Path:
+def task1_run_dir(model_name: str, num_generations: int, model_family: str, diffusion_steps: int) -> Path:
     directory_name = f"{model_name}-n{num_generations}"
     if model_family == "llada":
         directory_name += f"-d{diffusion_steps}"
     return RESULTS_ROOT / directory_name
 
 
-def task1_output_path(model_name: str, num_continuations: int) -> Path:
-    return RESULTS_ROOT / "task1" / f"{model_name}_n{num_continuations}.json"
+def task6_output_path(model_name: str, num_continuations: int) -> Path:
+    return RESULTS_ROOT / "task6" / f"{model_name}_n{num_continuations}.json"
 
 
-def task1_judge_output_path() -> Path:
-    return RESULTS_ROOT / "task1" / TASK1_JUDGE_RESULT_FILENAME
+def task6_judge_output_path() -> Path:
+    return RESULTS_ROOT / "task6" / TASK6_JUDGE_RESULT_FILENAME
 
 
 def task3_output_path(model_name: str, prompt_type: str) -> Path:

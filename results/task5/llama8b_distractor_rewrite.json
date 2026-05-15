@@ -11,7 +11,7 @@
     "cfg_scale": 0.0,
     "condition": "distractor_rewrite",
     "target_selection": "distractor_rewrite",
-    "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task0",
+    "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task1",
     "timestamp": "2026-04-13 02:53:07"
   },
   "results": {

@@ -8,7 +8,7 @@ This script generates per-instance entropy trajectories for the Task-5 analysis.
 Methodological notes:
 - deterministic target-pair selection instead of taking the first two
   disambiguations
-- diffusion-side scoring aligned more closely with the Task-0 MC estimator
+- diffusion-side scoring aligned more closely with the paper T1 MC estimator
   by scoring masked continuation tokens only and rescaling by the effective
   mask ratio
 - explicit metadata on ambiguity side, target labels, and selection rule
@@ -451,7 +451,7 @@ def compute_diffusion_mc_nll_at_ratio(
     """
     Compute a fixed-ratio masked-token Monte Carlo plausibility proxy.
 
-    Alignment with Task 0:
+    Alignment with paper T1:
     - prompt tokens are preserved
     - exactly a fixed proportion of continuation tokens is masked per sample
     - loss is computed only on masked tokens and rescaled by 1 / effective_ratio
@@ -608,7 +608,7 @@ def run(args) -> int:
             if args.condition == "gold_disambiguation"
             else args.condition
         ),
-        "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task0",
+        "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task1",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
