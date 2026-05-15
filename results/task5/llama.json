@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "task": "task5_superposition_decay_updated",
+    "task": "task5_temporal_semantic_commitment",
     "model_name": "llama",
     "model_type": "ar",
     "model_id": "meta-llama/Meta-Llama-3.1-8B",

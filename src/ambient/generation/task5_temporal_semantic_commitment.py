@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# src/ambient/generation/task5_superposition_decay.py
+# src/ambient/generation/task5_temporal_semantic_commitment.py
 """
 Task 5: Temporal Semantic Commitment
 
@@ -593,7 +593,7 @@ def run(args) -> int:
     set_global_determinism(args.seed)
 
     run_meta = {
-        "task": "task5_superposition_decay_updated",
+        "task": "task5_temporal_semantic_commitment",
         "model_name": args.model_name,
         "model_type": "diffusion" if is_diffusion else "ar",
         "model_id": model_id,

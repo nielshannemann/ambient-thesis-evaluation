@@ -247,7 +247,7 @@ def _add_task5_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
         choices=["gold_disambiguation", "distractor_rewrite", "random_matched_rewrite"],
     )
     generate_parser.add_argument("--output-path", type=Path, default=None)
-    _set_handler(generate_parser, "ambient.generation.task5_superposition_decay:run")
+    _set_handler(generate_parser, "ambient.generation.task5_temporal_semantic_commitment:run")
 
     metrics_parser = subparsers.add_parser("metrics", help="Aggregate Task-5 scalar metrics.")
     metrics_parser.add_argument("--llama-file", type=Path, required=True)

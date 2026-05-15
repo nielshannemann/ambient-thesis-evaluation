@@ -1,4 +1,4 @@
-from ambient.generation.task5_superposition_decay import build_task5_instances
+from ambient.generation.task5_temporal_semantic_commitment import build_task5_instances
 from ambient.evaluation.task5_compute_decay_metrics import _extract_trajectory_map
 from ambient.evaluation.task5_compute_decay_metrics import _trajectory_to_instance_metrics
 from ambient.paths import task5_output_path
