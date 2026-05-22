@@ -80,9 +80,14 @@ use. The main models and scorers used by the paper are:
   from their original package or Hugging Face sources and subject to the
   respective upstream licenses.
 
-The original code in this anonymized artifact is provided for review and
-research reproducibility. If this repository is made public after review, add a
-formal project license before broad reuse.
+The original code in this anonymized artifact is released under the MIT License
+in `LICENSE`. Files adapted from the official LLaDA repository retain their
+upstream attribution noted in the source files. Dataset-derived files remain
+subject to the original AmbiEnt CC BY 4.0 terms, and pretrained model weights
+are not redistributed here.
+
+If this repository is made public after review, replace the anonymous copyright
+holder in `LICENSE` with the final author or institutional copyright holder.
 
 ## Data and privacy
 
