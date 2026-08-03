@@ -170,8 +170,13 @@ evidence only and must not enter the confirmatory analysis.
 Dream-v0-Base-7B produced mostly natural raw continuations at temperature 0.7
 and top-p 0.95, with one heuristic artifact and no exact duplicates among 64
 development outputs. Mistral-7B-v0.3 passed a separate raw-completion smoke
-test at the same setting. P3 therefore uses LLaMA, LLaDA, Mistral, and Dream as
-four base models with a shared raw prompt and matched decoding parameters.
+test at the same setting. Its subsequent nine-item calibration produced 72/72
+non-empty outputs, no heuristic artifacts, and no exact within-item duplicates.
+Manual inspection found generally natural continuations, with occasional
+context drift on generic prompts and one visibly truncated output; no further
+decoding search was performed. P3 therefore uses LLaMA, LLaDA, Mistral, and
+Dream as four base models with a shared raw prompt and matched decoding
+parameters.
 The eight-item development sample and the shared one-item smoke prompt are
 frozen as nine excluded IDs in
 `data/splits/task3_october_calibration_ids.txt` and excluded before the
