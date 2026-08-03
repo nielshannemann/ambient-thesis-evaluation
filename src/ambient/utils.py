@@ -38,7 +38,9 @@ _RE_CJK = re.compile(r'[\u4e00-\u9fff\u3400-\u4dbf]')
 _RE_TRAILING_PUNCT = re.compile(r'[\)\]\}\s]+$')
 
 # [Thesis: Methodology > Output Sanitization and Artifact Filtering]
-_RE_MCQ_PATTERN = re.compile(r'^\s*[A-D][\.\s\)]')
+# Match explicit option labels ("A."/"A)"), not ordinary sentences that
+# begin with the indefinite article (for example, "A few ...").
+_RE_MCQ_PATTERN = re.compile(r'^\s*[A-D](?:[\.\)](?:\s|$)|\s*$)')
 
 
 # ------------------------------------------------------------------------
