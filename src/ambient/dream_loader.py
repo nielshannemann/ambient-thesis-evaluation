@@ -18,6 +18,19 @@ def get_model_device(model: Any) -> torch.device:
         return next(model.parameters()).device
 
 
+def _decode_dream_suffix(tokenizer: Any, sequence: torch.Tensor, prompt_len: int) -> str:
+    """Decode one Dream suffix and stop at the first generated EOS marker."""
+    text = tokenizer.decode(
+        sequence[prompt_len:].tolist(),
+        skip_special_tokens=False,
+        clean_up_tokenization_spaces=True,
+    )
+    eos_token = getattr(tokenizer, "eos_token", None)
+    if eos_token and eos_token in text:
+        text = text.split(eos_token, 1)[0]
+    return clean_continuation_text(text)
+
+
 def load_dream_model(
     hf_model: str = DREAM_BASE_MODEL_ID,
     use_4bit: bool = False,
@@ -106,15 +119,7 @@ def run_dream_prompt(
     prompt_len = input_ids.shape[1]
     decoded: list[str] = []
     for sequence in output.sequences:
-        text = tokenizer.decode(
-            sequence[prompt_len:].tolist(),
-            skip_special_tokens=True,
-            clean_up_tokenization_spaces=True,
-        )
-        eos_token = getattr(tokenizer, "eos_token", None)
-        if eos_token and eos_token in text:
-            text = text.split(eos_token, 1)[0]
-        decoded.append(clean_continuation_text(text))
+        decoded.append(_decode_dream_suffix(tokenizer, sequence, prompt_len))
 
     if return_history:
         return decoded, getattr(output, "history", None)

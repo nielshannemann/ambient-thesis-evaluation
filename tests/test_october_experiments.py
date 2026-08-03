@@ -8,6 +8,7 @@ import torch
 import pandas as pd
 
 from ambient.adapters import ARAdapter
+from ambient.dream_loader import _decode_dream_suffix
 from ambient.evaluation.get_log_likelihood import get_pseudo_log_likelihood
 from ambient.evaluation.continuation_evaluation_adapted import create_test_instances
 from ambient.evaluation.human_evaluation import (
@@ -100,6 +101,16 @@ class FakeChatTokenizer:
         assert tokenize is False
         assert add_generation_prompt is True
         return "FORMATTED CHAT PROMPT"
+
+
+class FakeDreamDecodeTokenizer:
+    eos_token = "<eos>"
+
+    def decode(self, token_ids, skip_special_tokens, clean_up_tokenization_spaces):
+        assert token_ids == [11, 12, 13]
+        assert skip_special_tokens is False
+        assert clean_up_tokenization_spaces is True
+        return "Useful continuation.<eos>Tokens after EOS must be ignored."
 
 
 def test_model_family_aliases_preserve_old_names_and_add_second_pair() -> None:
@@ -223,6 +234,12 @@ def test_task3_chat_prompt_uses_tokenizer_template_and_records_instruction() -> 
             "content": TASK3_CHAT_USER_TEMPLATE.format(text="Ambiguous text."),
         },
     ]
+
+
+def test_dream_suffix_decoding_stops_at_first_eos_before_cleaning() -> None:
+    sequence = torch.tensor([1, 2, 11, 12, 13])
+    decoded = _decode_dream_suffix(FakeDreamDecodeTokenizer(), sequence, prompt_len=2)
+    assert decoded == "Useful continuation."
 
 
 def test_ar_adapter_removes_diffusion_only_generation_arguments() -> None:
