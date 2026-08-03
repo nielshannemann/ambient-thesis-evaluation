@@ -5,9 +5,11 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import torch
+import pandas as pd
 
 from ambient.adapters import ARAdapter
 from ambient.evaluation.get_log_likelihood import get_pseudo_log_likelihood
+from ambient.evaluation.continuation_evaluation_adapted import create_test_instances
 from ambient.evaluation.human_evaluation import (
     binary_kappa,
     binary_value,
@@ -268,3 +270,25 @@ def test_task3_completed_resume_returns_before_model_loading(tmp_path: Path) -> 
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     assert payload["metadata"]["status"] == "finished"
     assert len(payload["results"]) == 1
+
+
+def test_task1_readings_keep_benchmark_order_while_deduplicating() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "id": 1,
+                "premise": "Ambiguous.",
+                "hypothesis": "Fixed.",
+                "premise_ambiguous": True,
+                "hypothesis_ambiguous": False,
+                "distractor_premise": "Distractor.",
+                "disambiguations": [
+                    {"premise": "Reading B."},
+                    {"premise": "Reading A."},
+                    {"premise": "Reading B."},
+                ],
+            }
+        ]
+    )
+    instances = create_test_instances(frame)
+    assert instances[0]["disambiguations"] == ["Reading B.", "Reading A."]

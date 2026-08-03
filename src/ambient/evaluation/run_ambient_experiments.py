@@ -305,6 +305,7 @@ def run(args) -> int:
             "id_file": str(args.id_file) if args.id_file else None,
             "max_examples": args.max_examples,
         },
+        "reading_order": "benchmark_order_with_stable_deduplication",
         "hyperparameters": hyperparams,
         "status": "running"
     }

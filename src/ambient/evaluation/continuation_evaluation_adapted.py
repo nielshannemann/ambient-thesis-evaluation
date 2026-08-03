@@ -97,11 +97,17 @@ def create_test_instances(test_df):
     for i, row in test_df.iterrows():
         for sentence_key in ['premise', 'hypothesis']:
             if row[f'{sentence_key}_ambiguous']:
+                # Preserve the benchmark's annotated reading order. Using a set
+                # here made y0/y1 depend on Python's per-process hash seed and
+                # consequently changed the reading-specific generation seeds.
+                ordered_readings = list(
+                    dict.fromkeys(l[sentence_key] for l in row['disambiguations'])
+                )
                 test_instances.append({
                     'id': row['id'],
                     'ambiguous_sentence_key': sentence_key,
                     'ambiguous_sentence': row[sentence_key],
-                    'disambiguations': list(set([l[sentence_key] for l in row['disambiguations']])),
+                    'disambiguations': ordered_readings,
                     'distractor': row.get(f'distractor_{sentence_key}') 
                 })
     return test_instances
