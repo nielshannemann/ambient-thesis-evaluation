@@ -56,7 +56,7 @@ LLADA_MASK_ID = 126336
 
 
 def model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
-    attention_mask = torch.ones_like(input_ids)
+    attention_mask = torch.ones_like(input_ids, dtype=torch.bool)
     try:
         return model(input_ids=input_ids, attention_mask=attention_mask).logits
     except TypeError:

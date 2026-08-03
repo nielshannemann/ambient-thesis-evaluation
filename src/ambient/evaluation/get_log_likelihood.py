@@ -43,7 +43,9 @@ def get_mask_id(model, tokenizer) -> int:
 
 def _model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
     """Call standard and remote-code model forwards through one interface."""
-    attention_mask = torch.ones_like(input_ids)
+    # Dream's BF16 SDPA path rejects integer masks, while standard Hugging Face
+    # models accept boolean masks. A boolean all-visible mask is valid for both.
+    attention_mask = torch.ones_like(input_ids, dtype=torch.bool)
     try:
         return model(input_ids=input_ids, attention_mask=attention_mask).logits
     except TypeError:

@@ -46,6 +46,8 @@ class UniformMaskedModel(torch.nn.Module):
         return self.embedding
 
     def forward(self, input_ids=None, attention_mask=None):
+        assert attention_mask is not None
+        assert attention_mask.dtype == torch.bool
         batch, length = input_ids.shape
         return SimpleNamespace(logits=torch.zeros(batch, length, 10, device=input_ids.device))
 
