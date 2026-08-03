@@ -6,6 +6,34 @@ Git. Historical model-family names (`llama`, `llada`) remain valid. The new
 generic backends are `ar` for Hugging Face causal LMs and `dream` for Dream's
 official masked-diffusion API.
 
+## Current status (2026-08-04)
+
+No confirmatory October experiment has been completed yet. The work so far
+covers implementation, smoke tests, and Task-3 continuation calibration only;
+calibration outputs are excluded from confirmatory analyses.
+
+| Work package | Status | Completed evidence | Next gate |
+| --- | --- | --- | --- |
+| P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
+| P1: human validation | Ready, not started | Commands and annotation pipeline are implemented | Generate and inspect the blinded sheets before annotation |
+| P2: second-pair Tasks 1 and 2 | Ready, not started | Qwen and Dream backends passed smoke tests | Run the complete equal-count pair |
+| P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
+| P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
+| P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
+| P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
+| P7: second-pair Task 5 | Optional, not started | Commands are available | Reconsider only after reviewing P1--P6 |
+
+The work packages use the following checkpoint sets. In particular, "four
+models" does not denote the same set in P3 and P4.
+
+| Checkpoint | P2: T1/T2 | P3: Task 3 | P4: Scope 2B | P5: PLL | P6: matched budget | P7: Task 5 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Meta-Llama-3.1-8B |  | Yes | Yes |  | Historical reference |  |
+| LLaDA-8B-Base |  | Yes | Yes | Primary | Primary |  |
+| Qwen2.5-7B | Yes |  | Yes |  |  | Yes |
+| Dream-v0-Base-7B | Yes | Yes | Yes | Optional follow-up |  | Yes |
+| Mistral-7B-v0.3 |  | Yes |  |  |  |  |
+
 ## 1. What each work package addresses
 
 | Priority | Work package | Main reviewer concern | Required for revision |
@@ -176,7 +204,10 @@ Manual inspection found generally natural continuations, with occasional
 context drift on generic prompts and one visibly truncated output; no further
 decoding search was performed. P3 therefore uses LLaMA, LLaDA, Mistral, and
 Dream as four base models with a shared raw prompt and matched decoding
-parameters.
+parameters. This calibration establishes mechanical suitability for the shared
+generation protocol; it is not evidence of semantic adequacy or comparative
+model performance.
+
 The eight-item development sample and the shared one-item smoke prompt are
 frozen as nine excluded IDs in
 `data/splits/task3_october_calibration_ids.txt` and excluded before the
@@ -582,7 +613,7 @@ git clone https://github.com/McGill-NLP/scope-ambiguity.git external/scope-ambig
 
 The repository is already ignored through `/external/`.
 
-### 8.2 Run all four models
+### 8.2 Run LLaMA, LLaDA, Qwen, and Dream
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py scope score \
