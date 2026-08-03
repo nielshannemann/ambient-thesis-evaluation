@@ -20,6 +20,78 @@ READING_SLOTS = 4
 YES_VALUES = {"yes", "y", "1", "true"}
 NO_VALUES = {"no", "n", "0", "false"}
 UNCERTAIN_VALUES = {"", "uncertain", "unsure", "?", "na", "n/a"}
+ANNOTATION_PROTOCOL_VERSION = "1.1"
+
+ANNOTATION_INSTRUCTIONS = """# Human annotation instructions
+
+## Purpose and unit of judgment
+
+This audit tests whether a generated continuation provides human-recognizable
+support for the annotated readings of an ambiguous sentence. Read the
+ambiguous sentence, all non-empty gold readings, and the continuation before
+assigning labels. Judge the continuation **in the context of the ambiguous
+sentence**. Do not try to identify the generating model and do not use the
+private key.
+
+The gold readings are legitimate alternatives supplied by the benchmark. They
+need not be mutually exclusive. The task is not to decide whether the original
+ambiguous sentence permits a reading; it is to decide whether the continuation
+provides evidence for that reading.
+
+## Reading-support labels
+
+For every non-empty `gold_reading_N`, enter exactly one of `yes`, `no`, or
+`uncertain` in the corresponding `supports_reading_N` column.
+
+- `yes`: In context, the continuation gives positive evidence for the reading.
+  This may be an explicit restatement, a presupposition, or a consequence that
+  makes that interpretation more evident. Exact word overlap is not required.
+- `no`: The continuation contradicts the reading or gives no evidence for it.
+  Mere grammatical compatibility, topical relatedness, or failure to resolve
+  the ambiguity is not sufficient for `yes`.
+- `uncertain`: The relation genuinely cannot be decided with reasonable
+  confidence. Do not use `uncertain` merely because the continuation supports
+  neither reading; use `no` in that case.
+
+More than one reading may receive `yes`, and all readings may receive `no`.
+Leave support columns blank only when their gold-reading column is blank.
+
+## Invalidity
+
+Enter `yes` in `invalid_or_uninterpretable` only when no stable interpretation
+can be assigned because the continuation is empty, nonsensical, severely
+malformed, or truncated before its intended meaning becomes recoverable.
+Otherwise enter `no`.
+
+A fluent but irrelevant continuation is not automatically invalid. Mark its
+reading-support labels `no` and rate its surface fluency independently. For an
+invalid continuation, still complete every non-empty support field; normally
+these will be `no`, unless some support remains recoverable.
+
+## Surface fluency
+
+Rate `fluency_1_to_5` independently of relevance and reading support:
+
+1. Unreadable or effectively word salad.
+2. Major grammatical or structural problems impede understanding.
+3. Understandable, but clearly awkward, fragmentary, or errorful.
+4. Fluent with only minor awkwardness or errors.
+5. Fully natural and well formed.
+
+Do not lower fluency merely because a continuation is off topic. Minor spacing
+or punctuation artifacts matter only when they impair readability.
+
+## Confidence and procedure
+
+Rate `confidence_1_to_3`: 1 means low confidence or a close judgment, 2 means
+moderate confidence, and 3 means the labels are clear. Use `notes` only for
+short explanations of difficult or exceptional cases.
+
+Annotate every row independently, without consulting the other annotator,
+external resources, automatic labels, or the private key. Do not discuss main
+evaluation rows until both annotation sheets are complete. Pilot rows are
+separate and may be discussed before the main annotation begins.
+"""
 
 
 def normalize_text(value: Any) -> str:
@@ -77,11 +149,10 @@ def choose_continuations(
     candidates = [
         (index, normalize_text(text))
         for index, text in enumerate(item.get("continuations", []))
-        if normalize_text(text)
     ]
     if len(candidates) < count:
         raise ValueError(
-            f"Instance {item.get('id')} has {len(candidates)} non-empty continuations, "
+            f"Instance {item.get('id')} has {len(candidates)} continuation slots, "
             f"but {count} were requested."
         )
     return rng.sample(candidates, count)
@@ -111,6 +182,23 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def prepare(args) -> int:
+    output_paths = [
+        args.output_dir / "instructions.md",
+        args.output_dir / "manifest.json",
+        args.output_dir / "private_key.csv",
+        *[
+            args.output_dir / f"annotation_annotator_{index}.csv"
+            for index in range(1, args.num_annotators + 1)
+        ],
+    ]
+    existing_paths = [path for path in output_paths if path.exists()]
+    if existing_paths and not getattr(args, "overwrite", False):
+        names = ", ".join(path.name for path in existing_paths)
+        raise FileExistsError(
+            f"Refusing to overwrite an existing annotation package ({names}). "
+            "Use --overwrite only before annotation has begun."
+        )
+
     model_files = parse_model_files(args.model_file)
     model_rows = {label: load_task3(path) for label, path in model_files.items()}
     common_ids = set.intersection(*(set(rows) for rows in model_rows.values()))
@@ -177,34 +265,39 @@ def prepare(args) -> int:
                     }
                 )
 
-    rng.shuffle(annotation_rows)
+    included_ids = sorted({row["instance_id"] for row in annotation_rows})
+    if len(included_ids) != args.num_instances:
+        raise ValueError(
+            f"Prepared rows for {len(included_ids)} of {args.num_instances} sampled instances."
+        )
+
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    annotator_order_seeds: dict[str, int] = {}
     for annotator_index in range(1, args.num_annotators + 1):
-        write_csv(args.output_dir / f"annotation_annotator_{annotator_index}.csv", annotation_rows)
+        order_seed = args.seed + 100_003 * annotator_index
+        annotator_order_seeds[str(annotator_index)] = order_seed
+        annotator_rows = list(annotation_rows)
+        random.Random(order_seed).shuffle(annotator_rows)
+        write_csv(
+            args.output_dir / f"annotation_annotator_{annotator_index}.csv",
+            annotator_rows,
+        )
     write_csv(args.output_dir / "private_key.csv", key_rows)
 
-    instructions = """# Human annotation instructions
-
-Annotate each row independently without trying to infer the generating model.
-
-1. For every non-empty gold reading, enter `yes`, `no`, or `uncertain` in the
-   corresponding `supports_reading_N` column. `yes` means that the continuation
-   is semantically compatible with and provides evidence for that reading.
-   More than one reading may receive `yes`.
-2. Mark `invalid_or_uninterpretable` as `yes` for empty, nonsensical, severely
-   malformed, or semantically uninterpretable continuations; otherwise use `no`.
-3. Rate surface fluency from 1 (unreadable) to 5 (fully fluent).
-4. Rate confidence from 1 (low) to 3 (high). Use `notes` only when useful.
-
-Do not consult the private key until annotation and any adjudication are final.
-"""
-    (args.output_dir / "instructions.md").write_text(instructions, encoding="utf-8")
+    (args.output_dir / "instructions.md").write_text(
+        ANNOTATION_INSTRUCTIONS,
+        encoding="utf-8",
+    )
     manifest = {
+        "annotation_protocol_version": ANNOTATION_PROTOCOL_VERSION,
         "model_files": {label: str(path) for label, path in model_files.items()},
         "num_instances_requested": args.num_instances,
+        "num_instances_included": len(included_ids),
+        "sampled_instance_ids": included_ids,
         "num_rows": len(annotation_rows),
         "continuations_per_model": args.continuations_per_model,
         "num_annotators": args.num_annotators,
+        "annotator_order_seeds": annotator_order_seeds,
         "seed": args.seed,
         "id_file": str(args.id_file) if args.id_file else None,
         "stratum_label": args.stratum_label,

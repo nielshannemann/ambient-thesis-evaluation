@@ -15,7 +15,7 @@ calibration outputs are excluded from confirmatory analyses.
 | Work package | Status | Completed evidence | Next gate |
 | --- | --- | --- | --- |
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
-| P1: human validation | Ready, not started | Commands and annotation pipeline are implemented | Generate and inspect the blinded sheets before annotation |
+| P1: human validation | Ready, not started | Commands and annotation pipeline are implemented | Complete the disjoint annotation pilot before distributing the main sheets |
 | P2: second-pair Tasks 1 and 2 | Ready, not started | Qwen and Dream backends passed smoke tests | Run the complete equal-count pair |
 | P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
@@ -347,10 +347,38 @@ items, two continuations per model and item, two independent annotators. This
 produces 200 blind rows. The model key must remain hidden until annotation and
 adjudication are complete.
 
-### 5.1 Prepare blind sheets
+### 5.1 Prepare a disjoint annotation pilot
+
+Before touching the main sheets, both annotators independently label the same
+eight pilot items. These items do not overlap the frozen 50-item main sample
+and never enter reported results. After both pilot sheets are complete, discuss
+disagreements to align the written rules, not to establish preferred model
+outcomes. Keep the pilot key hidden until both independent passes are finished.
 
 ```bash
-CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py human-eval prepare \
+PYTHONPATH=src python src/ambient/cli.py human-eval prepare \
+  --model-file llama=results/task3/no_trailing_quotes/llama8b_ambiguous.json llada=results/task3/no_trailing_quotes/llada8b_ambiguous.json \
+  --id-file data/splits/human_eval_pilot_ids.txt \
+  --num-instances 8 \
+  --continuations-per-model 2 \
+  --num-annotators 2 \
+  --seed 42 \
+  --stratum-label pilot \
+  --output-dir results/october_revision/human_eval/pilot
+```
+
+The preparation command samples all continuation slots uniformly, including
+empty outputs. Annotator order is randomized independently, while `blind_id`
+keeps rows alignable for agreement analysis.
+
+### 5.2 Freeze the guidance and prepare the main sheets
+
+Only prepare or distribute the main package after the pilot discussion and any
+resulting written clarification. Protocol version and sampled IDs are stored in
+`manifest.json`.
+
+```bash
+PYTHONPATH=src python src/ambient/cli.py human-eval prepare \
   --model-file llama=results/task3/no_trailing_quotes/llama8b_ambiguous.json llada=results/task3/no_trailing_quotes/llada8b_ambiguous.json \
   --num-instances 50 \
   --continuations-per-model 2 \
@@ -365,7 +393,12 @@ Distribute only `annotation_annotator_1.csv`,
 private. Each annotator labels support for every available gold reading,
 invalidity, fluency, and confidence.
 
-### 5.2 Apply the automatic NLI judge to the same rows
+`human-eval prepare` refuses to replace an existing package. `--overwrite` is
+reserved for a package that is known to be untouched, for example one created
+before the pilot protocol was frozen. Never overwrite a sheet after annotation
+has started.
+
+### 5.3 Apply the automatic NLI judge to the same rows
 
 Run this independently of the human annotation process so annotators never see
 the automatic labels.
@@ -379,7 +412,7 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py human-eval nli-l
   --output-path results/october_revision/human_eval/random_sample/nli_labels_roberta.csv
 ```
 
-### 5.3 Evaluate completed annotations
+### 5.4 Evaluate completed annotations
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py human-eval evaluate \
@@ -836,8 +869,9 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task5 metrics \
 ## 12. Recommended execution order
 
 1. Freeze the branch revision and run all smoke tests.
-2. Prepare the human sheets immediately because annotation has calendar time
-   but almost no GPU cost.
+2. Complete the disjoint human-annotation pilot, freeze the guidance, and then
+   prepare the main sheets because annotation has calendar time but almost no
+   GPU cost.
 3. Start P2 Task 1, then the four fresh P3 generations with checkpointing.
 4. Run the P5 PLL rescoring in parallel only if another GPU is available.
 5. Run P4 Scope Experiment 2B for all four models.
@@ -851,6 +885,8 @@ Record these decisions before inspecting results:
 
 - Human evaluation is primary validation of Task-3 NLI coverage, not a search
   for favorable examples.
+- Pilot rows train the annotation protocol and are excluded from every reported
+  human result.
 - The random human sample is the main sample. Any targeted stress sample is
   separate and labeled exploratory.
 - The four-model Task-3 comparison uses exactly
@@ -870,7 +906,7 @@ Before drafting the October revision, verify that the extension folder contains:
 
 - `CODE_REVISION.txt` and runtime metadata for every model run;
 - completed human annotation sheets, private key, agreement output, and
-  qualitative examples;
+  qualitative examples, plus the separately labeled pilot package;
 - Qwen/Dream Task-1 summaries and Task-2 controls;
 - four Task-3 generation artifacts on the exact same 150 IDs and four
   corresponding evaluation files;

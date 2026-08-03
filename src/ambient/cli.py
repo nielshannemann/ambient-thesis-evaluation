@@ -534,6 +534,11 @@ def _add_human_evaluation_commands(
     prepare_parser.add_argument("--stratum-label", type=str, default="random")
     prepare_parser.add_argument("--seed", type=int, default=42)
     prepare_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace an existing package only before annotation has begun.",
+    )
+    prepare_parser.add_argument(
         "--output-dir",
         type=Path,
         default=Path("results/october_revision/human_eval/random_sample"),

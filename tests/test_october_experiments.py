@@ -1,6 +1,7 @@
 import csv
 import json
 import math
+import random
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -16,7 +17,9 @@ from ambient.evaluation.human_evaluation import (
     binary_kappa,
     binary_value,
     bootstrap_mean_ci,
+    choose_continuations,
     paired_bootstrap_difference,
+    prepare as prepare_human_evaluation,
 )
 from ambient.evaluation.scope_ambiguity import build_summary, load_scope_items
 from ambient.evaluation.task1_compare_scorers import index_rows
@@ -198,6 +201,84 @@ def test_human_bootstrap_summaries_are_paired() -> None:
     paired = paired_bootstrap_difference([0.0, 0.5], [0.5, 1.0], reps=100, seed=3)
     assert paired["difference_b_minus_a"] == 0.5
     assert paired["n"] == 2
+
+
+def test_human_continuation_sampling_does_not_filter_empty_slots() -> None:
+    selected = choose_continuations(
+        {"id": "x", "continuations": ["", "usable continuation"]},
+        count=2,
+        rng=random.Random(42),
+    )
+    assert {index for index, _text in selected} == {0, 1}
+    assert any(not text for _index, text in selected)
+
+
+def test_human_package_is_versioned_blinded_and_overwrite_protected(tmp_path: Path) -> None:
+    model_paths = []
+    for model in ("a", "b"):
+        path = tmp_path / f"{model}.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "results": [
+                        {
+                            "id": f"item-{item}",
+                            "ambiguity_side": "hypothesis",
+                            "gold_disambiguations": [
+                                {"hypothesis": f"reading {item} one"},
+                                {"hypothesis": f"reading {item} two"},
+                            ],
+                            "continuations": [
+                                f"{model} item {item} continuation {continuation}"
+                                for continuation in range(4)
+                            ],
+                        }
+                        for item in range(2)
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        model_paths.append(f"{model}={path}")
+
+    output_dir = tmp_path / "human"
+    args = SimpleNamespace(
+        model_file=model_paths,
+        id_file=None,
+        num_instances=2,
+        continuations_per_model=2,
+        num_annotators=2,
+        seed=42,
+        stratum_label="test",
+        output_dir=output_dir,
+        overwrite=False,
+    )
+    assert prepare_human_evaluation(args) == 0
+
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["annotation_protocol_version"] == "1.1"
+    assert manifest["num_instances_included"] == 2
+
+    with (output_dir / "annotation_annotator_1.csv").open(
+        encoding="utf-8", newline=""
+    ) as handle:
+        first = list(csv.DictReader(handle))
+    with (output_dir / "annotation_annotator_2.csv").open(
+        encoding="utf-8", newline=""
+    ) as handle:
+        second = list(csv.DictReader(handle))
+    assert {row["blind_id"] for row in first} == {row["blind_id"] for row in second}
+    assert [row["blind_id"] for row in first] != [row["blind_id"] for row in second]
+    assert "actual_model" not in first[0]
+    assert "Mere grammatical compatibility" in (
+        output_dir / "instructions.md"
+    ).read_text(encoding="utf-8")
+
+    with pytest.raises(FileExistsError, match="Refusing to overwrite"):
+        prepare_human_evaluation(args)
+
+    args.overwrite = True
+    assert prepare_human_evaluation(args) == 0
 
 
 def test_task1_scorer_comparison_preserves_composite_instance_ids(tmp_path: Path) -> None:

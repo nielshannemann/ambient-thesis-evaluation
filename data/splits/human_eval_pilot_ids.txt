@@ -1,0 +1,10 @@
+# Disjoint annotation-training items. These are excluded from the 50-item
+# main sample produced with seed 42 and do not enter reported human results.
+86796
+45595
+120_c
+32945
+50_c
+85938
+27855
+22300
