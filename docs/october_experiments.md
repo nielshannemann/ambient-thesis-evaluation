@@ -71,6 +71,9 @@ Transformers 4.46.2, while this repository currently pins newer versions. If
 the Dream smoke tests fail because of a remote-code API incompatibility, create
 a separate Dream environment instead of downgrading the established LLaMA and
 LLaDA environment. Record that environment as a separate protocol decision.
+The Mistral tokenizer additionally requires the pinned `protobuf` package from
+`requirements.txt`; install it into older workstation environments before
+loading `mistralai/Mistral-7B-v0.3`.
 
 ## 3. Mandatory smoke tests
 
