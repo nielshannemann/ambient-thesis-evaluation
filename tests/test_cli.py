@@ -17,6 +17,7 @@ def test_help_entrypoints_exit_cleanly() -> None:
         ["task2", "evaluate"],
         ["task3", "generate"],
         ["task3", "evaluate"],
+        ["task3", "quality"],
         ["task3", "subset"],
         ["task4", "evaluate"],
         ["task5", "generate"],
@@ -78,6 +79,20 @@ def test_historical_and_extension_model_families_parse() -> None:
     assert dream.resume is False
     assert dream.checkpoint_every == 1
     assert dream.use_4bit is None
+
+    subset = parser.parse_args(
+        [
+            "task3",
+            "subset",
+            "--results-path",
+            "source.json",
+            "--sample-size",
+            "2",
+            "--output-path",
+            "subset.json",
+        ]
+    )
+    assert subset.exclude_id_file is None
 
 
 def test_task5_and_plot_commands_use_llama_llada_file_flags() -> None:

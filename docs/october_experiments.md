@@ -13,7 +13,7 @@ official masked-diffusion API.
 | P0 | Smoke tests and frozen protocol | Reproducibility | Yes |
 | P1 | Blinded human validation of Task 3 | Automatic proxies and no human validation | Yes |
 | P2 | Qwen2.5-7B versus Dream-v0-Base-7B on Tasks 1 and 2 | One model per family | Yes |
-| P3 | Four-model Task-3 comparison on one fixed subset | One model per family and judge-dependent coverage | Yes |
+| P3 | Fresh four-base-model Task-3 comparison on a held-out subset | One model per family and judge-dependent coverage | Yes |
 | P4 | Scope Ambiguities Experiment 2B on all four models | One dataset | Yes |
 | P5 | Single-token PLL triangulation of Task 1 | Reconstruction-proxy validity | Yes |
 | P6 | Full matched continuation budget for LLaDA | 100 AR versus 10 diffusion continuations | Yes, start with T=64 |
@@ -157,57 +157,25 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
 Do not start full runs until all four smoke tests finish, their `run_meta.json`
 or JSON metadata says `finished`, and the Dream outputs contain non-empty text.
 
-### 3.5 Task-3 raw-completion calibration and instruct fallback
+### 3.5 Task-3 continuation calibration
 
 An eight-item development sample (`selection_seed=2027`, eight continuations
-per item) showed that raw Qwen2.5-7B completion is not a suitable primary
-Task-3 condition. At temperatures 0.2, 0.5, and 0.7, QA/cloze continuations
-persisted; lowering temperature increased exact within-item duplication from
-6.25% at 0.7 to 15.62% at 0.5 and 51.56% at 0.2. Dream's corresponding
-development runs instead exposed a quality-diversity trade-off, with 12.5%
-exact duplication at 0.5 and none at 0.7. These development observations must
-not be reported as confirmatory ambiguity results.
+per item) showed that raw Qwen2.5-7B completion is not suitable for Task 3:
+QA/cloze continuations persisted at temperatures 0.2, 0.5, and 0.7. A shared
+instruction prompt corrected Qwen's format but Dream-v0-Instruct-7B produced
+many early-EOS, fragmentary, or contextually unsupported outputs at
+temperatures 0.5, 0.7, and 1.0. These failed configurations are calibration
+evidence only and must not enter the confirmatory analysis.
 
-Before replacing or extending the base-model Task-3 comparison, smoke-test a
-matched instruction-tuned pair with the shared `chat_continuation` prompt. The
-historical `raw` mode remains the CLI default.
-
-```bash
-CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
-  --model-family ar \
-  --model-name qwen25-7b-instruct-smoke \
-  --model-id Qwen/Qwen2.5-7B-Instruct \
-  --prompt-mode chat_continuation \
-  --sample-size 1 \
-  --selection-seed 2026 \
-  --num-continuations 4 \
-  --batch-size 4 \
-  --temperature 0.7 \
-  --top-p 0.95 \
-  --seed 42 \
-  --checkpoint-every 1 \
-  --no-use-4bit \
-  --output-path results/october_revision/smoke/qwen-instruct-task3.json
-
-CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
-  --model-family dream \
-  --model-name dream7b-instruct-smoke \
-  --model-id Dream-org/Dream-v0-Instruct-7B \
-  --prompt-mode chat_continuation \
-  --sample-size 1 \
-  --selection-seed 2026 \
-  --num-continuations 4 \
-  --batch-size 1 \
-  --diffusion-steps 128 \
-  --diffusion-alg entropy \
-  --diffusion-alg-temp 0.0 \
-  --temperature 0.7 \
-  --top-p 0.95 \
-  --seed 42 \
-  --checkpoint-every 1 \
-  --no-use-4bit \
-  --output-path results/october_revision/smoke/dream-instruct-task3.json
-```
+Dream-v0-Base-7B produced mostly natural raw continuations at temperature 0.7
+and top-p 0.95, with one heuristic artifact and no exact duplicates among 64
+development outputs. Mistral-7B-v0.3 passed a separate raw-completion smoke
+test at the same setting. P3 therefore uses LLaMA, LLaDA, Mistral, and Dream as
+four base models with a shared raw prompt and matched decoding parameters.
+The eight-item development sample and the shared one-item smoke prompt are
+frozen as nine excluded IDs in
+`data/splits/task3_october_calibration_ids.txt` and excluded before the
+confirmatory sample is drawn.
 
 ## 4. Historical commands remain available
 
@@ -465,93 +433,124 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task2 evaluate \
 Interpret this as a replication across a second pair, not as a factorial test
 that isolates architecture from training data and objective.
 
-## 7. P3: four-model Task-3 subset
+## 7. P3: matched four-base-model Task-3 subset
 
-Use one precommitted set of 150 AMBIENT IDs for every model. First derive the
-IDs from the existing full LLaMA artifact, then subset the existing LLaDA
-artifact and generate only the missing Qwen and Dream continuations.
+Use one held-out set of 150 AMBIENT IDs for LLaMA, LLaDA, Mistral, and Dream.
+Generate every continuation file afresh with the historical raw-prompt
+operationalization and matched temperature/top-p settings. This is a model
+breadth robustness analysis; it does not replace the full-data primary result.
+Qwen remains part of P2 and P4 but is excluded here because its raw Task-3
+outputs failed the format calibration.
 
-### 7.1 Freeze the shared IDs and existing-model subsets
+### 7.1 Freeze the held-out IDs
+
+Use the full historical LLaMA artifact only as the 580-item ID universe. The
+resulting reference subset is not one of the four newly evaluated files.
 
 ```bash
-CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 subset \
+PYTHONPATH=src python src/ambient/cli.py task3 subset \
   --results-path results/task3/no_trailing_quotes/llama8b_ambiguous.json \
+  --exclude-id-file data/splits/task3_october_calibration_ids.txt \
   --sample-size 150 \
   --selection-seed 2026 \
-  --output-path results/october_revision/task3/llama8b_ambiguous_150.json \
-  --id-output results/october_revision/task3/shared_ids_150.txt
-
-CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 subset \
-  --results-path results/task3/no_trailing_quotes/llada8b_ambiguous.json \
-  --id-file results/october_revision/task3/shared_ids_150.txt \
-  --output-path results/october_revision/task3/llada8b_ambiguous_150.json \
-  --id-output results/october_revision/task3/llada8b_verified_ids.txt
+  --output-path results/october_revision/task3/id_selection_reference.json \
+  --id-output results/october_revision/task3/shared_confirmatory_ids_150.txt
 ```
 
-### 7.2 Generate Qwen and Dream continuations
+### 7.2 Generate all four matched continuation files
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
+  --model-family llama \
+  --model-name llama8b-task3-t07 \
+  --model-id meta-llama/Meta-Llama-3.1-8B \
+  --prompt-type ambiguous --prompt-mode raw \
+  --id-file results/october_revision/task3/shared_confirmatory_ids_150.txt \
+  --num-continuations 100 --batch-size 25 \
+  --temperature 0.7 --top-p 0.95 --top-k 0 \
+  --seed 42 --resume --checkpoint-every 1 --no-use-4bit \
+  --output-path results/october_revision/task3/llama8b_raw_t07_150.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
+  --model-family llada \
+  --model-name llada8b-task3-t07 \
+  --model-id GSAI-ML/LLaDA-8B-Base \
+  --prompt-type ambiguous --prompt-mode raw \
+  --id-file results/october_revision/task3/shared_confirmatory_ids_150.txt \
+  --num-continuations 100 --batch-size 25 \
+  --diffusion-steps 128 --cfg-scale 0.0 \
+  --temperature 0.7 --top-p 0.95 --top-k 0 \
+  --seed 42 --resume --checkpoint-every 1 --no-use-4bit \
+  --output-path results/october_revision/task3/llada8b_raw_t07_150.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
   --model-family ar \
-  --model-name qwen25-7b \
-  --model-id Qwen/Qwen2.5-7B \
-  --prompt-type ambiguous \
-  --id-file results/october_revision/task3/shared_ids_150.txt \
-  --num-continuations 100 \
-  --batch-size 25 \
-  --temperature 1.0 \
-  --seed 42 \
-  --resume \
-  --checkpoint-every 1 \
-  --no-use-4bit \
-  --output-path results/october_revision/task3/qwen25-7b_ambiguous_150.json
+  --model-name mistral7b-task3-t07 \
+  --model-id mistralai/Mistral-7B-v0.3 \
+  --prompt-type ambiguous --prompt-mode raw \
+  --id-file results/october_revision/task3/shared_confirmatory_ids_150.txt \
+  --num-continuations 100 --batch-size 25 \
+  --temperature 0.7 --top-p 0.95 --top-k 0 \
+  --seed 42 --resume --checkpoint-every 1 --no-use-4bit \
+  --output-path results/october_revision/task3/mistral7b_raw_t07_150.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
   --model-family dream \
-  --model-name dream7b \
+  --model-name dream7b-task3-t07 \
   --model-id Dream-org/Dream-v0-Base-7B \
-  --prompt-type ambiguous \
-  --id-file results/october_revision/task3/shared_ids_150.txt \
-  --num-continuations 100 \
-  --batch-size 2 \
-  --diffusion-steps 128 \
-  --diffusion-alg entropy \
-  --diffusion-alg-temp 0.0 \
+  --prompt-type ambiguous --prompt-mode raw \
+  --id-file results/october_revision/task3/shared_confirmatory_ids_150.txt \
+  --num-continuations 100 --batch-size 2 \
+  --diffusion-steps 128 --diffusion-alg entropy --diffusion-alg-temp 0.0 \
   --cfg-scale 0.0 \
-  --temperature 1.0 \
-  --seed 42 \
-  --resume \
-  --checkpoint-every 1 \
-  --no-use-4bit \
-  --output-path results/october_revision/task3/dream7b_ambiguous_150.json
+  --temperature 0.7 --top-p 0.95 --top-k 0 \
+  --seed 42 --resume --checkpoint-every 1 --no-use-4bit \
+  --output-path results/october_revision/task3/dream7b_raw_t07_150.json
 ```
 
-### 7.3 Apply one frozen automatic evaluation to all four files
+### 7.3 Record lightweight generation-quality diagnostics
+
+Run these before semantic evaluation. Empty, heuristic-artifact, and exact
+duplicate rates are descriptive controls and must not be presented as human
+fluency judgments.
+
+```bash
+PYTHONPATH=src python src/ambient/cli.py task3 quality \
+  --results-path results/october_revision/task3/llama8b_raw_t07_150.json
+PYTHONPATH=src python src/ambient/cli.py task3 quality \
+  --results-path results/october_revision/task3/llada8b_raw_t07_150.json
+PYTHONPATH=src python src/ambient/cli.py task3 quality \
+  --results-path results/october_revision/task3/mistral7b_raw_t07_150.json
+PYTHONPATH=src python src/ambient/cli.py task3 quality \
+  --results-path results/october_revision/task3/dream7b_raw_t07_150.json
+```
+
+### 7.4 Apply one frozen semantic evaluation to all four files
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
-  --results-path results/october_revision/task3/llama8b_ambiguous_150.json \
+  --results-path results/october_revision/task3/llama8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --output-path results/october_revision/task3/llama8b_evaluation.json
+  --output-path results/october_revision/task3/llama8b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
-  --results-path results/october_revision/task3/llada8b_ambiguous_150.json \
+  --results-path results/october_revision/task3/llada8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --output-path results/october_revision/task3/llada8b_evaluation.json
+  --output-path results/october_revision/task3/llada8b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
-  --results-path results/october_revision/task3/qwen25-7b_ambiguous_150.json \
+  --results-path results/october_revision/task3/mistral7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --output-path results/october_revision/task3/qwen25-7b_evaluation.json
+  --output-path results/october_revision/task3/mistral7b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
-  --results-path results/october_revision/task3/dream7b_ambiguous_150.json \
+  --results-path results/october_revision/task3/dream7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --output-path results/october_revision/task3/dream7b_evaluation.json
+  --output-path results/october_revision/task3/dream7b_t07_evaluation.json
 ```
 
 The paper already contains MiniLM/MPNet and RoBERTa/DeBERTa robustness checks.
@@ -803,7 +802,7 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task5 metrics \
 1. Freeze the branch revision and run all smoke tests.
 2. Prepare the human sheets immediately because annotation has calendar time
    but almost no GPU cost.
-3. Start P2 Task 1, then P3 Dream generation with checkpointing.
+3. Start P2 Task 1, then the four fresh P3 generations with checkpointing.
 4. Run the P5 PLL rescoring in parallel only if another GPU is available.
 5. Run P4 Scope Experiment 2B for all four models.
 6. Run P6 LLaDA N=100 at T=64; decide later whether T=4 is worth the cost.
@@ -818,7 +817,8 @@ Record these decisions before inspecting results:
   for favorable examples.
 - The random human sample is the main sample. Any targeted stress sample is
   separate and labeled exploratory.
-- The four-model Task-3 comparison uses exactly `shared_ids_150.txt`.
+- The four-model Task-3 comparison uses exactly
+  `shared_confirmatory_ids_150.txt`, after excluding the frozen calibration IDs.
 - Experiment 2B is the primary second dataset. Experiment 2A is not substituted
   after seeing results.
 - T=64 is the primary matched-budget setting. T=4 is a quality-stress control.

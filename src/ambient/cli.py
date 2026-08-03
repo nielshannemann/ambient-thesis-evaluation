@@ -297,12 +297,26 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     evaluate_parser.add_argument("--output-path", type=Path, default=None)
     _set_handler(evaluate_parser, "ambient.evaluation.task3_reading_coverage:run")
 
+    quality_parser = subparsers.add_parser(
+        "quality",
+        help="Summarize empty, artifact, and exact-duplicate rates in Task-3 outputs.",
+    )
+    quality_parser.add_argument("--results-path", type=Path, required=True)
+    quality_parser.add_argument("--output-path", type=Path, default=None)
+    _set_handler(quality_parser, "ambient.evaluation.task3_generation_quality:run")
+
     subset_parser = subparsers.add_parser(
         "subset",
         help="Create a deterministic subset from an existing Task-3 generation artifact.",
     )
     subset_parser.add_argument("--results-path", type=Path, required=True)
     subset_parser.add_argument("--id-file", type=Path, default=None)
+    subset_parser.add_argument(
+        "--exclude-id-file",
+        type=Path,
+        default=None,
+        help="Optional IDs to remove before deterministic subset sampling.",
+    )
     subset_parser.add_argument("--sample-size", type=int, default=None)
     subset_parser.add_argument("--selection-seed", type=int, default=2026)
     subset_parser.add_argument("--output-path", type=Path, required=True)

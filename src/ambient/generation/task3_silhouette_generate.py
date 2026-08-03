@@ -18,6 +18,7 @@ cryptographic reproducibility via chunk-level deterministic seeding.
 =============================================================================
 """
 
+import hashlib
 import json
 import random
 import time
@@ -244,6 +245,12 @@ def run(args) -> int:
 
     dataset = load_ambiguous_examples(args.data_path, max_examples=args.max_examples)
     dataset = select_examples(dataset, args.id_file, args.sample_size, args.selection_seed)
+    selected_ids = [example_id(item) for item in dataset]
+    selected_id_sha256 = hashlib.sha256("\n".join(selected_ids).encode("utf-8")).hexdigest()
+    run_meta["data_selection"] = {
+        "num_selected_items": len(selected_ids),
+        "selected_id_sha256": selected_id_sha256,
+    }
     print(f"[INFO] Successfully isolated {len(dataset)} ambiguous instances for evaluation.")
     indexed_dataset = list(enumerate(dataset))
 
@@ -256,21 +263,62 @@ def run(args) -> int:
             previous = json.load(handle)
         previous_meta = previous.get("metadata") or {}
         previous_prompt_mode = previous_meta.get("prompt_mode", "raw")
-        expected = {
+        expected_identity = {
             "model_id": model_id,
             "prompt_type": args.prompt_type,
             "prompt_mode": prompt_mode,
         }
-        actual = {
+        actual_identity = {
             "model_id": previous_meta.get("model_id"),
             "prompt_type": previous_meta.get("prompt_type"),
             "prompt_mode": previous_prompt_mode,
         }
         mismatches = {
-            key: (actual.get(key), value)
-            for key, value in expected.items()
-            if actual.get(key) not in {None, value}
+            key: (actual_identity.get(key), value)
+            for key, value in expected_identity.items()
+            if actual_identity.get(key) not in {None, value}
         }
+
+        previous_hyperparameters = previous_meta.get("hyperparameters") or {}
+        generation_keys = {
+            "seed",
+            "num_continuations",
+            "batch_size",
+            "temperature",
+            "top_p",
+            "top_k",
+            "cfg_scale",
+            "diffusion_steps",
+            "diffusion_alg",
+            "diffusion_alg_temp",
+        }
+        for key in generation_keys:
+            if key not in run_meta["hyperparameters"]:
+                continue
+            value = run_meta["hyperparameters"][key]
+            if key in previous_hyperparameters and previous_hyperparameters[key] != value:
+                mismatches[f"hyperparameters.{key}"] = (
+                    previous_hyperparameters[key],
+                    value,
+                )
+
+        previous_selection = previous_meta.get("data_selection") or {}
+        previous_selection_hash = previous_selection.get("selected_id_sha256")
+        if previous_selection_hash not in {None, selected_id_sha256}:
+            mismatches["data_selection.selected_id_sha256"] = (
+                previous_selection_hash,
+                selected_id_sha256,
+            )
+        if previous_selection_hash is None:
+            for key in {"id_file", "sample_size", "selection_seed", "max_examples"}:
+                if key not in previous_hyperparameters:
+                    continue
+                value = run_meta["hyperparameters"][key]
+                if previous_hyperparameters[key] != value:
+                    mismatches[f"hyperparameters.{key}"] = (
+                        previous_hyperparameters[key],
+                        value,
+                    )
         if mismatches:
             raise ValueError(
                 f"Cannot resume Task-3 output with incompatible metadata: {mismatches}"
@@ -281,6 +329,12 @@ def run(args) -> int:
             str(item["id"] if item.get("id") is not None else item.get("row_id"))
             for item in all_results
         }
+        unexpected_ids = processed_ids - set(selected_ids)
+        if unexpected_ids:
+            raise ValueError(
+                f"Cannot resume Task-3 output: {len(unexpected_ids)} completed IDs "
+                "are absent from the current selection."
+            )
         indexed_dataset = [
             (index, item)
             for index, item in indexed_dataset

@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 import torch
 import pandas as pd
+import pytest
 
 from ambient.adapters import ARAdapter
 from ambient.dream_loader import _decode_dream_suffix
@@ -19,6 +20,8 @@ from ambient.evaluation.human_evaluation import (
 )
 from ambient.evaluation.scope_ambiguity import build_summary, load_scope_items
 from ambient.evaluation.task1_compare_scorers import index_rows
+from ambient.evaluation.task3_generation_quality import summarize_task3_quality
+from ambient.evaluation.task3_subset import run as run_task3_subset
 from ambient.generation.task3_silhouette_generate import (
     TASK3_CHAT_SYSTEM_PROMPT,
     TASK3_CHAT_USER_TEMPLATE,
@@ -219,6 +222,53 @@ def test_task3_id_selection_handles_zero(tmp_path: Path) -> None:
     assert selected == [{"id": 0}]
 
 
+def test_task3_subset_excludes_development_ids_before_sampling(tmp_path: Path) -> None:
+    source_path = tmp_path / "source.json"
+    source_path.write_text(
+        json.dumps({"metadata": {}, "results": [{"id": value} for value in "abcd"]}),
+        encoding="utf-8",
+    )
+    exclude_path = tmp_path / "exclude.txt"
+    exclude_path.write_text("b\n", encoding="utf-8")
+    output_path = tmp_path / "subset.json"
+    ids_path = tmp_path / "subset.ids.txt"
+    args = SimpleNamespace(
+        results_path=source_path,
+        id_file=None,
+        exclude_id_file=exclude_path,
+        sample_size=3,
+        selection_seed=2026,
+        output_path=output_path,
+        id_output=ids_path,
+    )
+
+    assert run_task3_subset(args) == 0
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert [item["id"] for item in payload["results"]] == ["a", "c", "d"]
+    assert ids_path.read_text(encoding="utf-8").splitlines() == ["a", "c", "d"]
+    assert payload["metadata"]["subset"]["num_excluded_items"] == 1
+
+
+def test_task3_quality_counts_empty_missing_artifact_and_duplicate_outputs() -> None:
+    summary = summarize_task3_quality(
+        {
+            "metadata": {"hyperparameters": {"num_continuations": 3}},
+            "results": [
+                {"id": "x", "continuations": ["A sentence.", "A sentence.", ""]},
+                {"id": "y", "continuations": ["2.", "Valid output."]},
+            ],
+        }
+    )
+    assert summary["expected_slots"] == 6
+    assert summary["returned_slots"] == 5
+    assert summary["nonempty_count"] == 4
+    assert summary["empty_or_missing_count"] == 2
+    assert summary["heuristic_artifact_count"] == 1
+    assert summary["nonempty_nonartifact_count"] == 3
+    assert summary["exact_duplicate_excess_count"] == 1
+    assert summary["items_with_empty_or_missing"] == 2
+
+
 def test_task3_raw_prompt_mode_preserves_historical_whitespace_suffix() -> None:
     assert build_task3_generation_prompt(None, "Ambiguous text.", "raw") == "Ambiguous text. "
 
@@ -319,6 +369,71 @@ def test_task3_completed_resume_returns_before_model_loading(tmp_path: Path) -> 
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     assert payload["metadata"]["status"] == "finished"
     assert len(payload["results"]) == 1
+
+
+def test_task3_resume_rejects_changed_generation_hyperparameters(tmp_path: Path) -> None:
+    data_path = tmp_path / "data.jsonl"
+    data_path.write_text(
+        json.dumps(
+            {
+                "id": 0,
+                "premise": "Ambiguous premise.",
+                "hypothesis": "Hypothesis.",
+                "premise_ambiguous": True,
+                "hypothesis_ambiguous": False,
+                "disambiguations": [
+                    {"premise": "Reading one."},
+                    {"premise": "Reading two."},
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    output_path = tmp_path / "task3.json"
+    output_path.write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "model_id": "Qwen/Qwen2.5-7B",
+                    "prompt_type": "ambiguous",
+                    "prompt_mode": "raw",
+                    "hyperparameters": {"temperature": 0.5},
+                },
+                "results": [{"id": 0, "continuations": ["Done."]}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    args = SimpleNamespace(
+        seed=42,
+        model_family="ar",
+        model_name="qwen",
+        model_id="Qwen/Qwen2.5-7B",
+        prompt_type="ambiguous",
+        prompt_mode="raw",
+        num_continuations=1,
+        batch_size=1,
+        temperature=1.0,
+        top_p=1.0,
+        top_k=0,
+        cfg_scale=0.0,
+        diffusion_steps=8,
+        diffusion_alg="entropy",
+        diffusion_alg_temp=0.0,
+        progress_every_chunks=1,
+        data_path=data_path,
+        max_examples=1,
+        id_file=None,
+        sample_size=None,
+        selection_seed=2026,
+        resume=True,
+        checkpoint_every=1,
+        use_4bit=False,
+        output_path=output_path,
+    )
+    with pytest.raises(ValueError, match="hyperparameters.temperature"):
+        run_task3_generation(args)
 
 
 def test_task1_readings_keep_benchmark_order_while_deduplicating() -> None:

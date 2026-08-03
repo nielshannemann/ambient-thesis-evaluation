@@ -35,8 +35,30 @@ def run(args) -> int:
         raise ValueError(f"No Task-3 results found in {args.results_path}")
 
     indexed = [(item_id(item, index), item) for index, item in enumerate(results)]
+    exclude_id_file = getattr(args, "exclude_id_file", None)
+    excluded_ids: set[str] = set()
+    if exclude_id_file is not None:
+        excluded_ids = read_ids(exclude_id_file)
+        source_ids = {identifier for identifier, _item in indexed}
+        missing_exclusions = excluded_ids - source_ids
+        if missing_exclusions:
+            raise ValueError(
+                f"Exclusion file contains {len(missing_exclusions)} IDs absent from "
+                "the Task-3 artifact."
+            )
+        indexed = [
+            (identifier, item)
+            for identifier, item in indexed
+            if identifier not in excluded_ids
+        ]
+
     if args.id_file is not None:
         selected_ids = read_ids(args.id_file)
+        overlap = selected_ids & excluded_ids
+        if overlap:
+            raise ValueError(
+                f"ID and exclusion files overlap on {len(overlap)} Task-3 IDs."
+            )
         selected = [(identifier, item) for identifier, item in indexed if identifier in selected_ids]
         found = {identifier for identifier, _item in selected}
         missing = selected_ids - found
@@ -57,6 +79,8 @@ def run(args) -> int:
         "num_source_items": len(results),
         "num_selected_items": len(selected),
         "id_file": str(args.id_file) if args.id_file else None,
+        "exclude_id_file": str(exclude_id_file) if exclude_id_file else None,
+        "num_excluded_items": len(excluded_ids),
         "selection_seed": args.selection_seed if args.id_file is None else None,
     }
     output = {"metadata": metadata, "results": [item for _identifier, item in selected]}
