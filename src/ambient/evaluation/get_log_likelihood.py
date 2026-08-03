@@ -22,6 +22,8 @@ import time
 import torch
 import torch.nn.functional as F
 
+from ambient.modeling import forward_unpadded_logits
+
 
 def get_model_device(model) -> torch.device:
     """Return the device that receives token ids for a loaded model."""
@@ -42,14 +44,8 @@ def get_mask_id(model, tokenizer) -> int:
 
 
 def _model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
-    """Call standard and remote-code model forwards through one interface."""
-    # Dream's BF16 SDPA path rejects integer masks, while standard Hugging Face
-    # models accept boolean masks. A boolean all-visible mask is valid for both.
-    attention_mask = torch.ones_like(input_ids, dtype=torch.bool)
-    try:
-        return model(input_ids=input_ids, attention_mask=attention_mask).logits
-    except TypeError:
-        return model(input_ids).logits
+    """Call standard and remote-code forwards for an unpadded scoring batch."""
+    return forward_unpadded_logits(model, input_ids)
 
 def forward_process(batch, prompt_index, mask_id, rng=None):
     """

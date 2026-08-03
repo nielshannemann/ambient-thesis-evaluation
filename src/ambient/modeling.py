@@ -79,6 +79,21 @@ def is_masked_diffusion_family(model_family: str) -> bool:
     return canonical_backend(model_family) in MASKED_DIFFUSION_FAMILIES
 
 
+def forward_unpadded_logits(model: Any, input_ids: torch.Tensor) -> torch.Tensor:
+    """Return logits for a dense batch in which every token position is valid.
+
+    Reconstruction scoring builds each batch by repeating one unpadded
+    prompt-continuation sequence. Omitting ``attention_mask`` is therefore
+    equivalent to an all-visible mask. It also avoids passing a 2D Hugging Face
+    padding mask to Dream's remote SDPA implementation, which expects an SDPA-
+    compatible attention mask rather than expanding the 2D form internally.
+    """
+    try:
+        return model(input_ids=input_ids).logits
+    except TypeError:
+        return model(input_ids).logits
+
+
 def default_base_model_id(model_family: str) -> str:
     defaults = {
         "llama": LLAMA_BASE_MODEL_ID,

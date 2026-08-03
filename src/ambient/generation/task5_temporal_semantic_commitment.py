@@ -44,6 +44,7 @@ from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
 from ambient.modeling import (
     canonical_backend,
     default_base_model_id,
+    forward_unpadded_logits,
     is_masked_diffusion_family,
     load_model_bundle,
     runtime_environment,
@@ -56,11 +57,7 @@ LLADA_MASK_ID = 126336
 
 
 def model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
-    attention_mask = torch.ones_like(input_ids, dtype=torch.bool)
-    try:
-        return model(input_ids=input_ids, attention_mask=attention_mask).logits
-    except TypeError:
-        return model(input_ids).logits
+    return forward_unpadded_logits(model, input_ids)
 
 
 def set_global_determinism(seed: int) -> None:
