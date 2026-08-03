@@ -166,6 +166,8 @@ def compute_mean_and_band(matrix: np.ndarray, band_mode: str) -> Tuple[np.ndarra
         band = std
     elif band_mode == "sem":
         band = std / math.sqrt(matrix.shape[0])
+    elif band_mode == "ci95":
+        band = 1.96 * std / math.sqrt(matrix.shape[0])
     else:
         band = np.zeros_like(std)
 
@@ -241,7 +243,7 @@ def finalize_axis(ax: plt.Axes, *, show_ylabel: bool) -> None:
     ax.set_ylim(0.0, 1.0)
     ax.set_xlabel("Generation progress (%)")
     if show_ylabel:
-        ax.set_ylabel("Semantic entropy (bits)")
+        ax.set_ylabel("Reading-preference entropy (bits)")
     ax.axhline(0.0, color="black", linestyle="--", linewidth=1.0, alpha=0.5)
 
 
@@ -259,7 +261,7 @@ def plot_gold_comparison(args) -> None:
                 series_name="llama_gold",
                 progress=progress,
                 matrix=matrix,
-                color="#c44e52",
+                color="#1f77b4",
                 label="Autoregressive (LLaMA)",
                 band_mode=args.band,
             )
@@ -276,7 +278,7 @@ def plot_gold_comparison(args) -> None:
                 series_name="llada_gold",
                 progress=progress,
                 matrix=matrix,
-                color="#4c78a8",
+                color="#ff7f0e",
                 label="Discrete diffusion (LLaDA)",
                 band_mode=args.band,
             )
@@ -330,8 +332,8 @@ def plot_paper_gold_comparison(args) -> None:
             linewidth=0,
         )
 
-    add_line(llama, "#b73b3c", "LLaMA")
-    add_line(llada, "#2f6f9f", "LLaDA")
+    add_line(llama, "#1f77b4", "LLaMA")
+    add_line(llada, "#ff7f0e", "LLaDA")
 
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 0.42)

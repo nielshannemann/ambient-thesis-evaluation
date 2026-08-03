@@ -15,7 +15,7 @@ Restored Features from Original Codebase:
 - Chunk-based micro-batching to prevent OOM errors on consumer GPUs 
   while preserving strict cryptographic reproducibility.
 
-[Method Reference: Section 3.1.2 - Standardizing the Interface: Adapter Design]
+[Thesis: Methodology > Shared Interface and Inference Controls]
 =============================================================================
 """
 
@@ -27,6 +27,7 @@ import torch
 
 # Custom AmbiEnt modules
 from ambient.utils import clean_continuation_text
+from ambient.dream_loader import run_dream_prompt
 from ambient.llada_loader import run_llada_prompt
 
 
@@ -36,6 +37,9 @@ class BaseAdapter:
     Ensures a standardized API for both sequence generation and 
     Negative Log-Likelihood (NLL) scoring across divergent architectures.
     """
+    is_autoregressive = False
+    backend_name = "unknown"
+
     def generate(self, prompt: str, num_return_sequences: int = 1, batch_size: int = 25, top_p: float = 1.0, max_new_tokens: int = 60, **kwargs) -> List[str]:
         raise NotImplementedError("Each adapter must implement its own generate method.")
 
@@ -67,7 +71,7 @@ def _filter_kwargs_for_call(fn: Callable, kwargs: dict) -> dict:
 def _post_process_generation(g: str, stop_at_sentence: bool) -> str:
     """
     Applies strict text normalization and formatting rules.
-    [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+    [Thesis: Methodology > Output Sanitization and Artifact Filtering]
     """
     if g is None:
         return ""
@@ -101,8 +105,11 @@ class ARAdapter(BaseAdapter):
     """
     Adapter for Autoregressive (AR) Models like LLaMA.
     Executes standard left-to-right causal decoding.
-    [Method Reference: Section 3.1.2 - The ARAdapter]
+    [Thesis: Methodology > Shared Interface and Inference Controls]
     """
+    is_autoregressive = True
+    backend_name = "ar"
+
     def __init__(self, model_name: str, model, tokenizer, ar_score_fn: Callable):
         self.model_name = model_name
         self.model = model
@@ -123,6 +130,9 @@ class ARAdapter(BaseAdapter):
         kwargs.pop("cfg_scale", None)
         kwargs.pop("mc_num", None)
         kwargs.pop("mc_batch_size", None)
+        kwargs.pop("diffusion_alg", None)
+        kwargs.pop("diffusion_alg_temp", None)
+        progress_every_chunks = int(kwargs.pop("progress_every_chunks", 0) or 0)
         base_seed = kwargs.pop("seed", 42)
         
         final_gens = []
@@ -172,6 +182,11 @@ class ARAdapter(BaseAdapter):
 
             remaining_sequences -= current_batch_size
             chunk_index += 1
+            if progress_every_chunks and chunk_index % progress_every_chunks == 0:
+                print(
+                    f"[progress] AR generation: {len(final_gens)}/{num_return_sequences} "
+                    "sequences complete"
+                )
 
         # Pad to ensure exactly `num_return_sequences` are returned
         if len(final_gens) < num_return_sequences:
@@ -181,7 +196,7 @@ class ARAdapter(BaseAdapter):
     def score_continuations(self, prompts: List[str], continuations: List[str], **kwargs) -> List[Optional[float]]:
         """
         Calculates exact Sequence Negative Log-Likelihood (NLL).
-        [Method Reference: Equation 2 (AR Exact Likelihood)]
+        [Thesis: Background > Sequence Scoring and Study 1]
         """
         return self.ar_score_fn(prompts, continuations)
 
@@ -194,8 +209,10 @@ class LLaDaAdapter(BaseAdapter):
     """
     Adapter for Discrete Text Diffusion Models (LLaDA).
     Executes iterative mask-based bidirectional refinement.
-    [Method Reference: Section 3.1.2 - The LLaDaAdapter]
+    [Thesis: Methodology > Shared Interface and Inference Controls]
     """
+    backend_name = "llada"
+
     def __init__(self, model_name: str, model, tokenizer, diff_mc_nll: Callable):
         self.model_name = model_name
         self.model = model
@@ -208,11 +225,12 @@ class LLaDaAdapter(BaseAdapter):
         Implements chunked micro-batching to prevent OOM errors on consumer GPUs 
         while preserving exact cryptographic reproducibility via chunk-level seeding.
         
-        [Method Reference: Section 3.2.1 - Configuring the Generation Process]
+        [Thesis: Methodology > Shared Interface and Inference Controls]
         """
         final_gens = []
         base_seed = kwargs.get("seed", 42)
         call_kwargs = dict(kwargs)
+        progress_every_chunks = int(call_kwargs.pop("progress_every_chunks", 0) or 0)
         
         remaining_sequences = num_return_sequences
         chunk_index = 0
@@ -259,6 +277,11 @@ class LLaDaAdapter(BaseAdapter):
             # Update counters for the next chunk
             remaining_sequences -= current_batch_size
             chunk_index += 1
+            if progress_every_chunks and chunk_index % progress_every_chunks == 0:
+                print(
+                    f"[progress] LLaDA generation: {len(final_gens)}/{num_return_sequences} "
+                    "sequences complete"
+                )
             
         # Pad to ensure exactly `num_return_sequences` are returned
         if len(final_gens) < num_return_sequences:
@@ -269,6 +292,83 @@ class LLaDaAdapter(BaseAdapter):
     def score_continuations(self, prompts: List[str], continuations: List[str], **kwargs) -> List[Optional[float]]:
         """
         Approximates Sequence Negative Log-Likelihood via Monte Carlo (MC) estimation.
-        [Method Reference: Equation 10 (MC NLL Estimator) & Section 3.3.1]
+        [Thesis: Methodology > Reconstruction-Based Plausibility Scoring]
         """
+        return self.diff_mc_nll(prompts, continuations)
+
+
+# ------------------------------------------------------------------------
+# Discrete Text Diffusion (Dream) Adapter
+# ------------------------------------------------------------------------
+
+class DreamAdapter(BaseAdapter):
+    """Adapter for Dream's official masked-diffusion generation API."""
+
+    backend_name = "dream"
+
+    def __init__(self, model_name: str, model, tokenizer, diff_mc_nll: Callable | None):
+        self.model_name = model_name
+        self.model = model
+        self.tokenizer = tokenizer
+        self.diff_mc_nll = diff_mc_nll
+
+    def generate(
+        self,
+        prompt: str,
+        num_return_sequences: int = 1,
+        batch_size: int = 25,
+        top_p: float = 1.0,
+        top_k: int = 0,
+        temperature: float = 1.0,
+        max_new_tokens: int = 64,
+        stop_at_sentence: bool = True,
+        **kwargs,
+    ) -> List[str]:
+        final_gens: List[str] = []
+        base_seed = kwargs.get("seed", 42)
+        progress_every_chunks = int(kwargs.get("progress_every_chunks", 0) or 0)
+        remaining = num_return_sequences
+        chunk_index = 0
+
+        while remaining > 0:
+            current_batch_size = min(batch_size, remaining)
+            chunk_seed = base_seed + chunk_index
+            torch.manual_seed(chunk_seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(chunk_seed)
+
+            try:
+                raw = run_dream_prompt(
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    prompt_text=prompt,
+                    num_return_sequences=current_batch_size,
+                    top_p=top_p,
+                    top_k=top_k,
+                    temperature=temperature,
+                    gen_length=max_new_tokens,
+                    steps=kwargs.get("steps", max_new_tokens),
+                    alg=kwargs.get("diffusion_alg", "entropy"),
+                    alg_temp=kwargs.get("diffusion_alg_temp", 0.0),
+                )
+            except Exception as exc:
+                print(f"[ERROR] Dream generation failed on chunk {chunk_index}: {exc}")
+                raw = [""] * current_batch_size
+
+            final_gens.extend(_post_process_generation(text, stop_at_sentence) for text in raw)
+            remaining -= current_batch_size
+            chunk_index += 1
+            if progress_every_chunks and chunk_index % progress_every_chunks == 0:
+                print(
+                    f"[progress] Dream generation: {len(final_gens)}/{num_return_sequences} "
+                    "sequences complete"
+                )
+
+        if len(final_gens) < num_return_sequences:
+            final_gens.extend([""] * (num_return_sequences - len(final_gens)))
+        return final_gens[:num_return_sequences]
+
+    def score_continuations(self, prompts: List[str], continuations: List[str], **kwargs):
+        if self.diff_mc_nll is None:
+            raise RuntimeError("This Dream adapter was initialized without a scoring function.")
         return self.diff_mc_nll(prompts, continuations)

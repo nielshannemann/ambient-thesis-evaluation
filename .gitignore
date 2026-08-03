@@ -40,9 +40,11 @@ __pycache__/
 # Logs and Outputs
 # =========================
 /logs/
+/results/october_revision/
 example_dirs/
 /paper/
 /paper_changes_backup/
+/thesis/
 
 # =========================
 # Local / private files

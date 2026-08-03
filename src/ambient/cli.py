@@ -63,6 +63,8 @@ def build_parser() -> argparse.ArgumentParser:
     _add_dataset_commands(top_level)
     _add_diagnostic_commands(top_level)
     _add_robustness_commands(top_level)
+    _add_human_evaluation_commands(top_level)
+    _add_scope_commands(top_level)
 
     return parser
 
@@ -73,6 +75,13 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
 
     run_parser = subparsers.add_parser("run", help="Run the Task-1 reading-ranking benchmark.")
     run_parser.add_argument("--data-path", type=Path, default=DEFAULT_DATA_PATH)
+    run_parser.add_argument("--id-file", type=Path, default=None)
+    run_parser.add_argument(
+        "--max-examples",
+        type=int,
+        default=None,
+        help="Optional cap on selected AMBIENT dataset rows for pilot runs.",
+    )
     run_parser.add_argument("--model-family", choices=MODEL_FAMILY_CHOICES, required=True)
     run_parser.add_argument("--model-name", type=str, required=True)
     run_parser.add_argument("--model-id", type=str, default=None)
@@ -83,9 +92,24 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     run_parser.add_argument("--mc-num", type=str, default="128")
     run_parser.add_argument("--mc-batch-size", type=int, default=16)
     run_parser.add_argument("--cfg-scale", type=float, default=0.0)
+    run_parser.add_argument(
+        "--diffusion-alg",
+        choices=["origin", "maskgit_plus", "topk_margin", "entropy"],
+        default="entropy",
+        help="Dream remasking strategy; ignored by the historical LLaDA backend.",
+    )
+    run_parser.add_argument("--diffusion-alg-temp", type=float, default=0.0)
     run_parser.add_argument("--top-p", type=float, default=1.0)
     run_parser.add_argument("--top-k", type=int, default=0)
     run_parser.add_argument("--temperature", type=float, default=1.0)
+    run_parser.add_argument("--progress-every-chunks", type=int, default=1)
+    run_parser.add_argument("--score-progress-every", type=int, default=20)
+    run_parser.add_argument(
+        "--use-4bit",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Override automatic quantization selection.",
+    )
     run_parser.add_argument("--output-dir", type=Path, default=None)
     _set_handler(run_parser, "ambient.evaluation.run_ambient_experiments:run")
 
@@ -93,6 +117,52 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     metrics_parser.add_argument("results_path", type=Path, help="Path to a Task-1 summary JSONL file.")
     metrics_parser.add_argument("--dedupe", choices=["instance", "row"], default="instance")
     _set_handler(metrics_parser, "ambient.evaluation.task1_compute_results_metrics:run")
+
+    rescore_parser = subparsers.add_parser(
+        "rescore",
+        help="Rescore saved masked-diffusion continuations without regenerating them.",
+    )
+    rescore_parser.add_argument("--run-dir", type=Path, required=True)
+    rescore_parser.add_argument("--model-family", choices=["llada", "dream"], required=True)
+    rescore_parser.add_argument("--model-id", type=str, default=None)
+    rescore_parser.add_argument("--scoring-method", choices=["pll", "mc"], default="pll")
+    rescore_parser.add_argument("--mc-num", type=int, default=256)
+    rescore_parser.add_argument("--batch-size", type=int, default=16)
+    rescore_parser.add_argument("--cfg-scale", type=float, default=0.0)
+    rescore_parser.add_argument("--seed", type=int, default=42)
+    rescore_parser.add_argument("--progress-every", type=int, default=20)
+    rescore_parser.add_argument("--example-dir-name", type=str, default="example_dirs")
+    rescore_parser.add_argument("--max-examples", type=int, default=None)
+    rescore_parser.add_argument("--output-dir", type=Path, default=None)
+    rescore_parser.add_argument("--overwrite", action="store_true")
+    rescore_parser.add_argument(
+        "--use-4bit",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+    )
+    _set_handler(rescore_parser, "ambient.evaluation.task1_rescore:run")
+
+    compare_parser = subparsers.add_parser(
+        "compare-scorers",
+        help="Compare Task-1 item outcomes and margins under two scoring methods.",
+    )
+    compare_parser.add_argument("--reference-summary", type=Path, required=True)
+    compare_parser.add_argument("--alternative-summary", type=Path, required=True)
+    compare_parser.add_argument(
+        "--metric-key",
+        type=str,
+        default="empirical_KL_div_normalized_clean",
+    )
+    compare_parser.add_argument("--dedupe", choices=["instance", "row"], default="instance")
+    compare_parser.add_argument("--bootstrap-reps", type=int, default=5000)
+    compare_parser.add_argument("--seed", type=int, default=42)
+    compare_parser.add_argument(
+        "--output-path",
+        type=Path,
+        default=Path("results/october_revision/task1_scorer_comparison.json"),
+    )
+    compare_parser.add_argument("--details-path", type=Path, default=None)
+    _set_handler(compare_parser, "ambient.evaluation.task1_compare_scorers:run")
 
 
 def _add_task6_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -113,6 +183,13 @@ def _add_task6_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--top-k", type=int, default=0)
     generate_parser.add_argument("--cfg-scale", type=float, default=0.0)
     generate_parser.add_argument("--diffusion-steps", type=int, default=128)
+    generate_parser.add_argument(
+        "--diffusion-alg",
+        choices=["origin", "maskgit_plus", "topk_margin", "entropy"],
+        default="entropy",
+    )
+    generate_parser.add_argument("--diffusion-alg-temp", type=float, default=0.0)
+    generate_parser.add_argument("--progress-every-chunks", type=int, default=1)
     generate_parser.add_argument("--output-path", type=Path, default=None)
     _set_handler(generate_parser, "ambient.generation.task6_disambiguation:run")
 
@@ -165,6 +242,14 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--data-path", type=Path, default=DEFAULT_DATA_PATH)
     generate_parser.add_argument("--prompt-type", choices=["ambiguous", "disambiguated_control"], default="ambiguous")
     generate_parser.add_argument("--max-examples", type=int, default=580)
+    generate_parser.add_argument(
+        "--id-file",
+        type=Path,
+        default=None,
+        help="Optional newline-delimited or JSON-list file of AMBIENT instance IDs.",
+    )
+    generate_parser.add_argument("--sample-size", type=int, default=None)
+    generate_parser.add_argument("--selection-seed", type=int, default=2026)
     generate_parser.add_argument("--num-continuations", type=int, default=10)
     generate_parser.add_argument("--batch-size", type=int, default=25)
     generate_parser.add_argument("--seed", type=int, default=42)
@@ -173,8 +258,27 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--top-k", type=int, default=0)
     generate_parser.add_argument("--cfg-scale", type=float, default=0.0)
     generate_parser.add_argument("--diffusion-steps", type=int, default=128)
+    generate_parser.add_argument(
+        "--diffusion-alg",
+        choices=["origin", "maskgit_plus", "topk_margin", "entropy"],
+        default="entropy",
+    )
+    generate_parser.add_argument("--diffusion-alg-temp", type=float, default=0.0)
+    generate_parser.add_argument("--progress-every-chunks", type=int, default=1)
+    generate_parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from an existing output artifact and checkpoint completed items.",
+    )
+    generate_parser.add_argument("--checkpoint-every", type=int, default=1)
+    generate_parser.add_argument(
+        "--use-4bit",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Override automatic quantization selection.",
+    )
     generate_parser.add_argument("--output-path", type=Path, default=None)
-    _set_handler(generate_parser, "ambient.generation.task3_silhouette_generate:run")
+    _set_handler(generate_parser, "ambient.generation.task3_reading_coverage:run")
 
     evaluate_parser = subparsers.add_parser("evaluate", help="Evaluate Task-3 semantic clusters.")
     evaluate_parser.add_argument("--results-path", type=Path, required=True)
@@ -185,7 +289,19 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     evaluate_parser.add_argument("--skip-nli", action="store_true")
     evaluate_parser.add_argument("--progress-every", type=int, default=25)
     evaluate_parser.add_argument("--output-path", type=Path, default=None)
-    _set_handler(evaluate_parser, "ambient.evaluation.task3_silhouette_evaluate:run")
+    _set_handler(evaluate_parser, "ambient.evaluation.task3_reading_coverage:run")
+
+    subset_parser = subparsers.add_parser(
+        "subset",
+        help="Create a deterministic subset from an existing Task-3 generation artifact.",
+    )
+    subset_parser.add_argument("--results-path", type=Path, required=True)
+    subset_parser.add_argument("--id-file", type=Path, default=None)
+    subset_parser.add_argument("--sample-size", type=int, default=None)
+    subset_parser.add_argument("--selection-seed", type=int, default=2026)
+    subset_parser.add_argument("--output-path", type=Path, required=True)
+    subset_parser.add_argument("--id-output", type=Path, default=None)
+    _set_handler(subset_parser, "ambient.evaluation.task3_subset:run")
 
 
 def _add_task4_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -218,7 +334,12 @@ def _add_task4_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
         "--vne-control-conditions",
         nargs="+",
         default=[],
-        choices=["distractor_rewrite", "random_matched_rewrite"],
+        choices=[
+            "distractor_reading",
+            "random_matched_reading",
+            "distractor_rewrite",
+            "random_matched_rewrite",
+        ],
     )
     evaluate_parser.add_argument("--vne-center-tokens", action="store_true")
     evaluate_parser.add_argument("--skip-vne", action="store_true")
@@ -241,22 +362,35 @@ def _add_task5_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--mc-num", type=int, default=8)
     generate_parser.add_argument("--cfg-scale", type=float, default=0.0)
     generate_parser.add_argument(
+        "--use-4bit",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    generate_parser.add_argument(
         "--condition",
         type=str,
         default="gold_disambiguation",
-        choices=["gold_disambiguation", "distractor_rewrite", "random_matched_rewrite"],
+        choices=[
+            "gold_disambiguation",
+            "distractor_reading",
+            "random_matched_reading",
+            "distractor_rewrite",
+            "random_matched_rewrite",
+        ],
     )
     generate_parser.add_argument("--output-path", type=Path, default=None)
-    _set_handler(generate_parser, "ambient.generation.task5_temporal_semantic_commitment:run")
+    _set_handler(generate_parser, "ambient.generation.task5_sequential_commitment:run")
 
     metrics_parser = subparsers.add_parser("metrics", help="Aggregate Task-5 scalar metrics.")
     metrics_parser.add_argument("--llama-file", type=Path, required=True)
     metrics_parser.add_argument("--llada-file", type=Path, required=True)
+    metrics_parser.add_argument("--ar-label", type=str, default="LLaMA-8B")
+    metrics_parser.add_argument("--diffusion-label", type=str, default="LLaDA-8B")
     metrics_parser.add_argument("--bootstrap-reps", type=int, default=5000)
     metrics_parser.add_argument("--ci-level", type=float, default=95.0)
     metrics_parser.add_argument("--seed", type=int, default=42)
     metrics_parser.add_argument("--output-path", type=Path, default=None)
-    _set_handler(metrics_parser, "ambient.evaluation.task5_compute_decay_metrics:run")
+    _set_handler(metrics_parser, "ambient.evaluation.task5_commitment_metrics:run")
 
 
 def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -287,11 +421,11 @@ def _add_plot_commands(top_level: argparse._SubParsersAction[argparse.ArgumentPa
     task5_parser.add_argument("--llama-random-file", type=Path, default=None)
     task5_parser.add_argument("--llada-distractor-file", type=Path, default=None)
     task5_parser.add_argument("--llada-random-file", type=Path, default=None)
-    task5_parser.add_argument("--band", choices=["std", "sem", "none"], default="std")
+    task5_parser.add_argument("--band", choices=["std", "sem", "ci95", "none"], default="std")
     task5_parser.add_argument("--num-points", type=int, default=101)
     task5_parser.add_argument("--output-dir", type=Path, default=task5_plot_dir())
     task5_parser.add_argument("--paper-graphics-dir", type=Path, default=None)
-    _set_handler(task5_parser, "ambient.visualization.task5_plot_decay:run")
+    _set_handler(task5_parser, "ambient.visualization.task5_commitment_plots:run")
 
 
 def _add_dataset_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -355,6 +489,113 @@ def _add_robustness_commands(top_level: argparse._SubParsersAction[argparse.Argu
     task1_parser.add_argument("--write-replicates", action="store_true")
     task1_parser.add_argument("--output-dir", type=Path, default=Path("results/robustness/task1"))
     _set_handler(task1_parser, "ambient.evaluation.task1_ranking_robustness:run")
+
+
+def _add_human_evaluation_commands(
+    top_level: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    human = top_level.add_parser(
+        "human-eval",
+        help="Prepare and summarize blinded human evaluation of Task-3 continuations.",
+    )
+    subparsers = human.add_subparsers(dest="human_eval_command", required=True)
+
+    prepare_parser = subparsers.add_parser("prepare", help="Create blind annotation sheets and key.")
+    prepare_parser.add_argument(
+        "--model-file",
+        nargs="+",
+        required=True,
+        metavar="LABEL=PATH",
+    )
+    prepare_parser.add_argument("--num-instances", type=int, default=50)
+    prepare_parser.add_argument("--continuations-per-model", type=int, default=2)
+    prepare_parser.add_argument("--num-annotators", type=int, default=2)
+    prepare_parser.add_argument("--id-file", type=Path, default=None)
+    prepare_parser.add_argument("--stratum-label", type=str, default="random")
+    prepare_parser.add_argument("--seed", type=int, default=42)
+    prepare_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("results/october_revision/human_eval/random_sample"),
+    )
+    _set_handler(prepare_parser, "ambient.evaluation.human_evaluation:prepare")
+
+    evaluate_parser = subparsers.add_parser("evaluate", help="Compute agreement and human coverage.")
+    evaluate_parser.add_argument("--annotations", nargs="+", type=Path, required=True)
+    evaluate_parser.add_argument("--key-file", type=Path, required=True)
+    evaluate_parser.add_argument("--nli-labels", type=Path, default=None)
+    evaluate_parser.add_argument("--bootstrap-reps", type=int, default=5000)
+    evaluate_parser.add_argument("--seed", type=int, default=42)
+    evaluate_parser.add_argument(
+        "--output-path",
+        type=Path,
+        default=Path("results/october_revision/human_eval/human_evaluation.json"),
+    )
+    evaluate_parser.add_argument("--consensus-path", type=Path, default=None)
+    _set_handler(evaluate_parser, "ambient.evaluation.human_evaluation:evaluate")
+
+    nli_parser = subparsers.add_parser(
+        "nli-label",
+        help="Apply an NLI judge to the exact blind annotation sample.",
+    )
+    nli_parser.add_argument("--annotation-sheet", type=Path, required=True)
+    nli_parser.add_argument("--nli-model", type=str, default=TASK3_NLI_MODEL_ID)
+    nli_parser.add_argument("--threshold", type=str, default="argmax")
+    nli_parser.add_argument("--batch-size", type=int, default=16)
+    nli_parser.add_argument("--output-path", type=Path, required=True)
+    _set_handler(nli_parser, "ambient.evaluation.human_evaluation:nli_label")
+
+
+def _add_scope_commands(top_level: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    scope = top_level.add_parser(
+        "scope",
+        help="Cross-dataset scope-ambiguity evaluation following Kamath et al. (2024).",
+    )
+    subparsers = scope.add_subparsers(dest="scope_command", required=True)
+    score_parser = subparsers.add_parser("score", help="Compute Experiment-2 alpha scores.")
+    score_parser.add_argument(
+        "--data-path",
+        type=Path,
+        default=Path("external/scope-ambiguity/datasets/exp2b_base_dataset.csv"),
+    )
+    score_parser.add_argument("--human-results", type=Path, default=None)
+    score_parser.add_argument("--model-family", choices=MODEL_FAMILY_CHOICES, required=True)
+    score_parser.add_argument("--model-name", type=str, required=True)
+    score_parser.add_argument("--model-id", type=str, default=None)
+    score_parser.add_argument("--scoring-method", choices=["auto", "exact", "mc", "pll"], default="auto")
+    score_parser.add_argument("--mc-num", type=int, default=256)
+    score_parser.add_argument("--batch-size", type=int, default=16)
+    score_parser.add_argument("--cfg-scale", type=float, default=0.0)
+    score_parser.add_argument("--max-examples", type=int, default=None)
+    score_parser.add_argument("--bootstrap-reps", type=int, default=5000)
+    score_parser.add_argument("--seed", type=int, default=42)
+    score_parser.add_argument("--progress-every", type=int, default=20)
+    score_parser.add_argument(
+        "--use-4bit",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+    )
+    score_parser.add_argument("--output-path", type=Path, required=True)
+    score_parser.add_argument("--csv-path", type=Path, default=None)
+    _set_handler(score_parser, "ambient.evaluation.scope_ambiguity:run")
+
+    summarize_parser = subparsers.add_parser(
+        "summarize",
+        help="Combine completed scope runs into a compact comparison table.",
+    )
+    summarize_parser.add_argument(
+        "--model-result",
+        nargs="+",
+        required=True,
+        metavar="LABEL=PATH",
+    )
+    summarize_parser.add_argument(
+        "--output-path",
+        type=Path,
+        default=Path("results/october_revision/scope/comparison.json"),
+    )
+    summarize_parser.add_argument("--csv-path", type=Path, default=None)
+    _set_handler(summarize_parser, "ambient.evaluation.scope_ambiguity:summarize")
 
 
 def main(argv: list[str] | None = None) -> int | None:

@@ -6,13 +6,17 @@ from pathlib import Path
 DEFAULT_DATA_PATH = Path("data/test_baked.jsonl")
 DEFAULT_MODELS_CACHE_DIR = "./models"
 
-MODEL_FAMILY_CHOICES = ("llama", "llada")
+MODEL_FAMILY_CHOICES = ("llama", "llada", "ar", "dream")
 
 LLAMA_BASE_MODEL_ID = "meta-llama/Meta-Llama-3.1-8B"
 LLADA_BASE_MODEL_ID = "GSAI-ML/LLaDA-8B-Base"
+QWEN_BASE_MODEL_ID = "Qwen/Qwen2.5-7B"
+DREAM_BASE_MODEL_ID = "Dream-org/Dream-v0-Base-7B"
 
 LLAMA_INSTRUCT_MODEL_ID = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 LLADA_INSTRUCT_MODEL_ID = "GSAI-ML/LLaDA-8B-Instruct"
+QWEN_INSTRUCT_MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
+DREAM_INSTRUCT_MODEL_ID = "Dream-org/Dream-v0-Instruct-7B"
 
 TASK6_JUDGE_MODEL_ID = "meta-llama/Meta-Llama-3.1-70B-Instruct"
 TASK6_SECONDARY_JUDGE_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"

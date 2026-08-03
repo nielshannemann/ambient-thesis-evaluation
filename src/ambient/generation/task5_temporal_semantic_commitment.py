@@ -19,8 +19,8 @@ sampling trajectory. The diffusion side is evaluated at fixed mask-ratio
 checkpoints rather than by logging internal denoising states.
 
 Method references:
-- Section 4.1: Standardized Evaluation Framework
-- Section 4.7: Task 5: Temporal Semantic Commitment
+- Methodology: Standardized Evaluation Framework
+- Methodology: Study 5: Sequential Commitment Diagnostic
 """
 
 from __future__ import annotations
@@ -38,15 +38,29 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
+from transformers import set_seed
 
 from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
-from ambient.llada_loader import load_llada_model
+from ambient.modeling import (
+    canonical_backend,
+    default_base_model_id,
+    is_masked_diffusion_family,
+    load_model_bundle,
+    runtime_environment,
+)
 from ambient.paths import task5_output_path
 
 LLADA_MODEL_ID = LLADA_BASE_MODEL_ID
 LLAMA_MODEL_ID = LLAMA_BASE_MODEL_ID
 LLADA_MASK_ID = 126336
+
+
+def model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
+    attention_mask = torch.ones_like(input_ids)
+    try:
+        return model(input_ids=input_ids, attention_mask=attention_mask).logits
+    except TypeError:
+        return model(input_ids).logits
 
 
 def set_global_determinism(seed: int) -> None:
@@ -362,7 +376,7 @@ def compute_exact_ar_nll(model, tokenizer, prefix_str: str, target_str: str) -> 
     prefix_len = len(prefix_ids)
 
     with torch.no_grad():
-        logits = model(full_ids.unsqueeze(0)).logits[0]
+        logits = model_logits(model, full_ids.unsqueeze(0))[0]
 
     shift_logits = logits[prefix_len - 1 : -1, :].contiguous()
     shift_labels = full_ids[prefix_len:].contiguous()
@@ -505,11 +519,11 @@ def compute_diffusion_mc_nll_at_ratio(
             un_batch[0, :prompt_len] = mask_id
             model_in = torch.cat([perturbed_seq, un_batch], dim=0)
 
-            logits = model(model_in).logits
+            logits = model_logits(model, model_in)
             logits_cond, logits_uncond = torch.chunk(logits, 2, dim=0)
             logits = logits_uncond + (cfg_scale + 1.0) * (logits_cond - logits_uncond)
         else:
-            logits = model(perturbed_seq).logits
+            logits = model_logits(model, perturbed_seq)
 
         ce_loss = F.cross_entropy(
             logits.view(-1, logits.size(-1)),
@@ -583,12 +597,19 @@ def diffusion_temporal_decay_track(
 
 
 def run(args) -> int:
-    is_diffusion = args.model_family == "llada"
-    model_id = args.model_id or (LLADA_MODEL_ID if is_diffusion else LLAMA_MODEL_ID)
+    requested_condition = args.condition
+    condition = {
+        "distractor_reading": "distractor_rewrite",
+        "random_matched_reading": "random_matched_rewrite",
+    }.get(requested_condition, requested_condition)
+
+    backend = canonical_backend(args.model_family)
+    is_diffusion = is_masked_diffusion_family(args.model_family)
+    model_id = args.model_id or default_base_model_id(args.model_family)
 
     print(f"=== Starting Task 5: {args.model_family.upper()} ===")
     print(f"[INFO] Using model: {model_id}")
-    print(f"[INFO] Condition: {args.condition}")
+    print(f"[INFO] Condition: {requested_condition}")
 
     set_global_determinism(args.seed)
 
@@ -596,17 +617,21 @@ def run(args) -> int:
         "task": "task5_temporal_semantic_commitment",
         "model_name": args.model_name,
         "model_type": "diffusion" if is_diffusion else "ar",
+        "model_family": args.model_family,
+        "backend": backend,
         "model_id": model_id,
+        "runtime_environment": runtime_environment(),
         "seed": args.seed,
         "max_examples": args.max_examples,
         "max_steps": args.max_steps,
         "mc_num": args.mc_num,
         "cfg_scale": args.cfg_scale,
-        "condition": args.condition,
+        "condition": requested_condition,
+        "internal_condition": condition,
         "target_selection": (
             "entailment_vs_nonentailment_else_deterministic_sorted_pair"
-            if args.condition == "gold_disambiguation"
-            else args.condition
+            if condition == "gold_disambiguation"
+            else requested_condition
         ),
         "diffusion_scoring": "fixed_ratio_masked_token_mc_proxy_aligned_to_task1",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -615,27 +640,22 @@ def run(args) -> int:
     test_instances = load_ambient_opposing_targets(
         args.data_path,
         max_examples=args.max_examples,
-        condition=args.condition,
+        condition=condition,
     )
     print(f"[INFO] Loaded {len(test_instances)} instances for the selected Task-5 condition.")
     if not test_instances:
         return 1
 
     all_trajectories: Dict[str, Any] = {}
+    bundle = load_model_bundle(
+        args.model_family,
+        model_id=model_id,
+        use_4bit=args.use_4bit,
+        verbose=True,
+    )
+    model, tokenizer = bundle.model, bundle.tokenizer
 
     if not is_diffusion:
-        tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir="./models")
-        if getattr(tokenizer, "pad_token", None) is None:
-            tokenizer.pad_token = getattr(tokenizer, "eos_token", None)
-
-        model = AutoModelForCausalLM.from_pretrained(
-            model_id,
-            device_map="auto",
-            torch_dtype=torch.float16,
-            cache_dir="./models",
-        )
-        model.eval()
-
         for inst in tqdm(test_instances, desc="Tracking AR commitment"):
             traj = ar_spatial_decay_track(
                 model,
@@ -648,9 +668,6 @@ def run(args) -> int:
             all_trajectories[str(inst["id"])] = {**inst, "trajectory": traj}
 
     else:
-        model, tokenizer = load_llada_model(hf_model=model_id, use_4bit=False)
-        model.eval()
-
         for inst in tqdm(test_instances, desc="Tracking diffusion commitment"):
             traj = diffusion_temporal_decay_track(
                 model,
@@ -667,7 +684,7 @@ def run(args) -> int:
 
     out = {"metadata": run_meta, "results": all_trajectories}
 
-    out_path = args.output_path or task5_output_path(args.model_name, condition=args.condition)
+    out_path = args.output_path or task5_output_path(args.model_name, condition=requested_condition)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, ensure_ascii=False)

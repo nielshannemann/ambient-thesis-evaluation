@@ -5,14 +5,15 @@ from pathlib import Path
 
 RESULTS_ROOT = Path("results")
 
-TASK4_RESULT_FILENAME = "layerwise_probe_results_with_vne.json"
+# Study 4 reports the combined probe/VNE artifact including control conditions.
+TASK4_RESULT_FILENAME = "layerwise_probe_results_with_vne_controls.json"
 TASK5_PLOT_FILENAME = "temporal_semantic_commitment_comparison.png"
 TASK6_JUDGE_RESULT_FILENAME = "judge_evaluation.json"
 
 
 def task1_run_dir(model_name: str, num_generations: int, model_family: str, diffusion_steps: int) -> Path:
     directory_name = f"{model_name}-n{num_generations}"
-    if model_family == "llada":
+    if model_family in {"llada", "dream"}:
         directory_name += f"-d{diffusion_steps}"
     return RESULTS_ROOT / directory_name
 

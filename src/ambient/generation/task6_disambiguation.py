@@ -15,7 +15,7 @@ Methodological Integration:
 - Features dynamic 4-bit quantization detection and comprehensive metadata 
   serialization for strict experimental reproducibility.
 
-[Method Reference: auxiliary Task 6: Explicit Generative Disambiguation]
+[Thesis: Methodology > Supplementary Study: Explicit Generative Disambiguation]
 =============================================================================
 """
 
@@ -29,11 +29,17 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, set_seed
+from transformers import set_seed
 
 # Custom AmbiEnt modules
-from ambient.llada_loader import load_llada_model
-from ambient.adapters import ARAdapter, LLaDaAdapter
+from ambient.adapters import ARAdapter, DreamAdapter, LLaDaAdapter
+from ambient.modeling import (
+    auto_detect_4bit as shared_auto_detect_4bit,
+    canonical_backend,
+    default_instruct_model_id,
+    is_masked_diffusion_family,
+    load_model_bundle,
+)
 from ambient.constants import LLADA_INSTRUCT_MODEL_ID, LLAMA_INSTRUCT_MODEL_ID
 from ambient.paths import task6_output_path
 
@@ -48,18 +54,7 @@ def auto_detect_4bit(hf_model: str) -> bool:
     Dynamically determines whether 4-bit quantization (NF4) is required 
     based on the available GPU memory (VRAM) and the model scale.
     """
-    if not torch.cuda.is_available():
-        return False
-    
-    vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-    hf_lower = hf_model.lower()
-    
-    if "70b" in hf_lower or "72b" in hf_lower:
-        return vram_gb < 130
-    if "8b" in hf_lower or "7b" in hf_lower or "9b" in hf_lower:
-        return vram_gb < 20
-        
-    return vram_gb < 16
+    return shared_auto_detect_4bit(hf_model)
 
 def load_ambient_data(path: Path, max_examples: int = 50) -> list:
     """
@@ -108,7 +103,7 @@ def build_task6_context_claim(row: dict):
 def clean_generated_interpretations(raw_text: str) -> str:
     """
     Cleans the raw output to strictly extract the enumerated interpretations.
-    [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+    [Thesis: Methodology > Supplementary Study output cleaning]
     """
     for cutoff_string in ["\nuser:", "user:", "\nContext:", "<|", "We don't know"]:
         if cutoff_string in raw_text:
@@ -146,10 +141,11 @@ def run(args) -> int:
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
     
-    is_diffusion = args.model_family == "llada"
+    backend = canonical_backend(args.model_family)
+    is_diffusion = is_masked_diffusion_family(args.model_family)
     # Use user-provided model ID if given, else fall back to the instruct defaults
     if args.model_id is None:
-        model_id = LLADA_MODEL_ID if is_diffusion else LLAMA_MODEL_ID
+        model_id = default_instruct_model_id(args.model_family)
     else:
         model_id = args.model_id
     use_4bit = auto_detect_4bit(model_id)
@@ -168,6 +164,7 @@ def run(args) -> int:
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "task": "task6_explicit_disambiguation",
         "model_type": args.model_family,
+        "backend": backend,
         "model_id": model_id,
         "hyperparameters": {
             "max_examples": args.max_examples,
@@ -192,23 +189,18 @@ def run(args) -> int:
 
     # --- ARCHITECTURE INITIALIZATION & ADAPTER INJECTION ---
     print("[INFO] Initializing architecture and injecting unified adapters...")
-    if is_diffusion:
-        model, tokenizer = load_llada_model(hf_model=model_id, use_4bit=use_4bit, verbose=False)
+    bundle = load_model_bundle(
+        args.model_family,
+        model_id=model_id,
+        use_4bit=use_4bit,
+        verbose=False,
+    )
+    model, tokenizer = bundle.model, bundle.tokenizer
+    if backend == "llada":
         adapter = LLaDaAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
+    elif backend == "dream":
+        adapter = DreamAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
     else:
-        load_kwargs = {"device_map": "auto", "torch_dtype": torch.float16, "cache_dir": "./models"}
-        if use_4bit:
-            load_kwargs["quantization_config"] = BitsAndBytesConfig(
-                load_in_4bit=True, bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True
-            )
-            
-        tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir="./models")
-        if getattr(tokenizer, "pad_token", None) is None:
-            tokenizer.pad_token = getattr(tokenizer, "eos_token", None)
-            
-        model = AutoModelForCausalLM.from_pretrained(model_id, **load_kwargs)
-        model.eval()
         adapter = ARAdapter(model_name=model_id, model=model, tokenizer=tokenizer, ar_score_fn=None)
 
     # --- LATENT SAMPLING LOOP ---
@@ -249,7 +241,10 @@ def run(args) -> int:
             max_new_tokens=160,
             stop_at_sentence=False, 
             seed=current_seed,
-            steps=args.diffusion_steps
+            steps=args.diffusion_steps,
+            diffusion_alg=getattr(args, "diffusion_alg", "entropy"),
+            diffusion_alg_temp=getattr(args, "diffusion_alg_temp", 0.0),
+            progress_every_chunks=getattr(args, "progress_every_chunks", 1),
         )
         
         # Iterate through all generated responses for this premise

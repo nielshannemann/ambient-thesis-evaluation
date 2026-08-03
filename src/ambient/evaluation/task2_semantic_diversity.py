@@ -17,7 +17,7 @@ Metrics Computed:
 3. Lexical Overlap: Calculates the Jaccard-like intersection of words between 
    the prompt and the continuation to penalize repetitive copying.
 
-[Method Ref: Evaluating Generation Quality and Diversity]
+[Thesis: Methodology > Study 2: Generation-Quality Controls]
 =============================================================================
 """
 

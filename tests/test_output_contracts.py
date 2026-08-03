@@ -21,6 +21,8 @@ def load_json(path: Path) -> dict:
 def test_core_paths_match_existing_results() -> None:
     assert task1_run_dir("llama8b", 100, "llama", 64) == Path("results/llama8b-n100")
     assert task1_run_dir("llada8b", 10, "llada", 64) == Path("results/llada8b-n10-d64")
+    assert task1_run_dir("qwen7b", 10, "ar", 64) == Path("results/qwen7b-n10")
+    assert task1_run_dir("dream7b", 10, "dream", 64) == Path("results/dream7b-n10-d64")
     assert task6_output_path("llama8b", 1) == Path("results/task6/llama8b_n1.json")
     assert task6_judge_output_path() == Path("results/task6/judge_evaluation.json")
     assert task4_output_path() == Path(f"results/task4/{TASK4_RESULT_FILENAME}")

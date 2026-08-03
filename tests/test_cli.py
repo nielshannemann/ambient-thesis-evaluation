@@ -12,9 +12,12 @@ def test_help_entrypoints_exit_cleanly() -> None:
         [],
         ["task1", "run"],
         ["task1", "metrics"],
+        ["task1", "rescore"],
+        ["task1", "compare-scorers"],
         ["task2", "evaluate"],
         ["task3", "generate"],
         ["task3", "evaluate"],
+        ["task3", "subset"],
         ["task4", "evaluate"],
         ["task5", "generate"],
         ["task5", "metrics"],
@@ -26,6 +29,11 @@ def test_help_entrypoints_exit_cleanly() -> None:
         ["dataset", "bake-distractors"],
         ["dataset", "disambiguation-similarity"],
         ["diagnostics", "continuation-lengths"],
+        ["human-eval", "prepare"],
+        ["human-eval", "evaluate"],
+        ["human-eval", "nli-label"],
+        ["scope", "score"],
+        ["scope", "summarize"],
     ]
 
     for command in commands:
@@ -53,6 +61,25 @@ def test_task1_run_parser_uses_new_flag_names() -> None:
     assert callable(args.handler)
 
 
+def test_historical_and_extension_model_families_parse() -> None:
+    parser = build_parser()
+    for family in ("llama", "llada", "ar", "dream"):
+        args = parser.parse_args(
+            ["task1", "run", "--model-family", family, "--model-name", f"test-{family}"]
+        )
+        assert args.model_family == family
+
+    dream = parser.parse_args(
+        ["task3", "generate", "--model-family", "dream", "--model-name", "dream7b"]
+    )
+    assert dream.sample_size is None
+    assert dream.selection_seed == 2026
+    assert dream.diffusion_alg == "entropy"
+    assert dream.resume is False
+    assert dream.checkpoint_every == 1
+    assert dream.use_4bit is None
+
+
 def test_task5_and_plot_commands_use_llama_llada_file_flags() -> None:
     parser = build_parser()
 
@@ -69,6 +96,8 @@ def test_task5_and_plot_commands_use_llama_llada_file_flags() -> None:
     assert metrics_args.llama_file == Path("results/task5/llama.json")
     assert metrics_args.llada_file == Path("results/task5/llada.json")
     assert metrics_args.output_path is None
+    assert metrics_args.ar_label == "LLaMA-8B"
+    assert metrics_args.diffusion_label == "LLaDA-8B"
 
     plot_args = parser.parse_args(["plots", "task5"])
     assert plot_args.llama_file is None

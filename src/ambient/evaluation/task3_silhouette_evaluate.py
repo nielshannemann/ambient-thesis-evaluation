@@ -10,14 +10,14 @@ retention of the tested architectures:
 
 1. Mean Cosine Distance (MCD): Measures raw intra-cluster dispersion.
 2. Silhouette Score: Measures the density and separation of semantic clusters.
-3. Target Coverage (Cosine): Embeddings-based minority intent preservation.
-4. Target Coverage (NLI): Strict entailment-based minority intent preservation.
+3. Target Coverage (Cosine): Embedding-based least-covered reading support.
+4. Target Coverage (NLI): Entailment-based least-covered reading support.
 
 Methodological Integration:
 Extracts the exact random seed from the generation metadata to guarantee 
 100% deterministic k-means clustering and evaluation parity.
 
-[Method Reference: Section 3.4.2 - Semantic Clustering Evaluation]
+[Thesis: Methodology > Study 3 Metrics and Evaluation]
 =============================================================================
 """
 

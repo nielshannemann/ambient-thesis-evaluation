@@ -5,8 +5,8 @@ UPSTREAM CODE ACKNOWLEDGEMENT & ADAPTATION
 =============================================================================
 This script is directly adapted from the official LLaDA repository:
 Repository: https://github.com/ML-GSAI/LLaDA
-Paper: "LLaDA: A Simple, Scalable and General Purpose Text Diffusion Model" 
-(Nie et al., 2024).
+Paper: "Large Language Diffusion Models"
+(Nie et al., 2025).
 
 Adaptations for this project:
 - Adapted for AMBIENT dataset scoring (handling prompt + continuation splits).
@@ -18,14 +18,42 @@ Adaptations for this project:
 
 import math
 import hashlib
+import time
 import torch
 import torch.nn.functional as F
+
+
+def get_model_device(model) -> torch.device:
+    """Return the device that receives token ids for a loaded model."""
+    try:
+        return model.get_input_embeddings().weight.device
+    except Exception:
+        return next(model.parameters()).device
+
+
+def get_mask_id(model, tokenizer) -> int:
+    """Resolve the model-specific mask token and reject silent fallbacks."""
+    mask_id = getattr(model.config, "mask_token_id", None)
+    if mask_id is None:
+        mask_id = getattr(tokenizer, "mask_token_id", None)
+    if mask_id is None:
+        raise ValueError("Masked scoring requires a model or tokenizer mask_token_id.")
+    return int(mask_id)
+
+
+def _model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
+    """Call standard and remote-code model forwards through one interface."""
+    attention_mask = torch.ones_like(input_ids)
+    try:
+        return model(input_ids=input_ids, attention_mask=attention_mask).logits
+    except TypeError:
+        return model(input_ids).logits
 
 def forward_process(batch, prompt_index, mask_id, rng=None):
     """
     Creates the corrupted sequence \tilde{X}^{(m)} for the diffusion process.
     
-    [Method Ref: Section 2.3.1 - Variance Reduction via Stratified Sampling]
+    [Thesis: Methodology > Reconstruction-Based Plausibility Scoring]
     Utilizes stratified sampling (via torch.linspace) across the batch dimension 
     to evenly distribute masking ratios. This significantly reduces the variance 
     of the Monte Carlo estimator compared to independent uniform sampling.
@@ -60,7 +88,7 @@ def forward_process(batch, prompt_index, mask_id, rng=None):
 def get_logits(model, batch, prompt_index, cfg_scale, mask_id):
     """
     Computes model logits, optionally applying Classifier-Free Guidance (CFG).
-    [Method Ref: Equation 8 - Classifier-Free Guidance for Diffusion]
+    [Thesis: Methodology > Shared Interface and Inference Controls]
     """
     if cfg_scale > 0.:
         assert len(prompt_index) == batch.shape[1]
@@ -71,7 +99,7 @@ def get_logits(model, batch, prompt_index, cfg_scale, mask_id):
         un_batch[prompt_index_expanded] = mask_id
         batch = torch.cat([batch, un_batch])
 
-    logits = model(batch).logits
+    logits = _model_logits(model, batch)
 
     if cfg_scale > 0.:
         # Extrapolate between conditional and unconditional logits
@@ -81,13 +109,24 @@ def get_logits(model, batch, prompt_index, cfg_scale, mask_id):
     return logits
 
 @torch.no_grad()
-def get_log_likelihood(model, tokenizer, prompts, continuations, mc_nums=[128], batch_size=16, cfg_scale=0.0, seed=42):
+def get_log_likelihood(
+    model,
+    tokenizer,
+    prompts,
+    continuations,
+    mc_nums=(128,),
+    batch_size=16,
+    cfg_scale=0.0,
+    seed=42,
+    progress_every=0,
+    progress_label="MC reconstruction scoring",
+):
     """
     Computes MC NLL for multiple mc_num levels simultaneously.
     Returns a list of lists: [ [scores_for_mc_1], [scores_for_mc_2], ... ]
     """
-    mask_id = getattr(model.config, "mask_token_id", getattr(tokenizer, "mask_token_id", 126336))
-    device = next(model.parameters()).device
+    mask_id = get_mask_id(model, tokenizer)
+    device = get_model_device(model)
     
     # Sort mc_nums to ensure we can collect intermediate results
     sorted_mc = sorted(list(set(mc_nums)))
@@ -96,9 +135,13 @@ def get_log_likelihood(model, tokenizer, prompts, continuations, mc_nums=[128], 
     # Initialize result storage for each mc_level
     results_per_level = {m: [] for m in sorted_mc}
 
-    for prompt_str, cont_str in zip(prompts, continuations):
+    started = time.time()
+    total_pairs = min(len(prompts), len(continuations))
+    for pair_index, (prompt_str, cont_str) in enumerate(zip(prompts, continuations), start=1):
         if not cont_str.strip():
             for m in sorted_mc: results_per_level[m].append(None)
+            if progress_every and pair_index % progress_every == 0:
+                print(f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs")
             continue
 
         # Deterministic seeding (Hash-based)
@@ -153,4 +196,88 @@ def get_log_likelihood(model, tokenizer, prompts, continuations, mc_nums=[128], 
                     results_per_level[sorted_mc[mc_idx]].append(total_loss_running / samples_processed)
                     mc_idx += 1
 
+        if progress_every and (pair_index % progress_every == 0 or pair_index == total_pairs):
+            elapsed = time.time() - started
+            rate = pair_index / elapsed if elapsed > 0 else 0.0
+            print(
+                f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs "
+                f"({rate:.2f} pairs/s, {elapsed / 60:.1f} min)"
+            )
+
     return [results_per_level[m] for m in sorted_mc]
+
+
+@torch.no_grad()
+def get_pseudo_log_likelihood(
+    model,
+    tokenizer,
+    prompts,
+    continuations,
+    batch_size: int = 16,
+    cfg_scale: float = 0.0,
+    progress_every: int = 0,
+    progress_label: str = "PLL scoring",
+):
+    """Compute deterministic continuation PLL by masking one token at a time.
+
+    For every continuation token, the function masks only that token, evaluates
+    its reconstruction cross-entropy, and sums these losses over the
+    continuation. Prompt tokens remain visible. The resulting total is a
+    pseudo-NLL compatibility score, not a calibrated sequence likelihood.
+    """
+    if batch_size < 1:
+        raise ValueError("batch_size must be at least 1")
+
+    mask_id = get_mask_id(model, tokenizer)
+    device = get_model_device(model)
+    results = []
+
+    started = time.time()
+    total_pairs = min(len(prompts), len(continuations))
+    for pair_index, (prompt_str, cont_str) in enumerate(zip(prompts, continuations), start=1):
+        if not str(cont_str).strip():
+            results.append(None)
+            if progress_every and pair_index % progress_every == 0:
+                print(f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs")
+            continue
+
+        p_ids = torch.tensor(
+            tokenizer(prompt_str, add_special_tokens=True)["input_ids"],
+            dtype=torch.long,
+            device=device,
+        )
+        c_ids = torch.tensor(
+            tokenizer(cont_str, add_special_tokens=False)["input_ids"],
+            dtype=torch.long,
+            device=device,
+        )
+        if c_ids.numel() == 0:
+            results.append(None)
+            continue
+
+        seq = torch.cat([p_ids, c_ids])
+        prompt_index = torch.arange(seq.numel(), device=device) < p_ids.numel()
+        continuation_positions = torch.arange(p_ids.numel(), seq.numel(), device=device)
+        total_loss = 0.0
+
+        for start in range(0, continuation_positions.numel(), batch_size):
+            positions = continuation_positions[start : start + batch_size]
+            batch = seq.unsqueeze(0).repeat(positions.numel(), 1)
+            row_indices = torch.arange(positions.numel(), device=device)
+            targets = batch[row_indices, positions].clone()
+            batch[row_indices, positions] = mask_id
+
+            logits = get_logits(model, batch, prompt_index, cfg_scale, mask_id)
+            token_logits = logits[row_indices, positions, :]
+            total_loss += float(F.cross_entropy(token_logits, targets, reduction="sum").item())
+
+        results.append(total_loss)
+        if progress_every and (pair_index % progress_every == 0 or pair_index == total_pairs):
+            elapsed = time.time() - started
+            rate = pair_index / elapsed if elapsed > 0 else 0.0
+            print(
+                f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs "
+                f"({rate:.2f} pairs/s, {elapsed / 60:.1f} min)"
+            )
+
+    return results

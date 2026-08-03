@@ -118,3 +118,13 @@ ambient --help
 
 If you are running directly from the repository without installation, set
 `PYTHONPATH=src` before calling `python -m ambient.cli`.
+
+## October revision experiments
+
+The model- and dataset-extension code lives on the
+`paper-october-experiments` branch. Historical `llama` and `llada` commands are
+unchanged; additive `ar` and `dream` backends support the Qwen2.5/Dream pair.
+The complete staged protocol, workstation commands, output locations, and
+claim-level decision rules are documented in
+[`docs/october_experiments.md`](docs/october_experiments.md). Extension outputs
+are written below the ignored `results/october_revision/` directory.

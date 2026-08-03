@@ -6,8 +6,8 @@ UPSTREAM CODE ACKNOWLEDGEMENT & ADAPTATION
 =============================================================================
 This script is adapted from the official LLaDA repository:
 Repository: https://github.com/ML-GSAI/LLaDA
-Paper: "LLaDA: A Simple, Scalable and General Purpose Text Diffusion Model" 
-(Nie et al., 2024).
+Paper: "Large Language Diffusion Models"
+(Nie et al., 2025).
 
 Adaptations for this project:
 - Restructured for memory-friendly iterative unmasking.
@@ -24,15 +24,15 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# [Method Reference: Section 3.2.2 - Output Sanitization]
+# [Thesis: Methodology > Output Sanitization and Artifact Filtering]
 from ambient.utils import clean_continuation_text, _ensure_tokenizer_has_pad
 
 # --- Configuration & Hyperparameters ---
-# [Method Reference: Section 3.1.1 - Initialization & Quantization]
+# [Thesis: Implementation and Reproducibility > Execution Environment]
 HF_MODEL = os.environ.get("AMBIENT_HF_MODEL", "GSAI-ML/LLaDA-8B-Base")
 USE_4BIT = False
 
-# [Method Reference: Section 3.2.1 - Configuring the Generation Process]
+# [Thesis: Methodology > Shared Interface and Inference Controls]
 DEFAULT_STEPS = 128
 DEFAULT_GEN_LENGTH = 64
 DEFAULT_BLOCK_LENGTH = 16
@@ -58,7 +58,7 @@ def get_embedding_device(model) -> torch.device:
 def load_llada_model(hf_model: str = HF_MODEL, use_4bit: bool = USE_4BIT, verbose: bool = True):
     """
     Loads the LLaDA architecture.
-    [Method Reference: Section 3.1.1 - Initialization]
+    [Thesis: Implementation and Reproducibility > Execution Environment]
     """
     global tokenizer
     
@@ -94,7 +94,7 @@ def load_llada_model(hf_model: str = HF_MODEL, use_4bit: bool = USE_4BIT, verbos
 def _apply_top_k_top_p(probs_flat: torch.Tensor, top_k: int = 0, top_p: float = 1.0) -> torch.Tensor:
     """
     Applies Top-K and Nucleus (Top-p) truncation to the probability distribution.
-    [Method Reference: Section 3.2.1 - Top-p / Top-k Sampling]
+    [Thesis: Methodology > Shared Interface and Inference Controls]
     """
     if probs_flat.ndim != 2 or (top_k <= 0 and top_p >= 1.0):
         return probs_flat
@@ -133,7 +133,7 @@ def decode_suffix_from_raw_tensor(tokenizer, raw_tensor: torch.LongTensor, promp
     """
     Extracts the newly generated tokens for an entire batch and strictly removes 
     LLaDA chat artifacts.
-    [Method Reference: Section 3.2.2 - Output Sanitization and Artifact Filtering]
+    [Thesis: Methodology > Output Sanitization and Artifact Filtering]
     """
     # Slice off the prompt and convert the batch to a list of lists
     suffix_ids_batch = raw_tensor[:, prompt_len:].cpu().tolist()
@@ -169,7 +169,7 @@ def generate_memory_friendly_diffusion(
     Iteratively unmasks tokens in blocks over T timesteps.
     Supports parallel batch processing (B > 1) natively.
     
-    [Method Reference: Section 1.2.2 - Diffusion Language Modeling (LLaDA)]
+    [Thesis: Background > Diffusion-Based Language Modeling]
     """
     device = get_embedding_device(model)
     mask_id = getattr(model.config, "mask_token_id", getattr(tokenizer, "mask_token_id", 126336))
@@ -267,7 +267,7 @@ def run_llada_prompt(model, tokenizer, prompt_text: str, num_return_sequences: i
     """
     Entry point for the LLaDaAdapter.
     Expands the input prompt by `num_return_sequences` to enable parallel diffusion batching.
-    [Method Reference: Section 3.1.2 - The LLaDaAdapter]
+    [Thesis: Methodology > Shared Interface and Inference Controls]
     """
     enc = tokenizer(prompt_text, return_tensors="pt", add_special_tokens=True)
     

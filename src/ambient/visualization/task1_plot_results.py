@@ -603,31 +603,40 @@ def plot_paper_task1_task2_tradeoff(
         print("[WARN] Skipping paper tradeoff figure because no merged Task-1/Task-2 rows were found.")
         return
 
-    fig, ax = plt.subplots(figsize=(3.45, 2.65))
+    fig, ax = plt.subplots(figsize=(5.4, 4.0))
 
     xs = merged[task2_metric].astype(float).tolist()
     ys = merged[task1_metric].astype(float).tolist()
     steps = merged["diffusion_steps"].astype(int).tolist()
 
-    ax.plot(xs, ys, color="#2c7fb8", linewidth=1.8, alpha=0.85)
+    ax.plot(xs, ys, color="#ff7f0e", linewidth=1.8, alpha=0.85)
     ax.scatter(
         xs,
         ys,
-        color="#2c7fb8",
         edgecolors="white",
         linewidth=0.9,
         s=52,
         zorder=3,
-        label=f"LLaDA (K={mc})",
+        color="#ff7f0e",
+        label=f"LLaDA ($K={mc}$)",
     )
 
+    label_offsets = {
+        2: (7, 8),
+        4: (7, 8),
+        8: (7, -16),
+        16: (7, 5),
+        32: (7, 5),
+        64: (7, 7),
+        128: (7, 7),
+    }
     for x_val, y_val, step in zip(xs, ys, steps):
         ax.annotate(
-            f"T={step}",
+            f"$T={step}$",
             xy=(x_val, y_val),
-            xytext=(5, 5),
+            xytext=label_offsets.get(step, (6, 5)),
             textcoords="offset points",
-            fontsize=7.5,
+            fontsize=9,
         )
 
     baseline_subset = task1_baseline_df[task1_baseline_df["section"] == section]
@@ -638,7 +647,7 @@ def plot_paper_task1_task2_tradeoff(
         task2_metric in task2_baseline_df.columns
     ):
         markers = ["*", "X", "P", "D"]
-        colors = ["#f28e2b", "#d62728", "#9467bd", "#8c564b"]
+        colors = ["#1f77b4", "#d62728", "#9467bd", "#8c564b"]
         for idx, (_, baseline_row) in enumerate(baseline_subset.iterrows()):
             model_name = str(baseline_row["model"])
             task2_rows = task2_baseline_df[task2_baseline_df["model"] == model_name]
@@ -660,19 +669,12 @@ def plot_paper_task1_task2_tradeoff(
                 zorder=4,
                 label=label,
             )
-            ax.annotate(
-                label,
-                xy=(baseline_x, baseline_y),
-                xytext=(8, -14 if idx == 0 else 7),
-                textcoords="offset points",
-                fontsize=7.5,
-            )
-
     maybe_set_log_scale(ax, task2_metric, axis="x")
-    ax.set_xlabel("Task 2 median PPL (2-scorer mean)", fontsize=8.5)
-    ax.set_ylabel("Task 1 rank accuracy", fontsize=8.5)
-    ax.tick_params(axis="both", labelsize=7.5)
-    ax.legend(frameon=True, loc="best", fontsize=7.5)
+    ax.margins(x=0.08, y=0.06)
+    ax.set_xlabel("Study 2 median external-model perplexity\n(mean across two scorers)", fontsize=10)
+    ax.set_ylabel("Study 1 strict reading-ranking accuracy", fontsize=10)
+    ax.tick_params(axis="both", labelsize=9)
+    ax.legend(frameon=True, loc="best", fontsize=9)
     fig.tight_layout()
 
     out_path = out_dir / f"task1_task2_tradeoff__{section}__mc{mc}.png"

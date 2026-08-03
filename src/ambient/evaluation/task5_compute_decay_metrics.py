@@ -275,15 +275,24 @@ def _format_metric_line(key: str, value: float, ci: Dict[str, float], ci_level: 
     )
 
 
-def _format_delta_line(key: str, value: float, ci: Dict[str, float], ci_level: float) -> str:
+def _format_named_delta_line(
+    key: str,
+    value: float,
+    ci: Dict[str, float],
+    ci_level: float,
+    difference_label: str,
+) -> str:
+    """Format generic pairwise differences without architecture-specific labels."""
     if "Rate" in key:
         return (
-            f"  Î” {key} (LLaDA - LLaMA): {value * 100:+.2f} pp "
-            f"[{ci_level:.0f}% paired bootstrap CI: {ci['lower'] * 100:+.2f}, {ci['upper'] * 100:+.2f} pp]"
+            f"  Delta {key} ({difference_label}): {value * 100:+.2f} pp "
+            f"[{ci_level:.0f}% paired bootstrap CI: "
+            f"{ci['lower'] * 100:+.2f}, {ci['upper'] * 100:+.2f} pp]"
         )
     return (
-        f"  Î” {key} (LLaDA - LLaMA): {value:+.4f} "
-        f"[{ci_level:.0f}% paired bootstrap CI: {ci['lower']:+.4f}, {ci['upper']:+.4f}]"
+        f"  Delta {key} ({difference_label}): {value:+.4f} "
+        f"[{ci_level:.0f}% paired bootstrap CI: {ci['lower']:+.4f}, "
+        f"{ci['upper']:+.4f}]"
     )
 
 
@@ -306,9 +315,12 @@ def run(args) -> int:
 
     results_cache: Dict[str, Dict[str, Any]] = {}
 
+    ar_display_name = f"Autoregressive ({args.ar_label})"
+    diffusion_display_name = f"Masked diffusion ({args.diffusion_label})"
+    difference_label = f"{args.diffusion_label} - {args.ar_label}"
     for short_name, display_name, filepath in [
-        ("llama", "Autoregressive (LLaMA-8B)", args.llama_file),
-        ("llada", "Discrete Diffusion (LLaDA-8B)", args.llada_file),
+        ("ar", ar_display_name, args.llama_file),
+        ("diffusion", diffusion_display_name, args.llada_file),
     ]:
         metrics, cis, valid_count, metrics_map = compute_metrics(
             filepath=filepath,
@@ -340,8 +352,8 @@ def run(args) -> int:
         }
 
     delta_metrics, delta_cis, paired_n = paired_bootstrap_differences(
-        ar_metrics_map=results_cache["llama"]["metrics_map"],
-        diff_metrics_map=results_cache["llada"]["metrics_map"],
+        ar_metrics_map=results_cache["ar"]["metrics_map"],
+        diff_metrics_map=results_cache["diffusion"]["metrics_map"],
         n_bootstrap=args.bootstrap_reps,
         ci_level=args.ci_level,
         seed=args.seed,
@@ -350,10 +362,18 @@ def run(args) -> int:
     print("\n>>> Paired model differences")
     print(f"  Shared trajectories compared: {paired_n}")
     for key in METRIC_ORDER:
-        print(_format_delta_line(key, delta_metrics[key], delta_cis[key], args.ci_level))
+        print(
+            _format_named_delta_line(
+                key,
+                delta_metrics[key],
+                delta_cis[key],
+                args.ci_level,
+                difference_label,
+            )
+        )
 
     output_payload["paired_differences"] = {
-        "definition": "LLaDA - LLaMA",
+        "definition": difference_label,
         "shared_trajectories": paired_n,
         "metrics": delta_metrics,
         "confidence_intervals": delta_cis,

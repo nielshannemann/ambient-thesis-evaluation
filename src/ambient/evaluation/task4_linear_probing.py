@@ -1172,6 +1172,13 @@ def evaluate_probe_dataset(
 
 
 def run(args) -> int:
+    args.vne_control_conditions = [
+        {
+            "distractor_reading": "distractor_rewrite",
+            "random_matched_reading": "random_matched_rewrite",
+        }.get(condition, condition)
+        for condition in args.vne_control_conditions
+    ]
     llama_model = args.llama_model_id
     llada_model = args.llada_model_id
 

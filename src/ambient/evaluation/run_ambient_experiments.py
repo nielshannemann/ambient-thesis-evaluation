@@ -14,7 +14,7 @@ Key architectural features for this project:
 - Batched Exact NLL (for AR) & Batched MC NLL (for Diffusion).
 - Strict Determinism for reproducible Ablation Studies.
 
-[Method Reference: Section 3.1.1 - Overview of the Experimental Pipeline]
+[Thesis: Methodology > Standardized Evaluation Framework]
 =============================================================================
 """
 
@@ -30,13 +30,18 @@ from typing import List
 import pandas as pd
 import torch
 import numpy as np
-from transformers import AutoModelForCausalLM, AutoTokenizer
-
-# [Method Reference: Section 3.1.2 - The Adapter Framework]
-from ambient.adapters import LLaDaAdapter, ARAdapter, register_adapter
+# [Thesis: Methodology > Shared Interface and Inference Controls]
+from ambient.adapters import ARAdapter, DreamAdapter, LLaDaAdapter, register_adapter
 from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
-from ambient.llada_loader import load_llada_model
 from ambient.evaluation.continuation_evaluation_adapted import continuation_evaluation
+from ambient.modeling import (
+    auto_detect_4bit as shared_auto_detect_4bit,
+    canonical_backend,
+    default_base_model_id,
+    is_masked_diffusion_family,
+    load_model_bundle,
+    runtime_environment,
+)
 from ambient.paths import task1_run_dir
 from ambient.utils import write_json_atomic
 
@@ -46,10 +51,23 @@ from ambient.utils import write_json_atomic
 LLADA_MODEL_ID = LLADA_BASE_MODEL_ID
 LLAMA_MODEL_ID = LLAMA_BASE_MODEL_ID
 
+
+def load_requested_ids(path: Path | None) -> set[str] | None:
+    if path is None:
+        return None
+    raw = path.read_text(encoding="utf-8").strip()
+    if raw.startswith("["):
+        return {str(value) for value in json.loads(raw)}
+    return {
+        line.strip()
+        for line in raw.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
 def set_seed(seed_val: int):
     """
     Enforces strict reproducibility across CPU, GPU, and NumPy runtimes.
-    [Method Reference: Section 3.3.2 - Experimental Setup and Reproducibility]
+    [Thesis: Implementation and Reproducibility > Reproducibility Boundaries]
     """
     os.environ['PYTHONHASHSEED'] = str(seed_val)
     random.seed(seed_val)
@@ -83,16 +101,26 @@ def fix_tokenizer_pad_token(tokenizer):
         pass
     return tokenizer
 
-def batched_exact_nll_score(model, tokenizer, prompts: List[str], continuations: List[str], batch_size: int = 8) -> List[float]:
+def batched_exact_nll_score(
+    model,
+    tokenizer,
+    prompts: List[str],
+    continuations: List[str],
+    batch_size: int = 8,
+    progress_every: int = 0,
+    progress_label: str = "AR exact-NLL scoring",
+) -> List[float]:
     """
     Computes the exact Sequence Negative Log-Likelihood for Autoregressive models.
     Utilizes left-aligned manual padding to allow for high-throughput batched inference.
     
-    [Method Reference: Equation 2 (AR Exact Likelihood)]
+    [Thesis: Background > Sequence Scoring and Study 1]
     """
     model.eval()
     results = []
     tokenizer = fix_tokenizer_pad_token(tokenizer)
+    started = time.time()
+    total_pairs = min(len(prompts), len(continuations))
 
     with torch.no_grad():
         for i in range(0, len(prompts), batch_size):
@@ -180,33 +208,30 @@ def batched_exact_nll_score(model, tokenizer, prompts: List[str], continuations:
                 except Exception:
                     results.append(None)
 
+            processed = min(i + len(batch_prompts), total_pairs)
+            if progress_every and (processed % progress_every < len(batch_prompts) or processed == total_pairs):
+                elapsed = time.time() - started
+                rate = processed / elapsed if elapsed > 0 else 0.0
+                print(
+                    f"[progress] {progress_label}: {processed}/{total_pairs} pairs "
+                    f"({rate:.2f} pairs/s, {elapsed / 60:.1f} min)"
+                )
+
     return results
 
 def auto_detect_4bit(model_id: str) -> bool:
     """
     Dynamically decides whether 4-bit quantization is required based on available VRAM.
-    [Method Reference: Section 3.1.1 - 4-bit Quantization via BitsAndBytes]
+    [Thesis: Implementation and Reproducibility > Execution Environment]
     """
-    if not torch.cuda.is_available():
-        return False
-    
-    vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-    model_id_lower = model_id.lower()
-    
-    # Large Models (e.g., Llama-70B)
-    if "70b" in model_id_lower or "65b" in model_id_lower or "72b" in model_id_lower:
-        return vram_gb < 130
-    # Medium Models (e.g., LLaDA-8B, Llama-8B)
-    if "8b" in model_id_lower or "7b" in model_id_lower or "9b" in model_id_lower:
-        return vram_gb < 20
-        
-    return vram_gb < 16
+    return shared_auto_detect_4bit(model_id)
 
 def run(args) -> int:
     data_path = args.data_path
     model_name = args.model_name
     model_id = args.model_id
-    model_type = "diffusion" if args.model_family == "llada" else "ar"
+    backend = canonical_backend(args.model_family)
+    model_type = "diffusion" if is_masked_diffusion_family(args.model_family) else "ar"
     num_generations = args.num_generations
     gen_batch_size = args.batch_size
     diffusion_steps = args.diffusion_steps
@@ -221,10 +246,7 @@ def run(args) -> int:
     is_diffusion = model_type == "diffusion"
     # Use user-provided model ID if given, else fall back to the instruct defaults
     if model_id is None:
-        if is_diffusion:
-            model_id = LLADA_MODEL_ID
-        else:
-            model_id = LLAMA_MODEL_ID
+        model_id = default_base_model_id(args.model_family)
 
     print(f"=== Starting AMBIENT Pipeline ({model_type.upper()}) ===")
     set_seed(seed)
@@ -266,7 +288,9 @@ def run(args) -> int:
             "diffusion_steps": diffusion_steps,
             "mc_nums": mc_list,
             "mc_batch_size": mc_batch_size,
-            "cfg_scale": cfg_scale
+            "cfg_scale": cfg_scale,
+            "diffusion_alg": getattr(args, "diffusion_alg", "entropy"),
+            "diffusion_alg_temp": getattr(args, "diffusion_alg_temp", 0.0),
         })
 
     run_meta = {
@@ -274,17 +298,44 @@ def run(args) -> int:
         "model_name": model_name,
         "model_id": model_id,
         "model_type": model_type,
+        "model_family": args.model_family,
+        "backend": backend,
+        "runtime_environment": runtime_environment(),
+        "data_selection": {
+            "id_file": str(args.id_file) if args.id_file else None,
+            "max_examples": args.max_examples,
+        },
         "hyperparameters": hyperparams,
         "status": "running"
     }
     write_json_atomic(meta_path, run_meta)
 
-    use_4bit = auto_detect_4bit(model_id)
-    print(f"[INFO] Loading {model_id} (Auto 4-bit: {use_4bit}) ONCE for Generate & Score architecture...")
+    test_df = pd.read_json(data_path, lines=True)
+    requested_ids = load_requested_ids(args.id_file)
+    if requested_ids is not None:
+        available_ids = test_df["id"].astype(str)
+        test_df = test_df[available_ids.isin(requested_ids)]
+        found_ids = set(test_df["id"].astype(str))
+        missing_ids = requested_ids - found_ids
+        if missing_ids:
+            raise ValueError(f"ID file contains {len(missing_ids)} IDs absent from {data_path}.")
+    if args.max_examples is not None:
+        test_df = test_df.head(args.max_examples)
+    print(f"[INFO] Task-1 data selection contains {len(test_df)} dataset rows.")
+
+    use_4bit = auto_detect_4bit(model_id) if args.use_4bit is None else args.use_4bit
+    print(f"[INFO] Loading {model_id} (4-bit: {use_4bit}) ONCE for generation and scoring...")
 
     # 2. MODEL INITIALIZATION & ADAPTER INJECTION
+    bundle = load_model_bundle(
+        model_family=args.model_family,
+        model_id=model_id,
+        use_4bit=use_4bit,
+        verbose=True,
+    )
+    model, tokenizer = bundle.model, bundle.tokenizer
+
     if model_type == "diffusion":
-        model, tokenizer = load_llada_model(hf_model=model_id, use_4bit=use_4bit)
         from ambient.evaluation.get_log_likelihood import get_log_likelihood
         
         def diff_score_wrapper(prompts, continuations, mc_nums=None):
@@ -299,27 +350,32 @@ def run(args) -> int:
                 mc_nums=mc_nums,
                 batch_size=mc_batch_size,
                 cfg_scale=cfg_scale,
-                seed=seed
+                seed=seed,
+                progress_every=getattr(args, "score_progress_every", 20),
+                progress_label="Task-1 diffusion scoring",
             )
             
-        adapter = LLaDaAdapter(model_name=model_name, model=model, tokenizer=tokenizer, diff_mc_nll=diff_score_wrapper)
+        adapter_class = LLaDaAdapter if backend == "llada" else DreamAdapter
+        adapter = adapter_class(
+            model_name=model_name,
+            model=model,
+            tokenizer=tokenizer,
+            diff_mc_nll=diff_score_wrapper,
+        )
         
     elif model_type == "ar":
-        load_kwargs = {"device_map": "auto", "torch_dtype": torch.float16, "cache_dir": "./models"}
-        if use_4bit:
-            from transformers import BitsAndBytesConfig
-            load_kwargs["quantization_config"] = BitsAndBytesConfig(
-                load_in_4bit=True, bnb_4bit_use_double_quant=True,
-                bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.float16
-            )
-        
-        model = AutoModelForCausalLM.from_pretrained(model_id, **load_kwargs)
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
         tokenizer = fix_tokenizer_pad_token(tokenizer)
 
         # Utilize the high-throughput batched AR scorer
         def ar_score_wrapper(prompts, continuations, mc_nums=None):
-            scores = batched_exact_nll_score(model, tokenizer, prompts, continuations, batch_size=mc_batch_size)
+            scores = batched_exact_nll_score(
+                model,
+                tokenizer,
+                prompts,
+                continuations,
+                batch_size=mc_batch_size,
+                progress_every=getattr(args, "score_progress_every", 20),
+            )
             # Wrap in an outer list to strictly mirror the Multi-Level "mc_nums" output structure of Diffusion
             return [scores]
 
@@ -331,8 +387,7 @@ def run(args) -> int:
     print(f"[INFO] Successfully registered and injected {adapter.__class__.__name__}.")
 
     # 3. RUN EVALUATION PIPELINE
-    test_df = pd.read_json(data_path, lines=True)
-
+    exit_code = 0
     try:
         results = continuation_evaluation(
             test_df=test_df, 
@@ -347,7 +402,10 @@ def run(args) -> int:
             batch_size=gen_batch_size,
             seed=seed,
             steps=diffusion_steps,
-            cfg_scale=cfg_scale
+            cfg_scale=cfg_scale,
+            diffusion_alg=getattr(args, "diffusion_alg", "entropy"),
+            diffusion_alg_temp=getattr(args, "diffusion_alg_temp", 0.0),
+            progress_every_chunks=getattr(args, "progress_every_chunks", 1),
         )
         
         print(f"\n[INFO] Evaluation finished successfully. Results written to: {out_dir}")
@@ -358,7 +416,8 @@ def run(args) -> int:
         traceback.print_exc()
         run_meta["status"] = "failed"
         run_meta["error"] = str(e)
+        exit_code = 1
     finally:
         run_meta["timestamp_end"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         write_json_atomic(meta_path, run_meta)
-    return 0
+    return exit_code

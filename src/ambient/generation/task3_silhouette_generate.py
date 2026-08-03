@@ -13,24 +13,45 @@ strict architectural consistency. It implements chunk-based micro-batching to
 prevent VRAM exhaustion on consumer hardware while guaranteeing exact 
 cryptographic reproducibility via chunk-level deterministic seeding.
 
-[Method Reference: Section 3.4.1 - Unconstrained Continuation Sampling]
+[Thesis: Methodology > Study 3: Reading Coverage in Free Continuations]
 =============================================================================
 """
 
 import json
+import random
 import time
 from pathlib import Path
 
 import torch
 from tqdm import tqdm
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed, BitsAndBytesConfig
+from transformers import set_seed
 
 # Custom AmbiEnt modules
-from ambient.llada_loader import load_llada_model
-from ambient.adapters import ARAdapter, LLaDaAdapter
-from ambient.constants import LLADA_BASE_MODEL_ID, LLAMA_BASE_MODEL_ID
+from ambient.adapters import ARAdapter, DreamAdapter, LLaDaAdapter
+from ambient.modeling import (
+    auto_detect_4bit as shared_auto_detect_4bit,
+    canonical_backend,
+    default_base_model_id,
+    is_masked_diffusion_family,
+    load_model_bundle,
+    runtime_environment,
+)
 from ambient.paths import task3_output_path
+from ambient.utils import write_json_atomic
+
+
+def clean_task3_continuation(text: str) -> str:
+    """Remove prompt-wrapper quote marks from Study 3 continuations."""
+    return text.replace('"', "").replace("\u201d", "").replace("\u201c", "").strip()
+
+
+def example_id(item: dict, fallback: str = "unknown") -> str:
+    """Read an ID without treating the valid integer ID 0 as missing."""
+    value = item.get("id")
+    if value is None:
+        value = item.get("_instance_id")
+    return str(fallback if value is None else value)
 
 
 def auto_detect_4bit(hf_model: str) -> bool:
@@ -38,19 +59,7 @@ def auto_detect_4bit(hf_model: str) -> bool:
     Dynamically determines whether 4-bit quantization (NF4) is required 
     based on the available GPU memory (VRAM) and the model scale.
     """
-    if not torch.cuda.is_available():
-        return False
-
-    vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-    hf_lower = hf_model.lower()
-
-    # Heuristics based on empirical VRAM consumption for LLM inference
-    if "70b" in hf_lower or "72b" in hf_lower:
-        return vram_gb < 130
-    if "8b" in hf_lower or "7b" in hf_lower or "9b" in hf_lower:
-        return vram_gb < 20
-
-    return vram_gb < 16
+    return shared_auto_detect_4bit(hf_model)
 
 
 def load_ambiguous_examples(path: Path, max_examples: int = 600) -> list:
@@ -93,6 +102,45 @@ def load_ambiguous_examples(path: Path, max_examples: int = 600) -> list:
     return data
 
 
+def select_examples(
+    dataset: list,
+    id_file: Path | None,
+    sample_size: int | None,
+    selection_seed: int,
+) -> list:
+    """Select a reproducible cross-model subset without modifying the dataset."""
+    selected = dataset
+    if id_file is not None:
+        raw = id_file.read_text(encoding="utf-8").strip()
+        if raw.startswith("["):
+            requested_ids = {str(value) for value in json.loads(raw)}
+        else:
+            requested_ids = {
+                line.strip()
+                for line in raw.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            }
+        selected = [
+            item
+            for item in selected
+            if example_id(item) in requested_ids
+        ]
+        found_ids = {example_id(item) for item in selected}
+        missing = requested_ids - found_ids
+        if missing:
+            raise ValueError(f"ID file contains {len(missing)} IDs absent from the selected dataset.")
+
+    if sample_size is not None:
+        if sample_size < 1:
+            raise ValueError("sample_size must be at least 1")
+        if sample_size > len(selected):
+            raise ValueError(f"sample_size={sample_size} exceeds {len(selected)} available examples")
+        rng = random.Random(selection_seed)
+        indices = sorted(rng.sample(range(len(selected)), sample_size))
+        selected = [selected[index] for index in indices]
+    return selected
+
+
 def run(args) -> int:
     print("=== Starting Task 3: Generative Sampling ===")
 
@@ -102,9 +150,10 @@ def run(args) -> int:
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
 
-    is_diffusion = args.model_family == "llada"
-    model_id = args.model_id or (LLADA_BASE_MODEL_ID if is_diffusion else LLAMA_BASE_MODEL_ID)
-    use_4bit = auto_detect_4bit(model_id)
+    backend = canonical_backend(args.model_family)
+    is_diffusion = is_masked_diffusion_family(args.model_family)
+    model_id = args.model_id or default_base_model_id(args.model_family)
+    use_4bit = auto_detect_4bit(model_id) if args.use_4bit is None else args.use_4bit
 
     print(f"[INFO] Architecture: {args.model_family.upper()} | Prompt Construct: {args.prompt_type.upper()}")
     print(f"[INFO] Hardware Setting: Generating {args.num_continuations} total samples in chunks of {args.batch_size}.")
@@ -119,11 +168,17 @@ def run(args) -> int:
         "model_name": args.model_name,
         "model_type": args.model_family,
         "model_id": model_id,
+        "runtime_environment": runtime_environment(),
         "prompt_type": args.prompt_type,
         "hyperparameters": {
             "num_continuations": args.num_continuations,
             "batch_size": args.batch_size,
             "max_examples": args.max_examples,
+            "id_file": str(args.id_file) if args.id_file else None,
+            "sample_size": args.sample_size,
+            "selection_seed": args.selection_seed,
+            "resume_requested": args.resume,
+            "checkpoint_every": args.checkpoint_every,
             "seed": args.seed,
             "temperature": args.temperature,
             "top_p": args.top_p,
@@ -134,37 +189,90 @@ def run(args) -> int:
     if is_diffusion:
         run_meta["hyperparameters"]["cfg_scale"] = args.cfg_scale
         run_meta["hyperparameters"]["diffusion_steps"] = args.diffusion_steps
+        run_meta["hyperparameters"]["diffusion_alg"] = args.diffusion_alg
+        run_meta["hyperparameters"]["diffusion_alg_temp"] = args.diffusion_alg_temp
 
     dataset = load_ambiguous_examples(args.data_path, max_examples=args.max_examples)
+    dataset = select_examples(dataset, args.id_file, args.sample_size, args.selection_seed)
     print(f"[INFO] Successfully isolated {len(dataset)} ambiguous instances for evaluation.")
+    indexed_dataset = list(enumerate(dataset))
 
-    # --- ARCHITECTURE INITIALIZATION & ADAPTER INJECTION ---
-    if is_diffusion:
-        model, tokenizer = load_llada_model(hf_model=model_id, use_4bit=use_4bit, verbose=False)
-        adapter = LLaDaAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
-    else:
-        load_kwargs = {"device_map": "auto", "torch_dtype": torch.float16, "cache_dir": "./models"}
-        if use_4bit:
-            load_kwargs["quantization_config"] = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.float16,
-                bnb_4bit_use_double_quant=True,
+    if args.checkpoint_every < 1:
+        raise ValueError("checkpoint_every must be at least 1")
+
+    all_results = []
+    if args.resume and out_path.exists():
+        with out_path.open("r", encoding="utf-8") as handle:
+            previous = json.load(handle)
+        previous_meta = previous.get("metadata") or {}
+        expected = {"model_id": model_id, "prompt_type": args.prompt_type}
+        mismatches = {
+            key: (previous_meta.get(key), value)
+            for key, value in expected.items()
+            if previous_meta.get(key) not in {None, value}
+        }
+        if mismatches:
+            raise ValueError(
+                f"Cannot resume Task-3 output with incompatible metadata: {mismatches}"
             )
 
-        tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir="./models")
-        if getattr(tokenizer, "pad_token", None) is None:
-            tokenizer.pad_token = tokenizer.eos_token
+        all_results = list(previous.get("results") or [])
+        processed_ids = {
+            str(item["id"] if item.get("id") is not None else item.get("row_id"))
+            for item in all_results
+        }
+        indexed_dataset = [
+            (index, item)
+            for index, item in indexed_dataset
+            if example_id(item) not in processed_ids
+        ]
+        run_meta["resume"] = {
+            "existing_items": len(all_results),
+            "resumed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+        print(
+            f"[INFO] Resume mode: {len(all_results)} items already complete; "
+            f"{len(indexed_dataset)} remain."
+        )
 
-        model = AutoModelForCausalLM.from_pretrained(model_id, **load_kwargs)
-        model.eval()
+    run_meta["status"] = "running"
+    run_meta["num_preexisting_results"] = len(all_results)
+    write_json_atomic(out_path, {"metadata": run_meta, "results": all_results})
+
+    if not indexed_dataset:
+        if all_results:
+            run_meta["status"] = "finished"
+            run_meta["num_completed_results"] = len(all_results)
+            run_meta["timestamp_end"] = time.strftime(
+                "%Y-%m-%dT%H:%M:%SZ", time.gmtime()
+            )
+            write_json_atomic(out_path, {"metadata": run_meta, "results": all_results})
+            print(f"[INFO] No pending Task-3 items; output is complete at {out_path}")
+            return 0
+        raise ValueError("Task-3 selection contains no examples.")
+
+    # --- ARCHITECTURE INITIALIZATION & ADAPTER INJECTION ---
+    bundle = load_model_bundle(
+        model_family=args.model_family,
+        model_id=model_id,
+        use_4bit=use_4bit,
+        verbose=False,
+    )
+    model, tokenizer = bundle.model, bundle.tokenizer
+    if backend == "llada":
+        adapter = LLaDaAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
+    elif backend == "dream":
+        adapter = DreamAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
+    else:
         adapter = ARAdapter(model_name=model_id, model=model, tokenizer=tokenizer, ar_score_fn=None)
 
     print("[INFO] Commencing unconstrained latent sampling...")
-    all_results = []
 
-    for prompt_idx, row in enumerate(tqdm(dataset, desc="Processing Inputs")):
-        row_id = row.get("id") or row.get("_instance_id", "unknown")
+    for run_index, (prompt_idx, row) in enumerate(
+        tqdm(indexed_dataset, desc="Processing Inputs"),
+        start=1,
+    ):
+        row_id = example_id(row)
         ambiguity_side = row.get("ambiguity_side")
 
         if args.prompt_type == "ambiguous":
@@ -172,8 +280,9 @@ def run(args) -> int:
         else:
             prompt_source = row.get("disambiguated_control", "")
 
+        # Thesis/Paper Study 3 reports the whitespace-suffix prompt. Earlier
+        # quote-wrapper runs are retained only as legacy/ablation artifacts.
         prompt = f'{prompt_source} '
-        #prompt = f'{prompt_source} "'
         current_seed = args.seed + (prompt_idx * 10000)
 
         raw_continuations = adapter.generate(
@@ -188,9 +297,12 @@ def run(args) -> int:
             stop_at_sentence=True,
             seed=current_seed,
             steps=args.diffusion_steps,
+            diffusion_alg=args.diffusion_alg,
+            diffusion_alg_temp=args.diffusion_alg_temp,
+            progress_every_chunks=args.progress_every_chunks,
         )
 
-        continuations = [c.replace('"', '').replace('”', '').replace('“', '').strip() for c in raw_continuations]
+        continuations = [clean_task3_continuation(c) for c in raw_continuations]
 
         all_results.append({
             "id": row_id,
@@ -203,10 +315,15 @@ def run(args) -> int:
             "continuations": continuations,
         })
 
-    final_output = {"metadata": run_meta, "results": all_results}
+        if run_index % args.checkpoint_every == 0:
+            run_meta["num_completed_results"] = len(all_results)
+            write_json_atomic(out_path, {"metadata": run_meta, "results": all_results})
 
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(final_output, f, ensure_ascii=False, indent=2)
+    run_meta["status"] = "finished"
+    run_meta["num_completed_results"] = len(all_results)
+    run_meta["timestamp_end"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    final_output = {"metadata": run_meta, "results": all_results}
+    write_json_atomic(out_path, final_output)
 
     print(f"\n[INFO] Task 3 Sampling complete. Results serialized to: {out_path}")
     return 0
