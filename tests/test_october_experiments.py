@@ -18,8 +18,13 @@ from ambient.evaluation.human_evaluation import (
 )
 from ambient.evaluation.scope_ambiguity import build_summary, load_scope_items
 from ambient.evaluation.task1_compare_scorers import index_rows
-from ambient.generation.task3_silhouette_generate import run as run_task3_generation
-from ambient.generation.task3_silhouette_generate import select_examples
+from ambient.generation.task3_silhouette_generate import (
+    TASK3_CHAT_SYSTEM_PROMPT,
+    TASK3_CHAT_USER_TEMPLATE,
+    build_task3_generation_prompt,
+    run as run_task3_generation,
+    select_examples,
+)
 from ambient.modeling import (
     canonical_backend,
     default_base_model_id,
@@ -84,6 +89,17 @@ class FakeARGenerationModel:
         self.kwargs = kwargs
         suffix = torch.full((kwargs["input_ids"].shape[0], 1), 2, dtype=torch.long)
         return torch.cat([kwargs["input_ids"], suffix], dim=1)
+
+
+class FakeChatTokenizer:
+    def __init__(self):
+        self.messages = None
+
+    def apply_chat_template(self, messages, tokenize, add_generation_prompt):
+        self.messages = messages
+        assert tokenize is False
+        assert add_generation_prompt is True
+        return "FORMATTED CHAT PROMPT"
 
 
 def test_model_family_aliases_preserve_old_names_and_add_second_pair() -> None:
@@ -190,6 +206,23 @@ def test_task3_id_selection_handles_zero(tmp_path: Path) -> None:
         selection_seed=2026,
     )
     assert selected == [{"id": 0}]
+
+
+def test_task3_raw_prompt_mode_preserves_historical_whitespace_suffix() -> None:
+    assert build_task3_generation_prompt(None, "Ambiguous text.", "raw") == "Ambiguous text. "
+
+
+def test_task3_chat_prompt_uses_tokenizer_template_and_records_instruction() -> None:
+    tokenizer = FakeChatTokenizer()
+    prompt = build_task3_generation_prompt(tokenizer, "Ambiguous text. ", "chat_continuation")
+    assert prompt == "FORMATTED CHAT PROMPT"
+    assert tokenizer.messages == [
+        {"role": "system", "content": TASK3_CHAT_SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": TASK3_CHAT_USER_TEMPLATE.format(text="Ambiguous text."),
+        },
+    ]
 
 
 def test_ar_adapter_removes_diffusion_only_generation_arguments() -> None:

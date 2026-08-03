@@ -4,8 +4,9 @@
 =============================================================================
 TASK 3: GENERATIVE SEMANTIC CLUSTERING (PHASE 1 - SAMPLING)
 =============================================================================
-This script unconditionally samples N=100 continuations from the base models 
-to explore the latent semantic distribution of ambiguous inputs.
+This script samples continuations from raw base-model prompts or from an
+explicit, shared continuation instruction for instruction-tuned models. The
+raw mode remains the historical default.
 
 Methodological Integration:
 This script utilizes the unified `ARAdapter` and `LLaDaAdapter` to ensure 
@@ -39,6 +40,45 @@ from ambient.modeling import (
 )
 from ambient.paths import task3_output_path
 from ambient.utils import write_json_atomic
+
+
+TASK3_CHAT_SYSTEM_PROMPT = "You are a helpful assistant."
+TASK3_CHAT_USER_TEMPLATE = (
+    "Write exactly one natural sentence that continues the text below. "
+    "Return only the continuation.\n\nText:\n{text}"
+)
+
+
+def task3_prompt_template(prompt_mode: str) -> str:
+    """Return the exact human-readable prompt template recorded in metadata."""
+    if prompt_mode == "raw":
+        return "{text} "
+    if prompt_mode == "chat_continuation":
+        return TASK3_CHAT_USER_TEMPLATE
+    raise ValueError(f"Unsupported Task-3 prompt mode: {prompt_mode}")
+
+
+def build_task3_generation_prompt(tokenizer, prompt_source: str, prompt_mode: str) -> str:
+    """Build either the historical raw prompt or a tokenizer-native chat prompt."""
+    if prompt_mode == "raw":
+        return f"{prompt_source} "
+    if prompt_mode != "chat_continuation":
+        raise ValueError(f"Unsupported Task-3 prompt mode: {prompt_mode}")
+    if not hasattr(tokenizer, "apply_chat_template"):
+        raise ValueError("chat_continuation requires a tokenizer with apply_chat_template().")
+
+    messages = [
+        {"role": "system", "content": TASK3_CHAT_SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": TASK3_CHAT_USER_TEMPLATE.format(text=prompt_source.strip()),
+        },
+    ]
+    return tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
 
 
 def clean_task3_continuation(text: str) -> str:
@@ -154,8 +194,12 @@ def run(args) -> int:
     is_diffusion = is_masked_diffusion_family(args.model_family)
     model_id = args.model_id or default_base_model_id(args.model_family)
     use_4bit = auto_detect_4bit(model_id) if args.use_4bit is None else args.use_4bit
+    prompt_mode = getattr(args, "prompt_mode", "raw")
 
-    print(f"[INFO] Architecture: {args.model_family.upper()} | Prompt Construct: {args.prompt_type.upper()}")
+    print(
+        f"[INFO] Architecture: {args.model_family.upper()} | "
+        f"Prompt Construct: {args.prompt_type.upper()} | Mode: {prompt_mode}"
+    )
     print(f"[INFO] Hardware Setting: Generating {args.num_continuations} total samples in chunks of {args.batch_size}.")
     print(f"[INFO] Hyperparameters: Temp={args.temperature}, Top-K={args.top_k}, Top-P={args.top_p}, CFG={args.cfg_scale}, Steps={args.diffusion_steps}")
 
@@ -170,6 +214,12 @@ def run(args) -> int:
         "model_id": model_id,
         "runtime_environment": runtime_environment(),
         "prompt_type": args.prompt_type,
+        "prompt_mode": prompt_mode,
+        "prompt_configuration": {
+            "system_prompt": TASK3_CHAT_SYSTEM_PROMPT if prompt_mode == "chat_continuation" else None,
+            "user_template": task3_prompt_template(prompt_mode),
+            "chat_template_source": "tokenizer.apply_chat_template" if prompt_mode == "chat_continuation" else None,
+        },
         "hyperparameters": {
             "num_continuations": args.num_continuations,
             "batch_size": args.batch_size,
@@ -205,11 +255,21 @@ def run(args) -> int:
         with out_path.open("r", encoding="utf-8") as handle:
             previous = json.load(handle)
         previous_meta = previous.get("metadata") or {}
-        expected = {"model_id": model_id, "prompt_type": args.prompt_type}
+        previous_prompt_mode = previous_meta.get("prompt_mode", "raw")
+        expected = {
+            "model_id": model_id,
+            "prompt_type": args.prompt_type,
+            "prompt_mode": prompt_mode,
+        }
+        actual = {
+            "model_id": previous_meta.get("model_id"),
+            "prompt_type": previous_meta.get("prompt_type"),
+            "prompt_mode": previous_prompt_mode,
+        }
         mismatches = {
-            key: (previous_meta.get(key), value)
+            key: (actual.get(key), value)
             for key, value in expected.items()
-            if previous_meta.get(key) not in {None, value}
+            if actual.get(key) not in {None, value}
         }
         if mismatches:
             raise ValueError(
@@ -280,9 +340,7 @@ def run(args) -> int:
         else:
             prompt_source = row.get("disambiguated_control", "")
 
-        # Thesis/Paper Study 3 reports the whitespace-suffix prompt. Earlier
-        # quote-wrapper runs are retained only as legacy/ablation artifacts.
-        prompt = f'{prompt_source} '
+        prompt = build_task3_generation_prompt(tokenizer, prompt_source, prompt_mode)
         current_seed = args.seed + (prompt_idx * 10000)
 
         raw_continuations = adapter.generate(
@@ -308,6 +366,7 @@ def run(args) -> int:
             "id": row_id,
             "ambiguity_side": ambiguity_side,
             "prompt_type": args.prompt_type,
+            "prompt_mode": prompt_mode,
             "ambiguous_sentence": row.get("ambiguous_sentence", ""),
             "disambiguated_control": row.get("disambiguated_control", ""),
             "prompt_text": prompt_source,

@@ -241,6 +241,12 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     generate_parser.add_argument("--model-id", type=str, default=None)
     generate_parser.add_argument("--data-path", type=Path, default=DEFAULT_DATA_PATH)
     generate_parser.add_argument("--prompt-type", choices=["ambiguous", "disambiguated_control"], default="ambiguous")
+    generate_parser.add_argument(
+        "--prompt-mode",
+        choices=["raw", "chat_continuation"],
+        default="raw",
+        help="Use the historical raw suffix prompt or a shared tokenizer-native continuation instruction.",
+    )
     generate_parser.add_argument("--max-examples", type=int, default=580)
     generate_parser.add_argument(
         "--id-file",

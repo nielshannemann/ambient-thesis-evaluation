@@ -154,6 +154,58 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
 Do not start full runs until all four smoke tests finish, their `run_meta.json`
 or JSON metadata says `finished`, and the Dream outputs contain non-empty text.
 
+### 3.5 Task-3 raw-completion calibration and instruct fallback
+
+An eight-item development sample (`selection_seed=2027`, eight continuations
+per item) showed that raw Qwen2.5-7B completion is not a suitable primary
+Task-3 condition. At temperatures 0.2, 0.5, and 0.7, QA/cloze continuations
+persisted; lowering temperature increased exact within-item duplication from
+6.25% at 0.7 to 15.62% at 0.5 and 51.56% at 0.2. Dream's corresponding
+development runs instead exposed a quality-diversity trade-off, with 12.5%
+exact duplication at 0.5 and none at 0.7. These development observations must
+not be reported as confirmatory ambiguity results.
+
+Before replacing or extending the base-model Task-3 comparison, smoke-test a
+matched instruction-tuned pair with the shared `chat_continuation` prompt. The
+historical `raw` mode remains the CLI default.
+
+```bash
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
+  --model-family ar \
+  --model-name qwen25-7b-instruct-smoke \
+  --model-id Qwen/Qwen2.5-7B-Instruct \
+  --prompt-mode chat_continuation \
+  --sample-size 1 \
+  --selection-seed 2026 \
+  --num-continuations 4 \
+  --batch-size 4 \
+  --temperature 0.7 \
+  --top-p 0.95 \
+  --seed 42 \
+  --checkpoint-every 1 \
+  --no-use-4bit \
+  --output-path results/october_revision/smoke/qwen-instruct-task3.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 generate \
+  --model-family dream \
+  --model-name dream7b-instruct-smoke \
+  --model-id Dream-org/Dream-v0-Instruct-7B \
+  --prompt-mode chat_continuation \
+  --sample-size 1 \
+  --selection-seed 2026 \
+  --num-continuations 4 \
+  --batch-size 1 \
+  --diffusion-steps 128 \
+  --diffusion-alg entropy \
+  --diffusion-alg-temp 0.0 \
+  --temperature 0.7 \
+  --top-p 0.95 \
+  --seed 42 \
+  --checkpoint-every 1 \
+  --no-use-4bit \
+  --output-path results/october_revision/smoke/dream-instruct-task3.json
+```
+
 ## 4. Historical commands remain available
 
 These commands document the old public interface. Existing historical outputs
