@@ -18,12 +18,13 @@ Key architectural features for this project:
 =============================================================================
 """
 
-import os
-import time
+import hashlib
 import json
-import random
-import traceback
 import math
+import os
+import random
+import time
+import traceback
 from pathlib import Path
 from typing import List
 
@@ -50,6 +51,43 @@ from ambient.utils import write_json_atomic
 # ==========================================
 LLADA_MODEL_ID = LLADA_BASE_MODEL_ID
 LLAMA_MODEL_ID = LLAMA_BASE_MODEL_ID
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def task1_resume_mismatches(
+    previous: dict,
+    current: dict,
+) -> dict[str, tuple[object, object]]:
+    """Compare scientific settings while accepting sparse historical metadata."""
+    mismatches: dict[str, tuple[object, object]] = {}
+    for key in (
+        "model_name",
+        "model_id",
+        "model_type",
+        "model_family",
+        "backend",
+        "reading_order",
+    ):
+        if key in previous and previous[key] != current.get(key):
+            mismatches[key] = (previous[key], current.get(key))
+
+    for section in ("hyperparameters", "data_selection"):
+        previous_section = previous.get(section, {})
+        current_section = current.get(section, {})
+        for key, current_value in current_section.items():
+            if key in previous_section and previous_section[key] != current_value:
+                mismatches[f"{section}.{key}"] = (
+                    previous_section[key],
+                    current_value,
+                )
+    return mismatches
 
 
 def load_requested_ids(path: Path | None) -> set[str] | None:
@@ -242,6 +280,8 @@ def run(args) -> int:
     seed = args.seed
     top_k = args.top_k
     temperature = args.temperature
+    max_new_tokens = args.max_new_tokens
+    stop_at_sentence = args.stop_at_sentence
 
     is_diffusion = model_type == "diffusion"
     # Use user-provided model ID if given, else fall back to the instruct defaults
@@ -271,6 +311,7 @@ def run(args) -> int:
     )
     out_dir.mkdir(parents=True, exist_ok=True)
     meta_path = out_dir / "run_meta.json"
+    use_4bit = auto_detect_4bit(model_id) if args.use_4bit is None else args.use_4bit
 
     # 1. METADATA RECORDING
     hyperparams = {
@@ -279,7 +320,10 @@ def run(args) -> int:
         "gen_batch_size": gen_batch_size,
         "top_p": top_p,
         "top_k": top_k,
-        "temperature": temperature
+        "temperature": temperature,
+        "max_new_tokens": max_new_tokens,
+        "stop_at_sentence": stop_at_sentence,
+        "use_4bit": use_4bit,
     }
 
     # Restrict diffusion-specific parameter logging to diffusion models
@@ -302,13 +346,30 @@ def run(args) -> int:
         "backend": backend,
         "runtime_environment": runtime_environment(),
         "data_selection": {
+            "data_path": str(data_path),
+            "data_sha256": file_sha256(data_path),
             "id_file": str(args.id_file) if args.id_file else None,
+            "id_file_sha256": file_sha256(args.id_file) if args.id_file else None,
             "max_examples": args.max_examples,
         },
         "reading_order": "benchmark_order_with_stable_deduplication",
         "hyperparameters": hyperparams,
         "status": "running"
     }
+
+    if meta_path.exists():
+        with meta_path.open("r", encoding="utf-8") as handle:
+            previous_meta = json.load(handle)
+        mismatches = task1_resume_mismatches(previous_meta, run_meta)
+        if mismatches:
+            raise ValueError(
+                "Cannot resume Task-1 output with incompatible metadata: "
+                f"{mismatches}"
+            )
+        run_meta["resume"] = {
+            "previous_status": previous_meta.get("status"),
+            "previous_timestamp_start": previous_meta.get("timestamp_start"),
+        }
     write_json_atomic(meta_path, run_meta)
 
     test_df = pd.read_json(data_path, lines=True)
@@ -322,9 +383,10 @@ def run(args) -> int:
             raise ValueError(f"ID file contains {len(missing_ids)} IDs absent from {data_path}.")
     if args.max_examples is not None:
         test_df = test_df.head(args.max_examples)
+    run_meta["data_selection"]["num_selected_dataset_rows"] = len(test_df)
+    write_json_atomic(meta_path, run_meta)
     print(f"[INFO] Task-1 data selection contains {len(test_df)} dataset rows.")
 
-    use_4bit = auto_detect_4bit(model_id) if args.use_4bit is None else args.use_4bit
     print(f"[INFO] Loading {model_id} (4-bit: {use_4bit}) ONCE for generation and scoring...")
 
     # 2. MODEL INITIALIZATION & ADAPTER INJECTION
@@ -335,6 +397,11 @@ def run(args) -> int:
         verbose=True,
     )
     model, tokenizer = bundle.model, bundle.tokenizer
+    try:
+        run_meta["resolved_model_dtype"] = str(next(model.parameters()).dtype)
+    except Exception:
+        run_meta["resolved_model_dtype"] = None
+    write_json_atomic(meta_path, run_meta)
 
     if model_type == "diffusion":
         from ambient.evaluation.get_log_likelihood import get_log_likelihood
@@ -402,6 +469,8 @@ def run(args) -> int:
             num_generations=num_generations,
             batch_size=gen_batch_size,
             seed=seed,
+            max_new_tokens=max_new_tokens,
+            stop_at_sentence=stop_at_sentence,
             steps=diffusion_steps,
             cfg_scale=cfg_scale,
             diffusion_alg=getattr(args, "diffusion_alg", "entropy"),

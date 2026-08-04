@@ -89,8 +89,11 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py ...
 ```
 
 The new metadata records Python, PyTorch, Transformers, CUDA, and the visible
-GPU. Keep the `CODE_REVISION.txt` file with the outputs. Do not mix outputs from
-different commits in one run directory.
+GPU. Task-1 metadata additionally records the dataset hash, continuation
+length/termination policy, precision choice, and decoding controls; resuming
+with incompatible scientific settings is rejected. Keep the
+`CODE_REVISION.txt` file with the outputs. Do not mix outputs from different
+commits in one run directory.
 
 Dream's upstream implementation uses `trust_remote_code=True` and its official
 `diffusion_generate` method. Try the existing project environment first. The
@@ -435,10 +438,54 @@ least-covered reading.
 ## 6. P2: second controlled model pair on Tasks 1 and 2
 
 Dream-v0-Base-7B is initialized from the Qwen2.5-7B family, so this pair is more
-controlled than adding unrelated checkpoints. Use equal continuation counts
-for the pair. The primary setting is N=10 and T=64.
+controlled than adding unrelated checkpoints. It is still not an architecture-
+only comparison because Dream underwent substantial diffusion training after
+initialization. Use equal continuation counts and the same generation chunk
+size for the pair. The primary setting is `N=10`, `T=64`, and `K=256`.
 
-### 6.1 Task 1 generation and scoring
+The numerical sampling controls (`temperature=1`, `top_p=1`, `top_k=0`) and
+64-token first-sentence continuation policy reproduce the primary Task-1
+protocol. They do not imply equal sampling entropy across model families;
+Task 2 measures the resulting quality and dispersion. Batch size is matched at
+two because the adapters advance their random seed once per generation chunk.
+
+### 6.1 Final-setting P2 smoke
+
+Before the full pair, run one item with the final generation length, matched
+two-sequence chunks, `T=64`, and `K=256`. These outputs verify execution only
+and are never reported.
+
+```bash
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
+  --model-family ar --model-name qwen25-7b-p2-final-smoke \
+  --model-id Qwen/Qwen2.5-7B \
+  --max-examples 1 --num-generations 4 --batch-size 2 \
+  --mc-batch-size 16 \
+  --temperature 1.0 --top-p 1.0 --top-k 0 \
+  --max-new-tokens 64 --stop-at-sentence \
+  --progress-every-chunks 1 --score-progress-every 10 \
+  --seed 42 --no-use-4bit \
+  --output-dir results/october_revision/smoke/qwen-p2-final
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
+  --model-family dream --model-name dream7b-p2-final-smoke \
+  --model-id Dream-org/Dream-v0-Base-7B \
+  --max-examples 1 --num-generations 4 --batch-size 2 \
+  --diffusion-steps 64 --diffusion-alg entropy --diffusion-alg-temp 0.0 \
+  --mc-num 256 --mc-batch-size 16 --cfg-scale 0.0 \
+  --temperature 1.0 --top-p 1.0 --top-k 0 \
+  --max-new-tokens 64 --stop-at-sentence \
+  --progress-every-chunks 1 --score-progress-every 10 \
+  --seed 42 --no-use-4bit \
+  --output-dir results/october_revision/smoke/dream-p2-final
+```
+
+Both `run_meta.json` files must report `finished`, the expected model ID,
+`max_new_tokens=64`, `stop_at_sentence=true`, and `use_4bit=false`. Do not
+change scientific settings in response to the smoke outputs unless the change
+is documented as a new calibration decision.
+
+### 6.2 Full Task 1 generation and scoring
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
@@ -446,11 +493,15 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
   --model-name qwen25-7b \
   --model-id Qwen/Qwen2.5-7B \
   --num-generations 10 \
-  --batch-size 10 \
+  --batch-size 2 \
   --mc-batch-size 16 \
   --temperature 1.0 \
   --top-p 1.0 \
   --top-k 0 \
+  --max-new-tokens 64 \
+  --stop-at-sentence \
+  --progress-every-chunks 1 \
+  --score-progress-every 10 \
   --seed 42 \
   --no-use-4bit \
   --output-dir results/october_revision/second_pair/qwen25-7b-n10
@@ -468,12 +519,18 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
   --mc-batch-size 16 \
   --cfg-scale 0.0 \
   --temperature 1.0 \
+  --top-p 1.0 \
+  --top-k 0 \
+  --max-new-tokens 64 \
+  --stop-at-sentence \
+  --progress-every-chunks 1 \
+  --score-progress-every 10 \
   --seed 42 \
   --no-use-4bit \
   --output-dir results/october_revision/second_pair/dream7b-n10-d64
 ```
 
-### 6.2 Task 1 summaries and Task 2 controls
+### 6.3 Task 1 summaries and Task 2 controls
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 metrics \

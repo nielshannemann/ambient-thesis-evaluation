@@ -102,6 +102,13 @@ def _add_task1_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     run_parser.add_argument("--top-p", type=float, default=1.0)
     run_parser.add_argument("--top-k", type=int, default=0)
     run_parser.add_argument("--temperature", type=float, default=1.0)
+    run_parser.add_argument("--max-new-tokens", type=int, default=64)
+    run_parser.add_argument(
+        "--stop-at-sentence",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Truncate generated text after its first sentence boundary.",
+    )
     run_parser.add_argument("--progress-every-chunks", type=int, default=1)
     run_parser.add_argument("--score-progress-every", type=int, default=20)
     run_parser.add_argument(

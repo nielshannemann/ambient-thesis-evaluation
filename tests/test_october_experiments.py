@@ -13,6 +13,7 @@ from ambient.adapters import ARAdapter
 from ambient.dream_loader import _decode_dream_suffix
 from ambient.evaluation.get_log_likelihood import get_pseudo_log_likelihood
 from ambient.evaluation.continuation_evaluation_adapted import create_test_instances
+from ambient.evaluation.run_ambient_experiments import task1_resume_mismatches
 from ambient.evaluation.human_evaluation import (
     binary_kappa,
     binary_value,
@@ -537,3 +538,38 @@ def test_task1_readings_keep_benchmark_order_while_deduplicating() -> None:
     )
     instances = create_test_instances(frame)
     assert instances[0]["disambiguations"] == ["Reading B.", "Reading A."]
+
+
+def test_task1_resume_rejects_changed_scientific_settings_but_accepts_old_metadata() -> None:
+    current = {
+        "model_name": "qwen25-7b",
+        "model_id": "Qwen/Qwen2.5-7B",
+        "model_type": "ar",
+        "model_family": "ar",
+        "backend": "ar",
+        "reading_order": "benchmark_order_with_stable_deduplication",
+        "hyperparameters": {
+            "seed": 42,
+            "num_generations": 10,
+            "gen_batch_size": 2,
+            "max_new_tokens": 64,
+            "stop_at_sentence": True,
+        },
+        "data_selection": {
+            "data_path": "data/test_baked.jsonl",
+            "data_sha256": "abc",
+            "id_file": None,
+        },
+    }
+    assert task1_resume_mismatches({}, current) == {}
+    assert task1_resume_mismatches(current, current) == {}
+
+    changed = json.loads(json.dumps(current))
+    changed["hyperparameters"]["gen_batch_size"] = 10
+    mismatches = task1_resume_mismatches(current, changed)
+    assert mismatches["hyperparameters.gen_batch_size"] == (2, 10)
+
+    changed_data = json.loads(json.dumps(current))
+    changed_data["data_selection"]["data_sha256"] = "def"
+    mismatches = task1_resume_mismatches(current, changed_data)
+    assert mismatches["data_selection.data_sha256"] == ("abc", "def")

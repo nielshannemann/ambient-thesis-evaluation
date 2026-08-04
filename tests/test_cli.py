@@ -58,6 +58,8 @@ def test_task1_run_parser_uses_new_flag_names() -> None:
 
     assert args.model_family == "llada"
     assert args.batch_size == 25
+    assert args.max_new_tokens == 64
+    assert args.stop_at_sentence is True
     assert args.output_dir is None
     assert callable(args.handler)
 
