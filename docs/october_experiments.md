@@ -16,7 +16,7 @@ calibration outputs are excluded from confirmatory analyses.
 | --- | --- | --- | --- |
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
-| P2: second-pair Tasks 1 and 2 | Ready, not started | Qwen and Dream backends passed smoke tests | Run the complete equal-count pair |
+| P2: second-pair Tasks 1 and 2 | Ready for full runs | Final-setting Qwen/Dream smokes and Dream MC batch 128 rescoring passed | Run the complete equal-count pair |
 | P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
@@ -442,6 +442,11 @@ controlled than adding unrelated checkpoints. It is still not an architecture-
 only comparison because Dream underwent substantial diffusion training after
 initialization. Use equal continuation counts and the same generation chunk
 size for the pair. The primary setting is `N=10`, `T=64`, and `K=256`.
+Dream records the same intermediate `K=2,4,8,16,32,64,128,256` estimates as
+the historical LLaDA run. Since all estimates are prefixes of the same
+`K=256` sample stream, this sweep does not require additional model forwards.
+MC scoring uses batch size 128, matching the historical stratified masking
+schedule; a one-item Dream rescore confirmed that this fits on the A6000.
 
 The numerical sampling controls (`temperature=1`, `top_p=1`, `top_k=0`) and
 64-token first-sentence continuation policy reproduce the primary Task-1
@@ -472,7 +477,7 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
   --model-id Dream-org/Dream-v0-Base-7B \
   --max-examples 1 --num-generations 4 --batch-size 2 \
   --diffusion-steps 64 --diffusion-alg entropy --diffusion-alg-temp 0.0 \
-  --mc-num 256 --mc-batch-size 16 --cfg-scale 0.0 \
+  --mc-num 256 --mc-batch-size 128 --cfg-scale 0.0 \
   --temperature 1.0 --top-p 1.0 --top-k 0 \
   --max-new-tokens 64 --stop-at-sentence \
   --progress-every-chunks 1 --score-progress-every 10 \
@@ -515,8 +520,8 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
   --diffusion-steps 64 \
   --diffusion-alg entropy \
   --diffusion-alg-temp 0.0 \
-  --mc-num 256 \
-  --mc-batch-size 16 \
+  --mc-num 2,4,8,16,32,64,128,256 \
+  --mc-batch-size 128 \
   --cfg-scale 0.0 \
   --temperature 1.0 \
   --top-p 1.0 \
