@@ -112,6 +112,37 @@ def create_test_instances(test_df):
                 })
     return test_instances
 
+
+def task1_resume_side_key(row_id, ambiguity_side: str) -> tuple[str, str]:
+    """Identify one ambiguity side without changing row-level metric IDs."""
+    return str(row_id), str(ambiguity_side)
+
+
+def task1_resume_sentence_key(row_id, ambiguous_sentence: str) -> tuple[str, str]:
+    """Match historical summaries that predate explicit ambiguity-side metadata."""
+    return str(row_id), str(ambiguous_sentence)
+
+
+def task1_instance_was_processed(
+    instance: dict,
+    processed_side_keys: set[tuple[str, str]],
+    processed_sentence_keys: set[tuple[str, str]],
+    legacy_processed_ids: set[str],
+    stem: str = '"',
+) -> bool:
+    """Check resume state while preserving both sides of dual-ambiguous rows."""
+    row_id = instance.get("id")
+    side_key = task1_resume_side_key(row_id, instance["ambiguous_sentence_key"])
+    sentence_key = task1_resume_sentence_key(
+        row_id, stem + str(instance["ambiguous_sentence"])
+    )
+    return (
+        side_key in processed_side_keys
+        or sentence_key in processed_sentence_keys
+        or str(row_id) in legacy_processed_ids
+    )
+
+
 def canonicalize_continuation(continuation_text: str, adapter: BaseAdapter) -> tuple[str, int, bool]:
     """
     Cleans the generated text and flags artifacts (e.g., CJK characters, repetitions).
@@ -158,7 +189,9 @@ def continuation_evaluation(
 
     # --- RESUME LOGIC (Checkpointing) ---
     # We base the resume logic on the first summary file assuming they are generated synchronously
-    processed_ids = set()
+    processed_side_keys = set()
+    processed_sentence_keys = set()
+    legacy_processed_ids = set()
     first_summary_file = out_dir / summary_names[0]
     if first_summary_file.exists():
         with open(first_summary_file, "r", encoding="utf-8") as f:
@@ -166,20 +199,46 @@ def continuation_evaluation(
                 if not line.strip(): continue
                 try:
                     obj = json.loads(line)
-                    if "id" in obj:
-                        processed_ids.add(str(obj["id"]))
+                    row_id = obj.get("row_id")
+                    if row_id is None:
+                        row_id = obj.get("id")
+                    if row_id is None:
+                        continue
+                    if obj.get("ambiguity_side"):
+                        processed_side_keys.add(
+                            task1_resume_side_key(row_id, obj["ambiguity_side"])
+                        )
+                    elif obj.get("ambiguous_sentence"):
+                        processed_sentence_keys.add(
+                            task1_resume_sentence_key(row_id, obj["ambiguous_sentence"])
+                        )
+                    else:
+                        legacy_processed_ids.add(str(row_id))
                 except Exception:
                     pass
 
     all_instances = create_test_instances(test_df)
     remaining_instances = []
     for r in all_instances:
-        iid = str(r.get('_instance_id') or r.get('id', ''))
-        if iid and iid not in processed_ids:
+        if not task1_instance_was_processed(
+            r,
+            processed_side_keys,
+            processed_sentence_keys,
+            legacy_processed_ids,
+            stem=stem,
+        ):
             remaining_instances.append(r)
 
-    if processed_ids:
-        print(f"[INFO] Resume mode: {len(processed_ids)} instances already evaluated. Remaining: {len(remaining_instances)}")
+    num_processed = (
+        len(processed_side_keys)
+        + len(processed_sentence_keys)
+        + len(legacy_processed_ids)
+    )
+    if num_processed:
+        print(
+            f"[INFO] Resume mode: {num_processed} ambiguity-side instances "
+            f"already evaluated. Remaining: {len(remaining_instances)}"
+        )
     else:
         print(f"[INFO] Starting new run. Remaining instances: {len(remaining_instances)}")
 
@@ -257,6 +316,7 @@ def continuation_evaluation(
                 ex = {
                     'id': instance_id,
                     'row_id': row.get('id'),
+                    'ambiguity_side': row.get('ambiguous_sentence_key'),
                     'ambiguous_sentence': ambiguous_sentence_full,
                     'generator_model': model_name,
                     'mc_num': mc_num,
@@ -333,6 +393,7 @@ def continuation_evaluation(
             ex = {
                 'id': instance_id,
                 'row_id': row.get('id'),
+                'ambiguity_side': row.get('ambiguous_sentence_key'),
                 'ambiguous_sentence': ambiguous_sentence_full,
                 'generator_model': model_name,
                 'num_conts': min_conts,

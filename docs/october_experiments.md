@@ -16,7 +16,7 @@ calibration outputs are excluded from confirmatory analyses.
 | --- | --- | --- | --- |
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
-| P2: second-pair Tasks 1 and 2 | Ready for full runs | Final-setting Qwen/Dream smokes and Dream MC batch 128 rescoring passed | Run the complete equal-count pair |
+| P2: second-pair Tasks 1 and 2 | Qwen complete, Dream pending | Qwen N=10 finished; final-setting Dream smoke and MC batch 128 rescoring passed | Run the complete Dream N=10 configuration |
 | P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
@@ -536,6 +536,18 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 run \
 ```
 
 ### 6.3 Task 1 summaries and Task 2 controls
+
+The Qwen run completed on 4 August 2026. Its 580 ambiguity-side records reduce
+to the same 543 source rows used by the historical T1 aggregate. One empty
+generation caused one three-condition instance to retain nine rather than ten
+continuations per condition (3/17,530 balanced slots, 0.0171%). The
+normalized-cleaned aggregate evaluates 532/543 rows, with ranking accuracy
+0.6898 and mean condition-level artifact rate 0.0444. These values remain an
+execution record, not a cross-model conclusion, until Dream and Task 2 finish.
+
+Task-1 resume state is tracked by ambiguity side (and, for historical summaries
+without side metadata, by ambiguous sentence). Row-level IDs and the default
+543-row aggregation remain unchanged.
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 metrics \

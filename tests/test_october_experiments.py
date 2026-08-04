@@ -12,7 +12,11 @@ import pytest
 from ambient.adapters import ARAdapter
 from ambient.dream_loader import _decode_dream_suffix
 from ambient.evaluation.get_log_likelihood import get_pseudo_log_likelihood
-from ambient.evaluation.continuation_evaluation_adapted import create_test_instances
+from ambient.evaluation.continuation_evaluation_adapted import (
+    create_test_instances,
+    task1_instance_was_processed,
+    task1_resume_sentence_key,
+)
 from ambient.evaluation.run_ambient_experiments import task1_resume_mismatches
 from ambient.evaluation.human_evaluation import (
     binary_kappa,
@@ -538,6 +542,43 @@ def test_task1_readings_keep_benchmark_order_while_deduplicating() -> None:
     )
     instances = create_test_instances(frame)
     assert instances[0]["disambiguations"] == ["Reading B.", "Reading A."]
+
+
+def test_task1_resume_preserves_unfinished_side_of_dual_ambiguous_row() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "id": "dual_1",
+                "premise": "Ambiguous premise.",
+                "hypothesis": "Ambiguous hypothesis.",
+                "premise_ambiguous": True,
+                "hypothesis_ambiguous": True,
+                "distractor_premise": "Premise distractor.",
+                "distractor_hypothesis": "Hypothesis distractor.",
+                "disambiguations": [
+                    {
+                        "premise": "Premise reading one.",
+                        "hypothesis": "Hypothesis reading one.",
+                    },
+                    {
+                        "premise": "Premise reading two.",
+                        "hypothesis": "Hypothesis reading two.",
+                    },
+                ],
+            }
+        ]
+    )
+    premise, hypothesis = create_test_instances(frame)
+    historical_completed = {
+        task1_resume_sentence_key("dual_1", '"Ambiguous premise.')
+    }
+
+    assert task1_instance_was_processed(
+        premise, set(), historical_completed, set()
+    )
+    assert not task1_instance_was_processed(
+        hypothesis, set(), historical_completed, set()
+    )
 
 
 def test_task1_resume_rejects_changed_scientific_settings_but_accepts_old_metadata() -> None:
