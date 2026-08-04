@@ -15,7 +15,7 @@ calibration outputs are excluded from confirmatory analyses.
 | Work package | Status | Completed evidence | Next gate |
 | --- | --- | --- | --- |
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
-| P1: human validation | Ready, not started | Commands and annotation pipeline are implemented | Complete the disjoint annotation pilot before distributing the main sheets |
+| P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Ready, not started | Qwen and Dream backends passed smoke tests | Run the complete equal-count pair |
 | P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
@@ -869,15 +869,16 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task5 metrics \
 ## 12. Recommended execution order
 
 1. Freeze the branch revision and run all smoke tests.
-2. Complete the disjoint human-annotation pilot, freeze the guidance, and then
-   prepare the main sheets because annotation has calendar time but almost no
-   GPU cost.
-3. Start P2 Task 1, then the four fresh P3 generations with checkpointing.
-4. Run the P5 PLL rescoring in parallel only if another GPU is available.
-5. Run P4 Scope Experiment 2B for all four models.
-6. Run P6 LLaDA N=100 at T=64; decide later whether T=4 is worth the cost.
-7. Complete annotation analysis and qualitative examples.
-8. Review all primary outcomes with the supervisors before starting optional P7.
+2. Prepare the disjoint human-annotation pilot and arrange two annotators. P1
+   may remain open while independent GPU experiments proceed.
+3. Start P2 Task 1. In parallel, complete the pilot, freeze the guidance, and
+   regenerate the untouched main sheets before annotation begins.
+4. After P2, start the four fresh P3 generations with checkpointing.
+5. Run the P5 PLL rescoring in parallel only if another GPU is available.
+6. Run P4 Scope Experiment 2B for all four models.
+7. Run P6 LLaDA N=100 at T=64; decide later whether T=4 is worth the cost.
+8. Complete annotation analysis and qualitative examples.
+9. Review all primary outcomes with the supervisors before starting optional P7.
 
 ## 13. Pre-paper decision rules
 
