@@ -16,7 +16,7 @@ calibration outputs are excluded from confirmatory analyses.
 | --- | --- | --- | --- |
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
-| P2: second-pair Tasks 1 and 2 | Task 1 complete, Task 2 pending | Equal-count Qwen/Dream T1 and the paired K=256 comparison are complete | Run both generation-quality oracles |
+| P2: second-pair Tasks 1 and 2 | Task 1 and Pythia control complete | Equal-count Qwen/Dream T1 and the Pythia quality control are complete | Run the LLaMA generation-quality oracle |
 | P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
@@ -543,7 +543,7 @@ generation caused one three-condition instance to retain nine rather than ten
 continuations per condition (3/17,530 balanced slots, 0.0171%). The
 normalized-cleaned aggregate evaluates 532/543 rows, with ranking accuracy
 0.6898 and mean condition-level artifact rate 0.0444. These values remain an
-execution record, not a cross-model conclusion, until Dream and Task 2 finish.
+execution record; the paired comparison is reported below.
 
 Task-1 resume state is tracked by ambiguity side (and, for historical summaries
 without side metadata, by ambiguous sentence). Row-level IDs and the default
@@ -590,6 +590,14 @@ inputs to `.../example_dirs` and report 543 instances for each. A summary with
 one evaluated instance and null metrics indicates the pre-resolution loader
 bug and is not an experimental result; rerunning with the corrected loader
 overwrites that summary.
+
+The Pythia-410M oracle evaluates 543 instances for each model. Qwen has lower
+external-LM perplexity than Dream (median 45.09 versus 68.75; mean 111.08
+versus 290.89). Dream has slightly higher within-item embedding dispersion
+(MCD 0.8080 versus 0.7759) and lower prompt overlap (0.0961 versus 0.1156).
+This is one external fluency scorer rather than a final quality conclusion;
+the LLaMA oracle tests whether the direction survives a substantially larger
+scorer. The medians are more informative than the tail-sensitive means.
 
 Interpret this as a replication across a second pair, not as a factorial test
 that isolates architecture from training data and objective.
