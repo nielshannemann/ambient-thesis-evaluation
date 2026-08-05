@@ -309,6 +309,15 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
             "drop outputs flagged by the frozen surface-artifact heuristic."
         ),
     )
+    evaluate_parser.add_argument(
+        "--duplicate-policy",
+        choices=["keep", "drop"],
+        default="keep",
+        help=(
+            "Keep sampled multiplicities (distributional analysis) or retain only "
+            "the first canonically identical continuation per item."
+        ),
+    )
     evaluate_parser.add_argument("--progress-every", type=int, default=25)
     evaluate_parser.add_argument("--output-path", type=Path, default=None)
     _set_handler(evaluate_parser, "ambient.evaluation.task3_reading_coverage:run")

@@ -590,15 +590,29 @@ def test_task3_artifact_sensitivity_preserves_clean_duplicates() -> None:
         ]
     }
 
-    kept, nonempty_count, filtered_count = select_task3_continuations(item, "keep")
+    kept, nonempty_count, artifact_count, duplicate_count = (
+        select_task3_continuations(item, "keep", "keep")
+    )
     assert kept == ["A coherent continuation.", "A coherent continuation.", "1."]
     assert nonempty_count == 3
-    assert filtered_count == 0
+    assert artifact_count == 0
+    assert duplicate_count == 0
 
-    cleaned, nonempty_count, filtered_count = select_task3_continuations(item, "drop")
+    cleaned, nonempty_count, artifact_count, duplicate_count = (
+        select_task3_continuations(item, "drop", "keep")
+    )
     assert cleaned == ["A coherent continuation.", "A coherent continuation."]
     assert nonempty_count == 3
-    assert filtered_count == 1
+    assert artifact_count == 1
+    assert duplicate_count == 0
+
+    unique, nonempty_count, artifact_count, duplicate_count = (
+        select_task3_continuations(item, "drop", "drop")
+    )
+    assert unique == ["A coherent continuation."]
+    assert nonempty_count == 3
+    assert artifact_count == 1
+    assert duplicate_count == 1
 
 
 def test_task1_resume_preserves_unfinished_side_of_dual_ambiguous_row() -> None:

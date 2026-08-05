@@ -86,6 +86,7 @@ def test_historical_and_extension_model_families_parse() -> None:
         ["task3", "evaluate", "--results-path", "task3.json"]
     )
     assert task3_evaluate.artifact_policy == "keep"
+    assert task3_evaluate.duplicate_policy == "keep"
 
     task3_evaluate_filtered = parser.parse_args(
         [
@@ -95,9 +96,12 @@ def test_historical_and_extension_model_families_parse() -> None:
             "task3.json",
             "--artifact-policy",
             "drop",
+            "--duplicate-policy",
+            "drop",
         ]
     )
     assert task3_evaluate_filtered.artifact_policy == "drop"
+    assert task3_evaluate_filtered.duplicate_policy == "drop"
 
     subset = parser.parse_args(
         [

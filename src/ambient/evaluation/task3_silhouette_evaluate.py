@@ -24,6 +24,7 @@ Extracts the exact random seed from the generation metadata to guarantee
 import json
 import os
 import time
+import unicodedata
 import warnings
 from pathlib import Path
 from typing import Any
@@ -172,10 +173,13 @@ def log(message: str) -> None:
 def select_task3_continuations(
     result_item: dict,
     artifact_policy: str,
-) -> tuple[list[str], int, int]:
-    """Select non-empty continuations while preserving sampled multiplicities."""
+    duplicate_policy: str = "keep",
+) -> tuple[list[str], int, int, int]:
+    """Apply the frozen artifact and canonical-duplicate selection policies."""
     if artifact_policy not in {"keep", "drop"}:
         raise ValueError(f"Unsupported artifact policy: {artifact_policy}")
+    if duplicate_policy not in {"keep", "drop"}:
+        raise ValueError(f"Unsupported duplicate policy: {duplicate_policy}")
 
     nonempty = [
         str(text).strip()
@@ -183,10 +187,28 @@ def select_task3_continuations(
         if str(text or "").strip()
     ]
     if artifact_policy == "keep":
-        return nonempty, len(nonempty), 0
+        retained = nonempty
+        filtered_artifacts = 0
+    else:
+        retained = [text for text in nonempty if not is_suspicious(text)]
+        filtered_artifacts = len(nonempty) - len(retained)
 
-    retained = [text for text in nonempty if not is_suspicious(text)]
-    return retained, len(nonempty), len(nonempty) - len(retained)
+    filtered_duplicates = 0
+    if duplicate_policy == "drop":
+        unique = []
+        seen = set()
+        for text in retained:
+            canonical = " ".join(
+                unicodedata.normalize("NFKC", text).split()
+            ).casefold()
+            if canonical in seen:
+                filtered_duplicates += 1
+                continue
+            seen.add(canonical)
+            unique.append(text)
+        retained = unique
+
+    return retained, len(nonempty), filtered_artifacts, filtered_duplicates
 
 
 def run(args) -> int:
@@ -200,8 +222,12 @@ def run(args) -> int:
     metadata = full_data.get("metadata", {})
     results_list = full_data.get("results", [])
     artifact_policy = str(getattr(args, "artifact_policy", "keep"))
+    duplicate_policy = str(getattr(args, "duplicate_policy", "keep"))
     log(f"[INFO] Loaded {len(results_list)} generated examples from {args.results_path}")
-    log(f"[INFO] Artifact policy: {artifact_policy}; exact duplicates are retained.")
+    log(
+        f"[INFO] Continuation policy: artifacts={artifact_policy}, "
+        f"duplicates={duplicate_policy}."
+    )
 
     extracted_seed = metadata.get("hyperparameters", {}).get("seed", 42)
     log(f"[INFO] Extracted deterministic seed {extracted_seed} from metadata. Locking environment...")
@@ -233,7 +259,9 @@ def run(args) -> int:
     total_nonempty_continuations = 0
     retained_continuations = 0
     filtered_artifacts = 0
+    filtered_duplicates = 0
     items_with_filtered_artifacts = 0
+    items_with_filtered_duplicates = 0
     items_below_minimum_after_filtering = 0
 
     log("\n[INFO] Commencing deterministic evaluation pipeline...\n")
@@ -243,13 +271,15 @@ def run(args) -> int:
     progress_every = max(1, int(args.progress_every or 1))
 
     for input_idx, data in enumerate(results_list, start=1):
-        continuations, nonempty_count, filtered_count = select_task3_continuations(
-            data, artifact_policy
+        continuations, nonempty_count, artifact_count, duplicate_count = (
+            select_task3_continuations(data, artifact_policy, duplicate_policy)
         )
         total_nonempty_continuations += nonempty_count
         retained_continuations += len(continuations)
-        filtered_artifacts += filtered_count
-        items_with_filtered_artifacts += int(filtered_count > 0)
+        filtered_artifacts += artifact_count
+        filtered_duplicates += duplicate_count
+        items_with_filtered_artifacts += int(artifact_count > 0)
+        items_with_filtered_duplicates += int(duplicate_count > 0)
         if nonempty_count >= 2 and len(continuations) < 2:
             items_below_minimum_after_filtering += 1
         gold_disambigs, side = extract_gold_texts(data)
@@ -344,9 +374,11 @@ def run(args) -> int:
     print(f"=== EVALUATION RESULTS FOR: {args.results_path.name} ===")
     print(f"Processed Inputs: {valid_examples}")
     print(
-        f"Continuation policy: {artifact_policy}; retained "
+        f"Continuation policy: artifacts={artifact_policy}, "
+        f"duplicates={duplicate_policy}; retained "
         f"{retained_continuations}/{total_nonempty_continuations} non-empty outputs; "
-        f"filtered={filtered_artifacts}"
+        f"artifact_filtered={filtered_artifacts}; "
+        f"duplicate_filtered={filtered_duplicates}"
     )
     print(f"Ambiguity sides seen: premise={side_counter['premise']}, hypothesis={side_counter['hypothesis']}")
     if skipped_side_unknown:
@@ -371,13 +403,16 @@ def run(args) -> int:
         "skip_nli": bool(args.skip_nli),
         "nli_thresholds": [str(threshold) for threshold in nli_thresholds],
         "artifact_policy": artifact_policy,
+        "duplicate_policy": duplicate_policy,
         "continuation_selection": {
             "total_nonempty": total_nonempty_continuations,
             "retained": retained_continuations,
             "filtered_artifacts": filtered_artifacts,
+            "filtered_duplicates": filtered_duplicates,
             "items_with_filtered_artifacts": items_with_filtered_artifacts,
+            "items_with_filtered_duplicates": items_with_filtered_duplicates,
             "items_below_minimum_after_filtering": items_below_minimum_after_filtering,
-            "exact_duplicates_retained": True,
+            "exact_duplicates_retained": duplicate_policy == "keep",
         },
         "seed": extracted_seed,
         "processed_inputs": valid_examples,
@@ -397,7 +432,12 @@ def run(args) -> int:
     if output_path is None:
         safe_embed = args.embed_model.replace("/", "__")
         safe_nli = args.nli_model.replace("/", "__")
-        policy_suffix = "" if artifact_policy == "keep" else "__artifacts-drop"
+        policy_parts = []
+        if artifact_policy == "drop":
+            policy_parts.append("artifacts-drop")
+        if duplicate_policy == "drop":
+            policy_parts.append("duplicates-drop")
+        policy_suffix = "" if not policy_parts else "__" + "__".join(policy_parts)
         output_path = args.results_path.with_name(
             f"{args.results_path.stem}__eval__embed-{safe_embed}__nli-{safe_nli}"
             f"{policy_suffix}.json"

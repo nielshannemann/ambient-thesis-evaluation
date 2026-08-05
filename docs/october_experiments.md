@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | LLaMA generated; three models pending | The shared split and LLaMA's complete 15,000-slot artifact are validated | Generate and validate the LLaDA continuation file |
+| P3: four-model Task 3 | LLaMA and LLaDA generated; two models pending | Both 15,000-slot artifacts and the three-view semantic protocol are frozen | Generate and validate the Mistral continuation file |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -713,6 +713,13 @@ much of both counts: 1,660 duplicate excesses occur in suspicious-text groups,
 versus 565 in non-suspicious groups. These are generated outcomes, not missing
 data, so the artifact is retained rather than regenerated.
 
+The LLaDA artifact returns all 15,000 slots, of which 14,988 are non-empty.
+Its surface-artifact rate is lower than LLaMA's (6.94% versus 16.5%), while its
+within-item exact duplicate excess is substantially higher (28.02% versus
+14.83%). This difference is descriptive evidence about sampled concentration,
+but it can also affect geometry-based metrics. Section 7.6 therefore adds a
+unique-output sensitivity before any semantic result is inspected.
+
 ### 7.4 Apply one frozen semantic evaluation to all four files
 
 The historical all-nonempty analysis remains primary. Set
@@ -730,28 +737,28 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/llama8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --artifact-policy keep \
+  --artifact-policy keep --duplicate-policy keep \
   --output-path results/october_revision/task3/llama8b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/llada8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --artifact-policy keep \
+  --artifact-policy keep --duplicate-policy keep \
   --output-path results/october_revision/task3/llada8b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/mistral7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --artifact-policy keep \
+  --artifact-policy keep --duplicate-policy keep \
   --output-path results/october_revision/task3/mistral7b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/dream7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
-  --artifact-policy keep \
+  --artifact-policy keep --duplicate-policy keep \
   --output-path results/october_revision/task3/dream7b_t07_evaluation.json
 ```
 
@@ -765,26 +772,69 @@ direction and needs diagnosis.
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/llama8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
-  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy keep \
   --output-path results/october_revision/task3/llama8b_t07_evaluation_clean.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/llada8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
-  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy keep \
   --output-path results/october_revision/task3/llada8b_t07_evaluation_clean.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/mistral7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
-  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy keep \
   --output-path results/october_revision/task3/mistral7b_t07_evaluation_clean.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/dream7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
-  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy keep \
   --output-path results/october_revision/task3/dream7b_t07_evaluation_clean.json
+```
+
+### 7.6 Clean unique-output sensitivity
+
+This third view first applies the same surface-artifact filter and then keeps
+only the first NFKC-normalized, whitespace-normalized, case-insensitive exact
+match per item. Unlike the primary analysis, it estimates geometry and reading
+support among unique sampled texts rather than weighting modes by empirical
+frequency. Effective sample counts vary, so this view is reported only as a
+sensitivity analysis.
+
+```bash
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/llama8b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy drop \
+  --output-path results/october_revision/task3/llama8b_t07_evaluation_clean_unique.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/llada8b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy drop \
+  --output-path results/october_revision/task3/llada8b_t07_evaluation_clean_unique.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/mistral7b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy drop \
+  --output-path results/october_revision/task3/mistral7b_t07_evaluation_clean_unique.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/dream7b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy drop --duplicate-policy drop \
+  --output-path results/october_revision/task3/dream7b_t07_evaluation_clean_unique.json
 ```
 
 ## 8. P4: second dataset, Scope Ambiguities Experiment 2B
