@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
+| P3: four-model Task 3 | Split frozen, generation not started | 150 unique IDs were sampled after excluding all nine calibration cases | Generate and validate the LLaMA continuation file |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -618,8 +618,10 @@ outputs failed the format calibration.
 
 ### 7.1 Freeze the held-out IDs
 
-Use the full historical LLaMA artifact only as the 580-item ID universe. The
-resulting reference subset is not one of the four newly evaluated files.
+Use the full historical LLaMA artifact only as the 543-source-row ID universe.
+The 580 ambiguity-side record count belongs to Task 1 and is not the Task-3
+sampling unit. The resulting reference subset is not one of the four newly
+evaluated files.
 
 ```bash
 PYTHONPATH=src python src/ambient/cli.py task3 subset \
@@ -630,6 +632,11 @@ PYTHONPATH=src python src/ambient/cli.py task3 subset \
   --output-path results/october_revision/task3/id_selection_reference.json \
   --id-output results/october_revision/task3/shared_confirmatory_ids_150.txt
 ```
+
+The frozen file contains 150 unique IDs sampled from 534 eligible source rows
+after excluding all nine calibration IDs; it has no calibration overlap. Its
+SHA-256 digest is
+`ec1afb9d864929e6cda1b75b59eec7ce4521e36e496913fa54b73f795e863c28`.
 
 ### 7.2 Generate all four matched continuation files
 
