@@ -16,7 +16,7 @@ calibration outputs are excluded from confirmatory analyses.
 | --- | --- | --- | --- |
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
-| P2: second-pair Tasks 1 and 2 | Qwen complete, Dream pending | Qwen N=10 finished; final-setting Dream smoke and MC batch 128 rescoring passed | Run the complete Dream N=10 configuration |
+| P2: second-pair Tasks 1 and 2 | Task 1 complete, Task 2 pending | Equal-count Qwen/Dream T1 and the paired K=256 comparison are complete | Run both generation-quality oracles |
 | P3: four-model Task 3 | Protocol frozen, not started | Prompt/model calibration completed; nine calibration IDs are frozen for exclusion | Freeze the 150 confirmatory IDs, then generate all four files |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
@@ -548,6 +548,17 @@ execution record, not a cross-model conclusion, until Dream and Task 2 finish.
 Task-1 resume state is tracked by ambiguity side (and, for historical summaries
 without side metadata, by ambiguous sentence). Row-level IDs and the default
 543-row aggregation remain unchanged.
+
+The Dream run contains all 580 ambiguity-side records at every requested K,
+with no duplicate sides. It retains 17,416/17,530 balanced continuation slots;
+at K=256, 17,411 are scoreable and 17,020 pass the artifact heuristic. Its
+normalized-cleaned all-readings accuracy rises from 0.3812 at K=2 to 0.6188 at
+K=256, with all 543 rows evaluable and mean condition-level artifact rate
+0.0224. On the 532 rows evaluable for both models, Qwen scores 0.6898 and Dream
+0.6222. The paired Dream-minus-Qwen difference is -0.0677 (5,000-replicate 95%
+bootstrap CI [-0.1203, -0.0150]); the outcome table contains 118 Qwen-only and
+82 Dream-only successes. This comparison concerns binary ranking outcomes
+only: exact AR NLL and reconstruction-loss margins are not commensurate.
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task1 metrics \
