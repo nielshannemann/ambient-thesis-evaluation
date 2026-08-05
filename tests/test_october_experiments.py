@@ -33,6 +33,7 @@ from ambient.evaluation.task2_semantic_diversity import (
     task2_continuation_files,
 )
 from ambient.evaluation.task3_generation_quality import summarize_task3_quality
+from ambient.evaluation.task3_silhouette_evaluate import select_task3_continuations
 from ambient.evaluation.task3_subset import run as run_task3_subset
 from ambient.generation.task3_silhouette_generate import (
     TASK3_CHAT_SYSTEM_PROMPT,
@@ -577,6 +578,27 @@ def test_task2_preserves_direct_historical_layout(tmp_path: Path) -> None:
     assert task2_continuation_files(instance_dir) == [
         instance_dir / "reading.jsonl"
     ]
+
+
+def test_task3_artifact_sensitivity_preserves_clean_duplicates() -> None:
+    item = {
+        "continuations": [
+            "A coherent continuation.",
+            "A coherent continuation.",
+            "1.",
+            "",
+        ]
+    }
+
+    kept, nonempty_count, filtered_count = select_task3_continuations(item, "keep")
+    assert kept == ["A coherent continuation.", "A coherent continuation.", "1."]
+    assert nonempty_count == 3
+    assert filtered_count == 0
+
+    cleaned, nonempty_count, filtered_count = select_task3_continuations(item, "drop")
+    assert cleaned == ["A coherent continuation.", "A coherent continuation."]
+    assert nonempty_count == 3
+    assert filtered_count == 1
 
 
 def test_task1_resume_preserves_unfinished_side_of_dual_ambiguous_row() -> None:

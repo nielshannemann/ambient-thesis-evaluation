@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | Split frozen, generation not started | 150 unique IDs were sampled after excluding all nine calibration cases | Generate and validate the LLaMA continuation file |
+| P3: four-model Task 3 | LLaMA generated; three models pending | The shared split and LLaMA's complete 15,000-slot artifact are validated | Generate and validate the LLaDA continuation file |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -706,37 +706,86 @@ PYTHONPATH=src python src/ambient/cli.py task3 quality \
   --results-path results/october_revision/task3/dream7b_raw_t07_150.json
 ```
 
+The LLaMA artifact contains all 15,000 requested non-empty outputs. The frozen
+heuristic flags 2,475 (16.5%), and there are 2,225 within-item exact duplicate
+excesses. Inspection shows that repeated short numbered outputs account for
+much of both counts: 1,660 duplicate excesses occur in suspicious-text groups,
+versus 565 in non-suspicious groups. These are generated outcomes, not missing
+data, so the artifact is retained rather than regenerated.
+
 ### 7.4 Apply one frozen semantic evaluation to all four files
+
+The historical all-nonempty analysis remains primary. Set
+`--artifact-policy keep` explicitly and retain exact duplicate multiplicities,
+which represent probability mass in the sampled output distribution. Section
+7.5 repeats the same evaluation after dropping only texts identified by the
+pre-existing surface-artifact heuristic. This sensitivity protocol was frozen
+after the LLaMA quality audit and before any four-model semantic result was
+computed. Filtering produces model- and item-specific effective sample counts,
+so it is a robustness check rather than a replacement for the matched
+100-sample primary analysis.
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/llama8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy keep \
   --output-path results/october_revision/task3/llama8b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/llada8b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy keep \
   --output-path results/october_revision/task3/llada8b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/mistral7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy keep \
   --output-path results/october_revision/task3/mistral7b_t07_evaluation.json
 
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --results-path results/october_revision/task3/dream7b_raw_t07_150.json \
   --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
   --nli-thresholds argmax,0.5,0.8 \
+  --artifact-policy keep \
   --output-path results/october_revision/task3/dream7b_t07_evaluation.json
 ```
 
 The paper already contains MiniLM/MPNet and RoBERTa/DeBERTa robustness checks.
 Do not multiply judge combinations unless the four-model result changes
 direction and needs diagnosis.
+
+### 7.5 Artifact-filter sensitivity
+
+```bash
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/llama8b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --output-path results/october_revision/task3/llama8b_t07_evaluation_clean.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/llada8b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --output-path results/october_revision/task3/llada8b_t07_evaluation_clean.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/mistral7b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --output-path results/october_revision/task3/mistral7b_t07_evaluation_clean.json
+
+CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
+  --results-path results/october_revision/task3/dream7b_raw_t07_150.json \
+  --embed-model all-MiniLM-L6-v2 --nli-model roberta-large-mnli \
+  --nli-thresholds argmax,0.5,0.8 --artifact-policy drop \
+  --output-path results/october_revision/task3/dream7b_t07_evaluation_clean.json
+```
 
 ## 8. P4: second dataset, Scope Ambiguities Experiment 2B
 

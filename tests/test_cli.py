@@ -82,6 +82,23 @@ def test_historical_and_extension_model_families_parse() -> None:
     assert dream.checkpoint_every == 1
     assert dream.use_4bit is None
 
+    task3_evaluate = parser.parse_args(
+        ["task3", "evaluate", "--results-path", "task3.json"]
+    )
+    assert task3_evaluate.artifact_policy == "keep"
+
+    task3_evaluate_filtered = parser.parse_args(
+        [
+            "task3",
+            "evaluate",
+            "--results-path",
+            "task3.json",
+            "--artifact-policy",
+            "drop",
+        ]
+    )
+    assert task3_evaluate_filtered.artifact_policy == "drop"
+
     subset = parser.parse_args(
         [
             "task3",

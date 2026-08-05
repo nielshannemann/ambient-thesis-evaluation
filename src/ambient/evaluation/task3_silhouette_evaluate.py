@@ -42,6 +42,8 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import cosine_distances, cosine_similarity
 from transformers import pipeline, set_seed
 
+from ambient.utils import is_suspicious
+
 
 def set_global_determinism(seed: int):
     """Lock all random number generators and backend heuristics."""
@@ -167,6 +169,26 @@ def log(message: str) -> None:
     print(message, flush=True)
 
 
+def select_task3_continuations(
+    result_item: dict,
+    artifact_policy: str,
+) -> tuple[list[str], int, int]:
+    """Select non-empty continuations while preserving sampled multiplicities."""
+    if artifact_policy not in {"keep", "drop"}:
+        raise ValueError(f"Unsupported artifact policy: {artifact_policy}")
+
+    nonempty = [
+        str(text).strip()
+        for text in result_item.get("continuations", [])
+        if str(text or "").strip()
+    ]
+    if artifact_policy == "keep":
+        return nonempty, len(nonempty), 0
+
+    retained = [text for text in nonempty if not is_suspicious(text)]
+    return retained, len(nonempty), len(nonempty) - len(retained)
+
+
 def run(args) -> int:
     if not args.results_path.exists():
         print(f"[ERROR] Target file not found: {args.results_path}")
@@ -177,7 +199,9 @@ def run(args) -> int:
 
     metadata = full_data.get("metadata", {})
     results_list = full_data.get("results", [])
+    artifact_policy = str(getattr(args, "artifact_policy", "keep"))
     log(f"[INFO] Loaded {len(results_list)} generated examples from {args.results_path}")
+    log(f"[INFO] Artifact policy: {artifact_policy}; exact duplicates are retained.")
 
     extracted_seed = metadata.get("hyperparameters", {}).get("seed", 42)
     log(f"[INFO] Extracted deterministic seed {extracted_seed} from metadata. Locking environment...")
@@ -206,6 +230,11 @@ def run(args) -> int:
     valid_examples = 0
     skipped_side_unknown = 0
     side_counter = {"premise": 0, "hypothesis": 0}
+    total_nonempty_continuations = 0
+    retained_continuations = 0
+    filtered_artifacts = 0
+    items_with_filtered_artifacts = 0
+    items_below_minimum_after_filtering = 0
 
     log("\n[INFO] Commencing deterministic evaluation pipeline...\n")
 
@@ -214,7 +243,15 @@ def run(args) -> int:
     progress_every = max(1, int(args.progress_every or 1))
 
     for input_idx, data in enumerate(results_list, start=1):
-        continuations = [c.strip() for c in data.get("continuations", []) if c and c.strip()]
+        continuations, nonempty_count, filtered_count = select_task3_continuations(
+            data, artifact_policy
+        )
+        total_nonempty_continuations += nonempty_count
+        retained_continuations += len(continuations)
+        filtered_artifacts += filtered_count
+        items_with_filtered_artifacts += int(filtered_count > 0)
+        if nonempty_count >= 2 and len(continuations) < 2:
+            items_below_minimum_after_filtering += 1
         gold_disambigs, side = extract_gold_texts(data)
 
         if side is None:
@@ -306,6 +343,11 @@ def run(args) -> int:
     print("=" * 65)
     print(f"=== EVALUATION RESULTS FOR: {args.results_path.name} ===")
     print(f"Processed Inputs: {valid_examples}")
+    print(
+        f"Continuation policy: {artifact_policy}; retained "
+        f"{retained_continuations}/{total_nonempty_continuations} non-empty outputs; "
+        f"filtered={filtered_artifacts}"
+    )
     print(f"Ambiguity sides seen: premise={side_counter['premise']}, hypothesis={side_counter['hypothesis']}")
     if skipped_side_unknown:
         print(f"Skipped (side could not be inferred): {skipped_side_unknown}")
@@ -328,6 +370,15 @@ def run(args) -> int:
         "nli_model": args.nli_model,
         "skip_nli": bool(args.skip_nli),
         "nli_thresholds": [str(threshold) for threshold in nli_thresholds],
+        "artifact_policy": artifact_policy,
+        "continuation_selection": {
+            "total_nonempty": total_nonempty_continuations,
+            "retained": retained_continuations,
+            "filtered_artifacts": filtered_artifacts,
+            "items_with_filtered_artifacts": items_with_filtered_artifacts,
+            "items_below_minimum_after_filtering": items_below_minimum_after_filtering,
+            "exact_duplicates_retained": True,
+        },
         "seed": extracted_seed,
         "processed_inputs": valid_examples,
         "ambiguity_sides_seen": side_counter,
@@ -346,8 +397,10 @@ def run(args) -> int:
     if output_path is None:
         safe_embed = args.embed_model.replace("/", "__")
         safe_nli = args.nli_model.replace("/", "__")
+        policy_suffix = "" if artifact_policy == "keep" else "__artifacts-drop"
         output_path = args.results_path.with_name(
-            f"{args.results_path.stem}__eval__embed-{safe_embed}__nli-{safe_nli}.json"
+            f"{args.results_path.stem}__eval__embed-{safe_embed}__nli-{safe_nli}"
+            f"{policy_suffix}.json"
         )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as handle:
