@@ -28,6 +28,10 @@ from ambient.evaluation.human_evaluation import (
 )
 from ambient.evaluation.scope_ambiguity import build_summary, load_scope_items
 from ambient.evaluation.task1_compare_scorers import index_rows
+from ambient.evaluation.task2_semantic_diversity import (
+    resolve_task2_model_input,
+    task2_continuation_files,
+)
 from ambient.evaluation.task3_generation_quality import summarize_task3_quality
 from ambient.evaluation.task3_subset import run as run_task3_subset
 from ambient.generation.task3_silhouette_generate import (
@@ -542,6 +546,37 @@ def test_task1_readings_keep_benchmark_order_while_deduplicating() -> None:
     )
     instances = create_test_instances(frame)
     assert instances[0]["disambiguations"] == ["Reading B.", "Reading A."]
+
+
+def test_task2_resolves_run_root_and_direct_example_dirs(tmp_path: Path) -> None:
+    run_root = tmp_path / "model-run"
+    examples_root = run_root / "example_dirs"
+    instance_dir = examples_root / "item-1"
+    instance_dir.mkdir(parents=True)
+    (instance_dir / "y0.jsonl").write_text("{}\n", encoding="utf-8")
+
+    expected = ("model-run", run_root, examples_root)
+    assert resolve_task2_model_input(run_root) == expected
+    assert resolve_task2_model_input(examples_root) == expected
+    assert task2_continuation_files(instance_dir) == [instance_dir / "y0.jsonl"]
+
+
+def test_task2_preserves_direct_historical_layout(tmp_path: Path) -> None:
+    direct_root = tmp_path / "custom-results"
+    instance_dir = direct_root / "item-1"
+    instance_dir.mkdir(parents=True)
+    (instance_dir / "reading.jsonl").write_text("{}\n", encoding="utf-8")
+    (instance_dir / "d.jsonl").write_text("{}\n", encoding="utf-8")
+    (instance_dir / "prompts.jsonl").write_text("{}\n", encoding="utf-8")
+
+    assert resolve_task2_model_input(direct_root) == (
+        "custom-results",
+        direct_root,
+        direct_root,
+    )
+    assert task2_continuation_files(instance_dir) == [
+        instance_dir / "reading.jsonl"
+    ]
 
 
 def test_task1_resume_preserves_unfinished_side_of_dual_ambiguous_row() -> None:

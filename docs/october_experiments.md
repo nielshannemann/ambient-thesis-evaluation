@@ -584,6 +584,13 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task2 evaluate \
   --seed 42
 ```
 
+Task 2 accepts either each run root or its nested `example_dirs` path. Before
+loading the embedding and perplexity models, the preflight must resolve both
+inputs to `.../example_dirs` and report 543 instances for each. A summary with
+one evaluated instance and null metrics indicates the pre-resolution loader
+bug and is not an experimental result; rerunning with the corrected loader
+overwrites that summary.
+
 Interpret this as a replication across a second pair, not as a factorial test
 that isolates architecture from training data and objective.
 

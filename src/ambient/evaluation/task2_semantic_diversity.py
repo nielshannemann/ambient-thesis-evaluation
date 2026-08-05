@@ -166,6 +166,33 @@ def calculate_word_overlap(prompt: str, continuation: str) -> float:
     return float(overlap)
 
 
+def resolve_task2_model_input(model_dir: Path) -> tuple[str, Path, Path]:
+    """Resolve either a Task-1 run root or its ``example_dirs`` directory."""
+    model_dir = Path(model_dir)
+    if model_dir.name == "example_dirs":
+        return model_dir.parent.name, model_dir.parent, model_dir
+
+    nested_examples = model_dir / "example_dirs"
+    if nested_examples.is_dir():
+        return model_dir.name, model_dir, nested_examples
+
+    # Preserve support for historical/custom paths that directly contain the
+    # per-instance directories but are not themselves named ``example_dirs``.
+    return model_dir.name, model_dir, model_dir
+
+
+def task2_continuation_files(instance_dir: Path) -> list[Path]:
+    """Return the reading-conditioned continuation files used by Task 2."""
+    target_files = sorted(instance_dir.glob("y*.jsonl"))
+    if target_files:
+        return target_files
+    return sorted(
+        path
+        for path in instance_dir.glob("*.jsonl")
+        if "prompts" not in path.name and path.name != "d.jsonl"
+    )
+
+
 def run(args) -> int:
     print(f"=== Starting Task 2: Quality & Diversity Evaluation ===")
     
@@ -176,6 +203,34 @@ def run(args) -> int:
     skip_ppl = bool(getattr(args, "skip_ppl", False))
     ppl_batch_size = int(getattr(args, "ppl_batch_size", 16))
     ppl_max_length = getattr(args, "ppl_max_length", None)
+
+    resolved_inputs = []
+    for requested_dir in args.model_dirs:
+        if not requested_dir.exists() or not requested_dir.is_dir():
+            print(f"[error] Directory not found or invalid: {requested_dir}")
+            return 2
+
+        model_name, model_root_dir, examples_root = resolve_task2_model_input(requested_dir)
+        instance_dirs = sorted(
+            path
+            for path in examples_root.iterdir()
+            if path.is_dir() and task2_continuation_files(path)
+        )
+        if not instance_dirs:
+            print(
+                f"[error] Found no per-instance continuation files below "
+                f"'{examples_root}'. Pass either a Task-1 run directory or its "
+                "'example_dirs' directory."
+            )
+            return 2
+
+        print(
+            f"[info] Resolved {requested_dir} -> {examples_root} "
+            f"({len(instance_dirs):,} instances)."
+        )
+        resolved_inputs.append(
+            (model_name, model_root_dir, examples_root, instance_dirs)
+        )
     
     # 1. LOAD MODELS
     embedder = None
@@ -209,31 +264,16 @@ def run(args) -> int:
     missing_prompt_warned = False # Flag to avoid spamming the console
 
     print("\n[info] Commencing Evaluation Loop...")
-    for model_dir in tqdm(args.model_dirs, desc="Evaluating Configurations", position=0):
-        if not model_dir.exists() or not model_dir.is_dir():
-            print(f"\n[warn] Directory not found or invalid: {model_dir}. Skipping.")
-            continue
-            
-        if model_dir.name == "example_dirs":
-            model_name = model_dir.parent.name
-            model_root_dir = model_dir.parent
-        else:
-            model_name = model_dir.name
-            model_root_dir = model_dir
-            
+    for model_name, model_root_dir, examples_root, instance_dirs in tqdm(
+        resolved_inputs, desc="Evaluating Configurations", position=0
+    ):
         metrics = {
             "diversity_scores": [],
             "perplexity_scores": [],
             "overlap_scores": []
         }
         ppl_texts = []
-        
-        instance_dirs = [d for d in model_dir.iterdir() if d.is_dir()]
-        
-        if not instance_dirs:
-            print(f"\n[warn] No subdirectories found inside '{model_dir}'. Are you sure this is the 'example_dirs' folder?")
-            continue
-            
+
         valid_files_found = 0
         
         for instance_dir in tqdm(instance_dirs, desc=f"Processing {model_name}", position=1, leave=False):
@@ -271,9 +311,7 @@ def run(args) -> int:
                 missing_prompt_warned = True
 
             # --- B. Gather Continuations ---
-            target_files = list(instance_dir.glob("y*.jsonl"))
-            if not target_files:
-                target_files = [f for f in instance_dir.glob("*.jsonl") if "prompts" not in f.name and "d.jsonl" not in f.name]
+            target_files = task2_continuation_files(instance_dir)
             
             continuations_for_div = [] 
             
@@ -337,7 +375,11 @@ def run(args) -> int:
                     metrics["perplexity_scores"].append(ppl)
 
         if valid_files_found == 0:
-             print(f"\n[warn] Looked in {len(instance_dirs)} folders inside {model_dir}, but found ZERO valid continuation files (y*.jsonl).")
+            print(
+                f"\n[error] Looked in {len(instance_dirs)} folders inside "
+                f"{examples_root}, but found no valid continuation files."
+            )
+            return 2
 
         # --- D. Aggregate and Print Individual Results ---
         individual_json_path = task2_metrics_output_path(model_root_dir, output_suffix)
@@ -355,6 +397,7 @@ def run(args) -> int:
             "ppl_max_length": None if skip_ppl else ppl_max_length,
             "embed_model": None if skip_diversity else args.embed_model,
             "seed_used": args.seed,
+            "examples_path": str(examples_root),
             "local_save_path": str(individual_json_path)
         }
         all_results[model_name] = model_stats
