@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | LLaMA and LLaDA generated; two models pending | Both 15,000-slot artifacts and the three-view semantic protocol are frozen | Generate and validate the Mistral continuation file |
+| P3: four-model Task 3 | Three models generated; Dream pending | LLaMA, LLaDA, and Mistral artifacts pass structural and quality audits | Generate and validate the Dream continuation file |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -719,6 +719,13 @@ within-item exact duplicate excess is substantially higher (28.02% versus
 14.83%). This difference is descriptive evidence about sampled concentration,
 but it can also affect geometry-based metrics. Section 7.6 therefore adds a
 unique-output sensitivity before any semantic result is inspected.
+
+The Mistral artifact also contains all 15,000 requested non-empty outputs. It
+has substantially lower heuristic-artifact and exact-duplicate-excess rates
+than the first two artifacts (0.46% and 5.06%, respectively), and its outputs
+are somewhat longer (median 13 words, versus 11 for LLaMA and 10 for LLaDA).
+These model-specific quality differences are reported as controls rather than
+treated as ambiguity effects.
 
 ### 7.4 Apply one frozen semantic evaluation to all four files
 
