@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | Three models generated; Dream pending | LLaMA, LLaDA, and Mistral artifacts pass structural and quality audits | Generate and validate the Dream continuation file |
+| P3: four-model Task 3 | Generation complete; semantic evaluation pending | All four 15,000-slot artifacts pass structural and quality audits | Run the four-model primary semantic evaluation |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -726,6 +726,13 @@ than the first two artifacts (0.46% and 5.06%, respectively), and its outputs
 are somewhat longer (median 13 words, versus 11 for LLaMA and 10 for LLaDA).
 These model-specific quality differences are reported as controls rather than
 treated as ambiguity effects.
+
+The Dream artifact returns all 15,000 requested non-empty outputs. Its
+surface-artifact rate is 1.48%, its exact-duplicate-excess rate is 5.79%, and
+its median output length is 12 words. Dream is therefore much closer to
+Mistral than to LLaDA on these controls. The resulting variation does not
+support treating generation quality or repetition as a simple property of the
+AR-versus-diffusion distinction.
 
 ### 7.4 Apply one frozen semantic evaluation to all four files
 
