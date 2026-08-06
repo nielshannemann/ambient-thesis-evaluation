@@ -745,6 +745,10 @@ after the LLaMA quality audit and before any four-model semantic result was
 computed. Filtering produces model- and item-specific effective sample counts,
 so it is a robustness check rather than a replacement for the matched
 100-sample primary analysis.
+Every evaluation artifact stores the 150 item-level metric records as well as
+the aggregate summaries. These records support paired bootstrap comparisons
+on the shared split; aggregate standard deviations alone are not treated as
+cross-model uncertainty estimates.
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \

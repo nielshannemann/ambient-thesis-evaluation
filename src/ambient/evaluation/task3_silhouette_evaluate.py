@@ -263,6 +263,7 @@ def run(args) -> int:
     items_with_filtered_artifacts = 0
     items_with_filtered_duplicates = 0
     items_below_minimum_after_filtering = 0
+    item_metrics = []
 
     log("\n[INFO] Commencing deterministic evaluation pipeline...\n")
 
@@ -283,16 +284,38 @@ def run(args) -> int:
         if nonempty_count >= 2 and len(continuations) < 2:
             items_below_minimum_after_filtering += 1
         gold_disambigs, side = extract_gold_texts(data)
+        identifier = data.get("id")
+        if identifier is None:
+            identifier = data.get("row_id", input_idx - 1)
+        item_record = {
+            "id": str(identifier),
+            "ambiguity_side": side,
+            "nonempty_continuations": nonempty_count,
+            "retained_continuations": len(continuations),
+            "filtered_artifacts": artifact_count,
+            "filtered_duplicates": duplicate_count,
+            "num_gold_readings": 0,
+            "mcd": None,
+            "silhouette": None,
+            "mtc_cos_percent": None,
+            "mtc_nli_percent": {},
+            "status": "pending",
+        }
 
         if side is None:
             skipped_side_unknown += 1
+            item_record["status"] = "skipped_unknown_side"
+            item_metrics.append(item_record)
             continue
 
         side_counter[side] += 1
 
         # Require at least two continuations and two distinct gold meanings for clustering.
         gold_disambigs = list(dict.fromkeys(gold_disambigs))
+        item_record["num_gold_readings"] = len(gold_disambigs)
         if len(continuations) < 2 or len(gold_disambigs) < 2:
+            item_record["status"] = "skipped_insufficient_data"
+            item_metrics.append(item_record)
             continue
 
         k = len(gold_disambigs)
@@ -305,6 +328,7 @@ def run(args) -> int:
         iu1 = np.triu_indices(len(continuations), k=1)
         mcd = np.mean(dist_matrix[iu1]) if len(iu1[0]) > 0 else 0.0
         mcd_scores.append(mcd)
+        item_record["mcd"] = float(mcd)
 
         if len(continuations) > k and mcd > 1e-5:
             kmeans = KMeans(n_clusters=k, random_state=extracted_seed, n_init=10)
@@ -312,6 +336,7 @@ def run(args) -> int:
             try:
                 sil = silhouette_score(cont_embeddings, labels, metric="cosine")
                 silhouette_scores.append(sil)
+                item_record["silhouette"] = float(sil)
             except ValueError:
                 pass
 
@@ -319,7 +344,9 @@ def run(args) -> int:
         sims = cosine_similarity(cont_embeddings, gold_embeddings)
         closest_gold_idx = np.argmax(sims, axis=1)
         cos_percentages = [np.sum(closest_gold_idx == i) / len(continuations) for i in range(k)]
-        cos_coverage_scores.append(min(cos_percentages))
+        cos_coverage = min(cos_percentages)
+        cos_coverage_scores.append(cos_coverage)
+        item_record["mtc_cos_percent"] = float(cos_coverage * 100.0)
 
         # 4: NLI Target Coverage (Strict Entailment Filter)
         if nli_pipe is not None:
@@ -359,9 +386,16 @@ def run(args) -> int:
                         nli_entail_counts[gold_idx] += 1
 
                 nli_percentages = [count / len(continuations) for count in nli_entail_counts]
-                nli_coverage_scores[str(threshold)].append(min(nli_percentages))
+                nli_coverage = min(nli_percentages)
+                threshold_key = str(threshold)
+                nli_coverage_scores[threshold_key].append(nli_coverage)
+                item_record["mtc_nli_percent"][threshold_key] = float(
+                    nli_coverage * 100.0
+                )
 
         valid_examples += 1
+        item_record["status"] = "evaluated"
+        item_metrics.append(item_record)
         if valid_examples <= 5 or valid_examples % progress_every == 0:
             elapsed = time.time() - start_time
             rate = valid_examples / elapsed if elapsed > 0 else 0.0
@@ -418,6 +452,7 @@ def run(args) -> int:
         "processed_inputs": valid_examples,
         "ambiguity_sides_seen": side_counter,
         "skipped_side_unknown": skipped_side_unknown,
+        "item_metrics": item_metrics,
         "metrics": {
             "mcd": metric_summary(mcd_scores),
             "silhouette": metric_summary(silhouette_scores),
