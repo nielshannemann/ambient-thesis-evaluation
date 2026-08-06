@@ -15,7 +15,11 @@ from scipy import stats
 from tqdm import tqdm
 
 from ambient.evaluation.get_log_likelihood import get_log_likelihood, get_pseudo_log_likelihood
-from ambient.evaluation.run_ambient_experiments import batched_exact_nll_score, set_seed
+from ambient.evaluation.run_ambient_experiments import (
+    batched_exact_nll_score,
+    file_sha256,
+    set_seed,
+)
 from ambient.modeling import (
     is_autoregressive_family,
     load_model_bundle,
@@ -293,7 +297,14 @@ def run(args) -> int:
             "task": "scope_ambiguity_experiment_2",
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "data_path": str(args.data_path),
+            "data_sha256": file_sha256(args.data_path),
             "human_results": str(args.human_results) if args.human_results else None,
+            "human_results_sha256": (
+                file_sha256(args.human_results) if args.human_results else None
+            ),
+            "num_items": len(items),
+            "max_examples": args.max_examples,
+            "bootstrap_reps": args.bootstrap_reps,
             "model_name": args.model_name,
             "model_family": args.model_family,
             "model_id": bundle.model_id,
