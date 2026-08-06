@@ -18,7 +18,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
 | P3: four-model Task 3 | Complete | Four models, three frozen continuation policies, quality controls, and paired intervals are complete | Preserve outputs and proceed to P4 |
-| P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
+| P4: second dataset | Complete | All four checkpoints were evaluated on all 110 Experiment-2B items with aligned human proxy scores | Preserve outputs and proceed to P5 |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
 | P7: second-pair Task 5 | Optional, not started | Commands are available | Reconsider only after reviewing P1--P6 |
@@ -985,6 +985,26 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py scope summarize 
 
 The implementation has been checked against all 110 complete Experiment-2B
 items and all 110 corresponding published human proxy scores.
+
+### 8.3 Results
+
+| Model | Scorer | Mean alpha [95% CI] | Positive alpha | Human Pearson r |
+| --- | --- | ---: | ---: | ---: |
+| LLaMA-8B | exact AR NLL | 4.525 [3.828, 5.214] | 88.2% | 0.380 |
+| LLaDA-8B | MC reconstruction, K=256 | 3.000 [2.454, 3.554] | 83.6% | 0.378 |
+| Qwen2.5-7B | exact AR NLL | 3.386 [2.689, 4.075] | 81.8% | 0.349 |
+| Dream-7B | MC reconstruction, K=256 | 1.805 [1.338, 2.274] | 77.3% | 0.244 |
+
+All four checkpoints yield a positive mean alpha whose bootstrap interval
+excludes zero, and all four item-level alpha vectors correlate positively with
+the published human proxy scores (`p <= .0103`). This provides convergent
+evidence of scope sensitivity beyond AMBIENT for every evaluated checkpoint.
+It does not establish
+an architecture ranking: exact autoregressive NLL and reconstruction losses are
+not calibrated to a common scale, and the observed correlations have not been
+tested for pairwise differences. In particular, this experiment tests
+reading-sensitive scope preferences rather than replicating AMBIENT Task 3's
+free-continuation coverage outcome.
 
 ## 9. P5: Task-1 PLL triangulation
 
