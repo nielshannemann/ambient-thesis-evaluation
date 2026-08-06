@@ -33,6 +33,7 @@ from ambient.evaluation.task2_semantic_diversity import (
     task2_continuation_files,
 )
 from ambient.evaluation.task3_generation_quality import summarize_task3_quality
+from ambient.evaluation.task3_compare import build_comparison
 from ambient.evaluation.task3_silhouette_evaluate import select_task3_continuations
 from ambient.evaluation.task3_subset import run as run_task3_subset
 from ambient.generation.task3_silhouette_generate import (
@@ -613,6 +614,51 @@ def test_task3_artifact_sensitivity_preserves_clean_duplicates() -> None:
     assert nonempty_count == 3
     assert artifact_count == 1
     assert duplicate_count == 1
+
+
+def test_task3_comparison_uses_aligned_paired_item_differences() -> None:
+    def payload(offset: float) -> dict:
+        return {
+            "artifact_policy": "keep",
+            "duplicate_policy": "keep",
+            "item_metrics": [
+                {
+                    "id": "a",
+                    "mcd": 1.0 + offset,
+                    "silhouette": 0.1 + offset,
+                    "mtc_cos_percent": 10.0 + offset,
+                    "mtc_nli_percent": {
+                        "argmax": 1.0 + offset,
+                        "0.5": 0.8 + offset,
+                        "0.8": 0.5 + offset,
+                    },
+                },
+                {
+                    "id": "b",
+                    "mcd": 2.0 + offset,
+                    "silhouette": 0.2 + offset,
+                    "mtc_cos_percent": 20.0 + offset,
+                    "mtc_nli_percent": {
+                        "argmax": 2.0 + offset,
+                        "0.5": 1.8 + offset,
+                        "0.8": 1.5 + offset,
+                    },
+                },
+            ],
+        }
+
+    comparison = build_comparison(
+        {"first": payload(0.0), "second": payload(0.5)},
+        bootstrap_reps=100,
+        ci_level=95.0,
+        seed=42,
+    )
+
+    assert comparison["num_aligned_items"] == 2
+    paired = comparison["paired_differences"]["second_minus_first"]
+    assert paired["mcd"]["mean_difference"] == pytest.approx(0.5)
+    assert paired["mcd"]["n"] == 2
+    assert paired["mtc_nli_argmax_percent"]["mean_difference"] == pytest.approx(0.5)
 
 
 def test_task1_resume_preserves_unfinished_side_of_dual_ambiguous_row() -> None:

@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | Generation complete; semantic evaluation pending | All four 15,000-slot artifacts pass structural and quality audits | Run the four-model primary semantic evaluation |
+| P3: four-model Task 3 | Primary scores complete; uncertainty and sensitivities pending | All four primary evaluation files contain 150 aligned item records | Run the primary paired bootstrap comparison |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -778,7 +778,29 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --nli-thresholds argmax,0.5,0.8 \
   --artifact-policy keep --duplicate-policy keep \
   --output-path results/october_revision/task3/dream7b_t07_evaluation.json
+
+PYTHONPATH=src python src/ambient/cli.py task3 compare \
+  --evaluation-file llama=results/october_revision/task3/llama8b_t07_evaluation.json \
+  --evaluation-file llada=results/october_revision/task3/llada8b_t07_evaluation.json \
+  --evaluation-file mistral=results/october_revision/task3/mistral7b_t07_evaluation.json \
+  --evaluation-file dream=results/october_revision/task3/dream7b_t07_evaluation.json \
+  --bootstrap-reps 5000 --ci-level 95 --seed 42 \
+  --output-path results/october_revision/task3/primary_paired_comparison.json
 ```
+
+The unfiltered primary means are:
+
+| Model | MCD | Silhouette | MTC-Cos | MTC-NLI argmax | MTC-NLI 0.5 | MTC-NLI 0.8 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| LLaMA | 0.6832 | 0.2957 | 27.98 | 3.99 | 3.91 | 2.67 |
+| LLaDA | 0.5157 | 0.3982 | 27.23 | 16.19 | 16.09 | 13.02 |
+| Mistral | 0.6604 | 0.1829 | 29.82 | 3.91 | 3.85 | 2.40 |
+| Dream | 0.6449 | 0.2091 | 28.84 | 3.96 | 3.87 | 2.52 |
+
+At the descriptive level, Dream resembles the two AR checkpoints rather than
+LLaDA. The previously observed low-dispersion/high-NLI-coverage pattern is thus
+not yet evidence for a diffusion-wide effect. Paired intervals and both frozen
+sensitivities determine how strongly this checkpoint-level conclusion holds.
 
 The paper already contains MiniLM/MPNet and RoBERTa/DeBERTa robustness checks.
 Do not multiply judge combinations unless the four-model result changes
@@ -814,6 +836,14 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --nli-thresholds argmax,0.5,0.8 \
   --artifact-policy drop --duplicate-policy keep \
   --output-path results/october_revision/task3/dream7b_t07_evaluation_clean.json
+
+PYTHONPATH=src python src/ambient/cli.py task3 compare \
+  --evaluation-file llama=results/october_revision/task3/llama8b_t07_evaluation_clean.json \
+  --evaluation-file llada=results/october_revision/task3/llada8b_t07_evaluation_clean.json \
+  --evaluation-file mistral=results/october_revision/task3/mistral7b_t07_evaluation_clean.json \
+  --evaluation-file dream=results/october_revision/task3/dream7b_t07_evaluation_clean.json \
+  --bootstrap-reps 5000 --ci-level 95 --seed 42 \
+  --output-path results/october_revision/task3/clean_paired_comparison.json
 ```
 
 ### 7.6 Clean unique-output sensitivity
@@ -853,6 +883,14 @@ CUDA_VISIBLE_DEVICES=1 PYTHONPATH=src python src/ambient/cli.py task3 evaluate \
   --nli-thresholds argmax,0.5,0.8 \
   --artifact-policy drop --duplicate-policy drop \
   --output-path results/october_revision/task3/dream7b_t07_evaluation_clean_unique.json
+
+PYTHONPATH=src python src/ambient/cli.py task3 compare \
+  --evaluation-file llama=results/october_revision/task3/llama8b_t07_evaluation_clean_unique.json \
+  --evaluation-file llada=results/october_revision/task3/llada8b_t07_evaluation_clean_unique.json \
+  --evaluation-file mistral=results/october_revision/task3/mistral7b_t07_evaluation_clean_unique.json \
+  --evaluation-file dream=results/october_revision/task3/dream7b_t07_evaluation_clean_unique.json \
+  --bootstrap-reps 5000 --ci-level 95 --seed 42 \
+  --output-path results/october_revision/task3/clean_unique_paired_comparison.json
 ```
 
 ## 8. P4: second dataset, Scope Ambiguities Experiment 2B

@@ -322,6 +322,22 @@ def _add_task3_commands(top_level: argparse._SubParsersAction[argparse.ArgumentP
     evaluate_parser.add_argument("--output-path", type=Path, default=None)
     _set_handler(evaluate_parser, "ambient.evaluation.task3_reading_coverage:run")
 
+    compare_parser = subparsers.add_parser(
+        "compare",
+        help="Compare aligned Task-3 item metrics with paired bootstrap intervals.",
+    )
+    compare_parser.add_argument(
+        "--evaluation-file",
+        action="append",
+        required=True,
+        help="Repeat as LABEL=PATH for each Task-3 evaluation artifact.",
+    )
+    compare_parser.add_argument("--bootstrap-reps", type=int, default=5000)
+    compare_parser.add_argument("--ci-level", type=float, default=95.0)
+    compare_parser.add_argument("--seed", type=int, default=42)
+    compare_parser.add_argument("--output-path", type=Path, required=True)
+    _set_handler(compare_parser, "ambient.evaluation.task3_compare:run")
+
     quality_parser = subparsers.add_parser(
         "quality",
         help="Summarize empty, artifact, and exact-duplicate rates in Task-3 outputs.",

@@ -17,6 +17,7 @@ def test_help_entrypoints_exit_cleanly() -> None:
         ["task2", "evaluate"],
         ["task3", "generate"],
         ["task3", "evaluate"],
+        ["task3", "compare"],
         ["task3", "quality"],
         ["task3", "subset"],
         ["task4", "evaluate"],
