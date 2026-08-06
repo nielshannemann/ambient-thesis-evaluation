@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | Primary comparison complete; sensitivities pending | Four-model means and paired 5,000-replicate bootstrap intervals are complete | Run the artifact-filtered evaluations |
+| P3: four-model Task 3 | Complete | Four models, three frozen continuation policies, quality controls, and paired intervals are complete | Preserve outputs and proceed to P4 |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -901,6 +901,18 @@ PYTHONPATH=src python src/ambient/cli.py task3 compare \
   --bootstrap-reps 5000 --ci-level 95 --seed 42 \
   --output-path results/october_revision/task3/clean_unique_paired_comparison.json
 ```
+
+Across the three views, the LLaDA-minus-LLaMA MTC-NLI-argmax difference is
++12.20 points in the primary analysis (95% CI [9.06, 15.42]), +12.59 after
+artifact filtering ([9.31, 16.07]), and +8.22 among clean unique outputs
+([5.79, 10.77]). The corresponding MCD and silhouette differences also remain
+separated from zero in every view. Deduplication therefore explains part, but
+not all, of the LLaDA pattern. MTC-Cos does not reliably separate LLaDA from
+LLaMA or Dream. Dream and Mistral remain indistinguishable in NLI-based reading
+coverage, while Dream is far below LLaDA in the clean-unique comparison
+(-9.18 points, [-11.85, -6.80]). These results support a robust conclusion
+about the evaluated LLaDA checkpoint, but do not replicate it as a generic
+masked-diffusion effect.
 
 ## 8. P4: second dataset, Scope Ambiguities Experiment 2B
 
