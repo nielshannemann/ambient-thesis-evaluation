@@ -20,7 +20,38 @@ def index_rows(path: Path, dedupe: str) -> dict[str, dict[str, Any]]:
         key_fn = lambda row: str(row.get("row_id") or row.get("id"))
     else:
         key_fn = lambda row: str(row.get("instance_id") or row.get("id") or row.get("row_id"))
+    # Historical example_dirs are overwritten by the final occurrence of a
+    # repeated instance ID, so last-write-wins keeps summaries aligned with them.
     return {key_fn(row): row for row in rows}
+
+
+def task_signature(row: dict[str, Any]) -> tuple[str, tuple[tuple[str, str], ...]]:
+    """Identify the exact Task-1 prompt and candidate set represented by a row."""
+    options = row.get("options") or {}
+    option_sentences = tuple(
+        (str(key), str(value.get("sentence") or "").strip())
+        for key, value in sorted(options.items())
+    )
+    return str(row.get("ambiguous_sentence") or "").strip(), option_sentences
+
+
+def validate_row_alignment(
+    reference_rows: dict[str, dict[str, Any]],
+    alternative_rows: dict[str, dict[str, Any]],
+    common_ids: list[str],
+) -> None:
+    mismatched = [
+        instance_id
+        for instance_id in common_ids
+        if task_signature(reference_rows[instance_id])
+        != task_signature(alternative_rows[instance_id])
+    ]
+    if mismatched:
+        preview = ", ".join(mismatched[:5])
+        raise ValueError(
+            "Task-1 scorer summaries disagree on the prompt or candidate readings "
+            f"for {len(mismatched)} common IDs (first: {preview})."
+        )
 
 
 def summarize_item(row: dict[str, Any], metric_key: str) -> dict[str, Any] | None:
@@ -68,6 +99,7 @@ def run(args) -> int:
     reference_rows = index_rows(args.reference_summary, args.dedupe)
     alternative_rows = index_rows(args.alternative_summary, args.dedupe)
     common_ids = sorted(set(reference_rows) & set(alternative_rows))
+    validate_row_alignment(reference_rows, alternative_rows, common_ids)
 
     details: list[dict[str, Any]] = []
     for instance_id in common_ids:

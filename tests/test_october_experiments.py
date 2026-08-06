@@ -27,7 +27,7 @@ from ambient.evaluation.human_evaluation import (
     prepare as prepare_human_evaluation,
 )
 from ambient.evaluation.scope_ambiguity import build_summary, load_scope_items
-from ambient.evaluation.task1_compare_scorers import index_rows
+from ambient.evaluation.task1_compare_scorers import index_rows, validate_row_alignment
 from ambient.evaluation.task2_semantic_diversity import (
     resolve_task2_model_input,
     task2_continuation_files,
@@ -300,6 +300,36 @@ def test_task1_scorer_comparison_preserves_composite_instance_ids(tmp_path: Path
     )
     assert set(index_rows(summary_path, "instance")) == {"12_abcd"}
     assert set(index_rows(summary_path, "row")) == {"12"}
+
+
+def test_task1_scorer_comparison_keeps_last_repeated_instance(tmp_path: Path) -> None:
+    summary_path = tmp_path / "summary.jsonl"
+    summary_path.write_text(
+        '{"id":"12","ambiguous_sentence":"first"}\n'
+        '{"id":"12","ambiguous_sentence":"last"}\n',
+        encoding="utf-8",
+    )
+    indexed = index_rows(summary_path, "instance")
+    assert indexed["12"]["ambiguous_sentence"] == "last"
+
+
+def test_task1_scorer_comparison_validates_prompt_and_candidate_alignment() -> None:
+    reference = {
+        "12": {
+            "ambiguous_sentence": "Ambiguous.",
+            "options": {
+                "y0": {"sentence": "Reading one."},
+                "d": {"sentence": "Distractor."},
+            },
+        }
+    }
+    matching = json.loads(json.dumps(reference))
+    validate_row_alignment(reference, matching, ["12"])
+
+    mismatched = json.loads(json.dumps(reference))
+    mismatched["12"]["options"]["y0"]["sentence"] = "Different reading."
+    with pytest.raises(ValueError, match="prompt or candidate readings"):
+        validate_row_alignment(reference, mismatched, ["12"])
 
 
 def test_task3_id_selection_handles_zero(tmp_path: Path) -> None:
