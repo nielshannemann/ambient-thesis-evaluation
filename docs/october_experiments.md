@@ -17,7 +17,7 @@ calibration outputs are excluded from confirmatory analyses.
 | P0: smoke tests | Complete | Historical LLaMA, generic Qwen, Dream scoring/generation, and Task-3 resume paths ran successfully | Keep the tested code revision with all outputs |
 | P1: human validation | Prepared, annotation pending | Protocol 1.1 and the 32-row disjoint pilot package are prepared | Two annotators complete the pilot; then freeze the guidance and regenerate the untouched main package |
 | P2: second-pair Tasks 1 and 2 | Complete | Equal-count Qwen/Dream T1 and both generation-quality oracles are complete | Preserve outputs and proceed to P3 |
-| P3: four-model Task 3 | Primary scores complete; uncertainty and sensitivities pending | All four primary evaluation files contain 150 aligned item records | Run the primary paired bootstrap comparison |
+| P3: four-model Task 3 | Primary comparison complete; sensitivities pending | Four-model means and paired 5,000-replicate bootstrap intervals are complete | Run the artifact-filtered evaluations |
 | P4: second dataset | Ready, not started | Experiment-2B loader and scoring implementation are available | Obtain the official repository and run the four specified checkpoints |
 | P5: PLL triangulation | Ready, not started | Rescoring and scorer-comparison commands are implemented | Reuse the complete historical `example_dirs` on the workstation |
 | P6: matched Task-1 budget | Ready, not started | Run and analysis commands are implemented | Run the primary `T=64`, `N=100` condition |
@@ -801,6 +801,15 @@ At the descriptive level, Dream resembles the two AR checkpoints rather than
 LLaDA. The previously observed low-dispersion/high-NLI-coverage pattern is thus
 not yet evidence for a diffusion-wide effect. Paired intervals and both frozen
 sensitivities determine how strongly this checkpoint-level conclusion holds.
+
+The paired primary comparison confirms the checkpoint-level distinction.
+Relative to LLaMA, LLaDA has lower MCD (-0.1675, 95% CI [-0.1908, -0.1433]),
+higher silhouette (+0.1025, [0.0712, 0.1344]), and higher MTC-NLI argmax
+(+12.20 percentage points, [9.06, 15.42]); its MTC-Cos difference is not
+separated from zero. Dream does not differ reliably from LLaMA or Mistral in
+MTC-NLI, and Dream is well below LLaDA (-12.23 points, [-15.49, -9.18]). The
+original LLaDA pattern is therefore replicated for that checkpoint but not as
+a generic property of the second diffusion checkpoint.
 
 The paper already contains MiniLM/MPNet and RoBERTa/DeBERTa robustness checks.
 Do not multiply judge combinations unless the four-model result changes
