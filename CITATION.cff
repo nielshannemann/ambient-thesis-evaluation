@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "Please cite the associated master's thesis when using this software or its reported results."
+title: "Evaluation code for linguistic ambiguity in autoregressive and masked diffusion language models"
+type: software
+authors:
+  - family-names: Hannemann
+    given-names: Niels
+repository-code: "https://github.com/nielshannemann/ambient-thesis-evaluation"
+license: MIT
+version: 0.1.0
+preferred-citation:
+  type: thesis
+  authors:
+    - family-names: Hannemann
+      given-names: Niels
+  title: "Evaluating Linguistic Ambiguity in Autoregressive and Masked Diffusion Language Models"
+  year: 2026
+  institution:
+    name: "University of Hamburg"
+  thesis-type: "Master's thesis"

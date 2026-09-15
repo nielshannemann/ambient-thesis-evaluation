@@ -1,0 +1,273 @@
+#!/usr/bin/env python3
+# src/ambient/generation/task6_disambiguation.py
+"""Generate explicit ambiguity explanations with instruction-tuned models.
+
+The prompt uses one demonstration and assistant prefilling to request two
+interpretations of an AMBIENT context-claim pair. Generation is seeded per
+instance and records the settings needed by the separate blind judge.
+
+Thesis reference: "Prompted Ambiguity Explanation".
+"""
+
+import json
+import os
+import random
+import time
+from pathlib import Path
+
+import numpy as np
+import torch
+from tqdm import tqdm
+
+from transformers import set_seed
+
+# AMBIENT experiment modules
+from ambient.adapters import ARAdapter, DreamAdapter, LLaDaAdapter
+from ambient.modeling import (
+    auto_detect_4bit as shared_auto_detect_4bit,
+    canonical_backend,
+    default_instruct_model_id,
+    is_masked_diffusion_family,
+    load_model_bundle,
+)
+from ambient.constants import LLADA_INSTRUCT_MODEL_ID, LLAMA_INSTRUCT_MODEL_ID
+from ambient.paths import task6_output_path
+
+# ==========================================
+# CONFIGURATION
+# ==========================================
+LLADA_MODEL_ID = LLADA_INSTRUCT_MODEL_ID
+LLAMA_MODEL_ID = LLAMA_INSTRUCT_MODEL_ID
+
+def auto_detect_4bit(hf_model: str) -> bool:
+    """
+    Dynamically determines whether 4-bit quantization (NF4) is required 
+    based on the available GPU memory (VRAM) and the model scale.
+    """
+    return shared_auto_detect_4bit(hf_model)
+
+def load_ambient_data(path: Path, max_examples: int = 50) -> list:
+    """
+    Parses the AMBIENT dataset and isolates explicitly ambiguous instances.
+    """
+    data = []
+    if not path.exists():
+        print(f"[ERROR] Dataset not found at {path}")
+        return data
+        
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            obj = json.loads(line)
+            # Keep AMBIENT instances marked as linguistically ambiguous.
+            if obj.get("premise_ambiguous", False) or obj.get("hypothesis_ambiguous", False):
+                data.append(obj)
+                if len(data) >= max_examples:
+                    break
+    return data
+
+
+
+def build_task6_context_claim(row: dict):
+    """
+    Reconstructs the conversational evaluation pair according to the ambiguity
+    side of the AMBIENT instance.
+
+    Returns:
+        ambiguity_side, context_text, claim_text
+    """
+    premise = row.get("premise", "")
+    hypothesis = row.get("hypothesis", "")
+
+    premise_amb = bool(row.get("premise_ambiguous", False))
+    hypothesis_amb = bool(row.get("hypothesis_ambiguous", False))
+
+    if premise_amb and not hypothesis_amb:
+        return "premise", premise, hypothesis
+    if hypothesis_amb and not premise_amb:
+        return "hypothesis", premise, hypothesis
+    if premise_amb and hypothesis_amb:
+        return "both", premise, hypothesis
+
+    return "unknown", premise, hypothesis
+
+def clean_generated_interpretations(raw_text: str) -> str:
+    """Extract at most two enumerated interpretations from a generated reply."""
+    for cutoff_string in ["\nuser:", "user:", "\nContext:", "<|", "We don't know"]:
+        if cutoff_string in raw_text:
+            raw_text = raw_text.split(cutoff_string)[0]
+            
+    lines = raw_text.split('\n')
+    valid_lines = []
+    
+    for line in lines:
+        line = line.strip()
+        if line and line[0].isdigit() and (len(line) > 1 and line[1] in ".)"):
+            valid_lines.append(line)
+        elif line and not valid_lines:
+            valid_lines.append(line)
+            
+    valid_lines = valid_lines[:2] 
+    clean_text = "\n".join(valid_lines).strip()
+    
+    if not clean_text:
+        return raw_text.strip()
+        
+    if clean_text and clean_text[0].isdigit():
+        return clean_text
+    else:
+        return "1. " + clean_text
+
+def run(args) -> int:
+    print(f"=== Starting Task 6: Explicit Disambiguation ===")
+    
+    # 1. STRICT GLOBAL DETERMINISM
+    set_seed(args.seed)
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
+    
+    backend = canonical_backend(args.model_family)
+    is_diffusion = is_masked_diffusion_family(args.model_family)
+    # Use user-provided model ID if given, else fall back to the instruct defaults
+    if args.model_id is None:
+        model_id = default_instruct_model_id(args.model_family)
+    else:
+        model_id = args.model_id
+    use_4bit = auto_detect_4bit(model_id)
+    
+    print(f"[INFO] Selected Model: {model_id} (Diffusion: {is_diffusion})")
+    print(f"[INFO] Hardware Setting: Auto-detected 4-bit Quantization = {use_4bit}")
+    print(f"[INFO] Generation: {args.num_continuations} attempts per premise (Batches of {args.batch_size})")
+    print(f"[INFO] Hyperparameters: Temp={args.temperature}, Top-K={args.top_k}, Top-P={args.top_p}, CFG={args.cfg_scale}, Steps={args.diffusion_steps}")
+    
+    # Configure output path
+    out_path = args.output_path or task6_output_path(args.model_name, args.num_continuations)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # --- METADATA RECORDING ---
+    run_meta = {
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "task": "task6_explicit_disambiguation",
+        "model_type": args.model_family,
+        "backend": backend,
+        "model_id": model_id,
+        "hyperparameters": {
+            "max_examples": args.max_examples,
+            "num_continuations": args.num_continuations,
+            "batch_size": args.batch_size,
+            "seed": args.seed,
+            "temperature": args.temperature,
+            "top_k": args.top_k,
+            "top_p": args.top_p
+        }
+    }
+    if is_diffusion:
+        run_meta["hyperparameters"]["cfg_scale"] = args.cfg_scale
+        run_meta["hyperparameters"]["diffusion_steps"] = args.diffusion_steps
+
+    dataset = load_ambient_data(args.data_path, max_examples=args.max_examples)
+    print(f"[INFO] Isolated {len(dataset)} ambiguous instances for evaluation.")
+    side_counts = {"premise": 0, "hypothesis": 0, "both": 0, "unknown": 0}
+    for row in dataset:
+        side_counts[build_task6_context_claim(row)[0]] += 1
+    print(f"[INFO] Ambiguity-side distribution: {side_counts}")
+
+    print("[INFO] Loading the checkpoint and selecting its model adapter...")
+    bundle = load_model_bundle(
+        args.model_family,
+        model_id=model_id,
+        use_4bit=use_4bit,
+        verbose=False,
+    )
+    model, tokenizer = bundle.model, bundle.tokenizer
+    if backend == "llada":
+        adapter = LLaDaAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
+    elif backend == "dream":
+        adapter = DreamAdapter(model_name=model_id, model=model, tokenizer=tokenizer, diff_mc_nll=None)
+    else:
+        adapter = ARAdapter(model_name=model_id, model=model, tokenizer=tokenizer, ar_score_fn=None)
+
+    # --- LATENT SAMPLING LOOP ---
+    print("[INFO] Commencing generative disambiguation...")
+    all_results = []
+    
+    for prompt_idx, row in enumerate(tqdm(dataset, desc="Generating")):
+        row_id = row.get("id") or row.get("_instance_id", "unknown")
+        ambiguity_side, context_text, claim_text = build_task6_context_claim(row)
+        premise = row.get("premise", "")
+        hypothesis = row.get("hypothesis", "")
+
+        # METHODOLOGY ALIGNMENT: One-Shot In-Context Learning + Assistant Prefilling
+        messages = [
+            {"role": "system", "content": "In each example, you will be given some context and a claim, where the correctness of the claim is affected by some ambiguity in the context. Enumerate two distinct interpretations of the context that lead to different judgments about the claim. Format them strictly as a numbered list."},
+            {"role": "user", "content": "Context: I'm afraid the cat was hit by a car.\nClaim: The cat was not hit by a car. Given the context alone, is this claim true, false, or inconclusive?"},
+            {"role": "assistant", "content": "We don't know, because the context can be interpreted in many different ways:\n1. I'm worried the cat was hit by a car. Then the claim is inconclusive.\n2. I'm sorry to share that the cat was hit by a car. Then the claim is false."},
+            {"role": "user", "content": f"Context: {premise}\nClaim: {hypothesis} Given the context alone, is this claim true, false, or inconclusive?"}
+        ]
+        
+        input_text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        
+        # Assistant-Prefilling: Forces the model into the correct enumeration schema
+        input_text += "We don't know, because the context can be interpreted in many different ways:\n1."
+        
+        # 2. STRICT INSTANCE DETERMINISM
+        current_seed = args.seed + prompt_idx
+        
+        # Route generation strictly through the standardized Adapter framework
+        raw_responses = adapter.generate(
+            prompt=input_text,
+            num_return_sequences=args.num_continuations,
+            batch_size=args.batch_size,
+            temperature=args.temperature,
+            top_k=args.top_k,
+            top_p=args.top_p,
+            cfg_scale=args.cfg_scale,
+            max_new_tokens=160,
+            stop_at_sentence=False, 
+            seed=current_seed,
+            steps=args.diffusion_steps,
+            diffusion_alg=getattr(args, "diffusion_alg", "entropy"),
+            diffusion_alg_temp=getattr(args, "diffusion_alg_temp", 0.0),
+            progress_every_chunks=getattr(args, "progress_every_chunks", 1),
+        )
+        
+        # Iterate through all generated responses for this premise
+        fixed_raw_list = []
+        cleaned_list = []
+        
+        for raw_resp in raw_responses:
+            raw_text = raw_resp if raw_resp else ""
+            
+            # ASSISTANT PREFILL PARSING FIX
+            if raw_text and not raw_text.lstrip().startswith("1"):
+                raw_text = "1. " + raw_text.lstrip()
+                
+            clean_text = clean_generated_interpretations(raw_text)
+            
+            fixed_raw_list.append(raw_text)
+            cleaned_list.append(clean_text)
+        
+        all_results.append({
+            "id": row_id,
+            "ambiguity_side": ambiguity_side,
+            "context_text": context_text,
+            "claim_text": claim_text,
+            "premise": premise,
+            "hypothesis": hypothesis,
+            "generated_raw": fixed_raw_list,
+            "generated_clean": cleaned_list
+        })
+
+    # --- FINAL DATA SERIALIZATION (Metadata + Results) ---
+    final_output = {
+        "metadata": run_meta,
+        "results": all_results
+    }
+    
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(final_output, f, ensure_ascii=False, indent=2)
+
+    print(f"\n[INFO] Task 6 complete. Results saved to {out_path}")
+    return 0

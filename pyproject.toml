@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ambient-artifact"
+version = "0.1.0"
+description = "Evaluation code for linguistic ambiguity experiments with autoregressive and masked diffusion language models"
+readme = "README.md"
+authors = [{name="Niels Hannemann"}]
+license = {text = "MIT"}
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/nielshannemann/ambient-thesis-evaluation"
+
+[project.scripts]
+ambient = "ambient.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+norecursedirs = ["external", ".git", ".venv", "models", "results"]

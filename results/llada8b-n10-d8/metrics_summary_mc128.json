@@ -1,0 +1,38 @@
+{
+  "Unnormalized_Unfiltered (Strict Math)": {
+    "Total Instances (Deduped)": 543,
+    "Total Evaluated (No generation failures)": 543,
+    "Artifact Rate (Garbage Generations)": 0.16544566544566544,
+    "Ranking Accuracy (All valid < distractor)": 0.6721915285451197,
+    "Ranking Accuracy (Any valid < distractor)": 0.8802946593001841,
+    "Mean KL Divergence (Valid Options)": 0.7870272991308292,
+    "Mean KL Divergence (Distractor)": 2.798442308452328
+  },
+  "Unnormalized_Cleaned (Math + Heuristic Filter)": {
+    "Total Instances (Deduped)": 543,
+    "Total Evaluated (No generation failures)": 539,
+    "Artifact Rate (Garbage Generations)": 0.16544566544566544,
+    "Ranking Accuracy (All valid < distractor)": 0.6530612244897959,
+    "Ranking Accuracy (Any valid < distractor)": 0.8849721706864564,
+    "Mean KL Divergence (Valid Options)": 0.8063914664262067,
+    "Mean KL Divergence (Distractor)": 2.810990220336041
+  },
+  "Normalized_Unfiltered (Length-Penalized)": {
+    "Total Instances (Deduped)": 543,
+    "Total Evaluated (No generation failures)": 543,
+    "Artifact Rate (Garbage Generations)": 0.16544566544566544,
+    "Ranking Accuracy (All valid < distractor)": 0.6832412523020258,
+    "Ranking Accuracy (Any valid < distractor)": 0.8766114180478821,
+    "Mean KL Divergence (Valid Options)": 0.044471258367375706,
+    "Mean KL Divergence (Distractor)": 0.17034014918430998
+  },
+  "Normalized_Cleaned (Original Script Baseline)": {
+    "Total Instances (Deduped)": 543,
+    "Total Evaluated (No generation failures)": 539,
+    "Artifact Rate (Garbage Generations)": 0.16544566544566544,
+    "Ranking Accuracy (All valid < distractor)": 0.6660482374768089,
+    "Ranking Accuracy (Any valid < distractor)": 0.8682745825602969,
+    "Mean KL Divergence (Valid Options)": 0.04641616768178067,
+    "Mean KL Divergence (Distractor)": 0.17208845541253223
+  }
+}

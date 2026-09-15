@@ -1,0 +1,58 @@
+{
+  "results_path": "results/task3/no_trailing_quotes/llama8b_disambiguated_control.json",
+  "embed_model": "all-MiniLM-L6-v2",
+  "nli_model": "roberta-large-mnli",
+  "skip_nli": false,
+  "nli_thresholds": [
+    "argmax",
+    "0.5",
+    "0.7",
+    "0.9"
+  ],
+  "seed": 42,
+  "processed_inputs": 543,
+  "ambiguity_sides_seen": {
+    "premise": 402,
+    "hypothesis": 141
+  },
+  "skipped_side_unknown": 0,
+  "metrics": {
+    "mcd": {
+      "mean": 0.8222443201265283,
+      "std": 0.06589838800371821,
+      "n": 543
+    },
+    "silhouette": {
+      "mean": 0.14372847406245068,
+      "std": 0.07536307223396115,
+      "n": 543
+    },
+    "mtc_cos_percent": {
+      "mean": 33.10992180230538,
+      "std": 11.066351058472236,
+      "n": 543
+    },
+    "mtc_nli_percent": {
+      "argmax": {
+        "mean": 2.1419582565991404,
+        "std": 4.450270405596846,
+        "n": 543
+      },
+      "0.5": {
+        "mean": 2.0498772252915898,
+        "std": 4.353541794493504,
+        "n": 543
+      },
+      "0.7": {
+        "mean": 1.3389349294045425,
+        "std": 3.2284484715918365,
+        "n": 543
+      },
+      "0.9": {
+        "mean": 0.7164671577655002,
+        "std": 2.3111346667862174,
+        "n": 543
+      }
+    }
+  }
+}

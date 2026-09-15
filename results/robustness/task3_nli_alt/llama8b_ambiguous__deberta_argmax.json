@@ -1,0 +1,40 @@
+{
+  "results_path": "results/task3/no_trailing_quotes/llama8b_ambiguous.json",
+  "embed_model": "all-MiniLM-L6-v2",
+  "nli_model": "microsoft/deberta-large-mnli",
+  "skip_nli": false,
+  "nli_thresholds": [
+    "argmax"
+  ],
+  "seed": 42,
+  "processed_inputs": 543,
+  "ambiguity_sides_seen": {
+    "premise": 402,
+    "hypothesis": 141
+  },
+  "skipped_side_unknown": 0,
+  "metrics": {
+    "mcd": {
+      "mean": 0.822693554735974,
+      "std": 0.0682976562698467,
+      "n": 543
+    },
+    "silhouette": {
+      "mean": 0.1400911156534051,
+      "std": 0.07217632666022966,
+      "n": 543
+    },
+    "mtc_cos_percent": {
+      "mean": 33.259910337258404,
+      "std": 10.74405769470414,
+      "n": 543
+    },
+    "mtc_nli_percent": {
+      "argmax": {
+        "mean": 1.8250460405156537,
+        "std": 4.1359002693967275,
+        "n": 543
+      }
+    }
+  }
+}

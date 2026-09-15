@@ -1,0 +1,29 @@
+{
+  "timestamp_start": "2026-03-25T14:12:44Z",
+  "model_name": "llada8b",
+  "model_id": "GSAI-ML/LLaDA-8B-Base",
+  "model_type": "diffusion",
+  "hyperparameters": {
+    "seed": 42,
+    "num_generations": 10,
+    "gen_batch_size": 25,
+    "top_p": 1.0,
+    "top_k": 0,
+    "temperature": 1.0,
+    "diffusion_steps": 4,
+    "mc_nums": [
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "mc_batch_size": 128,
+    "cfg_scale": 0.0
+  },
+  "status": "finished",
+  "timestamp_end": "2026-03-26T08:48:19Z"
+}

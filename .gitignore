@@ -1,0 +1,66 @@
+# =========================
+# Virtual Environments
+# =========================
+/.venv/
+
+# =========================
+# IDEs and Editors
+# =========================
+/.vscode/
+
+# =========================
+# Python Build / Cache
+# =========================
+*.egg-info/
+/build/
+/dist/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+# Models and HuggingFace Cache
+# =========================
+/hf_cache/
+/models/
+.cache/
+
+# =========================
+# Data and Caches
+# =========================
+/data/conceptnet_cache.json
+
+# =========================
+# External Dependencies
+# =========================
+/external/
+
+# =========================
+# Logs and Outputs
+# =========================
+/logs/
+/results/october_revision/
+/results/analysis/
+/results/human_eval/
+/results/scope/
+example_dirs/
+/paper/
+/paper_changes_backup/
+/thesis/
+/tmp/
+
+# =========================
+# Local / private files
+# =========================
+.env
+.env.*
+/todo.txt
+/debug.log
+/docs/thesis_final_feedback_audit_*.md
+/docs/thesis_intro_feedback_plan_*.md
+/docs/thesis_reader_review.md
+*codex_labels.csv
+wandb/

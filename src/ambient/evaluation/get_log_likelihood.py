@@ -1,0 +1,273 @@
+# src/ambient/evaluation/get_log_likelihood.py
+"""Monte Carlo reconstruction scoring adapted from the LLaDA repository.
+
+Upstream repository: https://github.com/ML-GSAI/LLaDA
+Associated paper: Nie et al. (2025), "Large Language Diffusion Models".
+
+The local adaptation separates prompt and continuation tokens, derives a
+repeatable random stream from each text pair, and exposes intermediate sample
+budgets through the shared model adapter. The returned positive quantity is a
+reconstruction-loss estimate, not exact autoregressive NLL.
+
+Thesis references: "Model-Specific Generation and Sequence Scoring" and
+Appendix "Reconstruction-Scoring Schedule".
+"""
+
+import math
+import hashlib
+import time
+import torch
+import torch.nn.functional as F
+
+from ambient.modeling import forward_unpadded_logits
+
+
+def get_model_device(model) -> torch.device:
+    """Return the device that receives token ids for a loaded model."""
+    try:
+        return model.get_input_embeddings().weight.device
+    except Exception:
+        return next(model.parameters()).device
+
+
+def get_mask_id(model, tokenizer) -> int:
+    """Resolve the model-specific mask token and reject silent fallbacks."""
+    mask_id = getattr(model.config, "mask_token_id", None)
+    if mask_id is None:
+        mask_id = getattr(tokenizer, "mask_token_id", None)
+    if mask_id is None:
+        raise ValueError("Masked scoring requires a model or tokenizer mask_token_id.")
+    return int(mask_id)
+
+
+def _model_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
+    """Call standard and remote-code forwards for an unpadded scoring batch."""
+    return forward_unpadded_logits(model, input_ids)
+
+def forward_process(batch, prompt_index, mask_id, rng=None):
+    """Build one seeded batch of masked copies for reconstruction scoring.
+
+    Mask counts are spaced across the continuation length within each batch;
+    the exact schedule is documented in Appendix "Reconstruction-Scoring
+    Schedule" of the thesis.
+    """
+    b, l = batch.shape
+
+    target_len = (l - prompt_index.sum()).item()
+    
+    # Generate the base masking count using the provided deterministic RNG
+    k = torch.randint(1, target_len + 1, (), generator=rng, device=batch.device)
+
+    # Apply stratified sampling to cover the range of mask ratios within one batch
+    x = torch.round(torch.linspace(float(k), k + (b - 1) * (target_len / b), steps=b, device=batch.device)).long()
+    x = ((x - 1) % target_len) + 1
+    assert x.min() >= 1 and x.max() <= target_len
+
+    indices = torch.arange(target_len, device=batch.device).repeat(b, 1)
+    is_mask = indices < x.unsqueeze(1)
+    
+    # Shuffle mask positions deterministically per batch row
+    for i in range(b):
+        is_mask[i] = is_mask[i][torch.randperm(target_len, generator=rng, device=batch.device)]
+
+    # Preserve prompt tokens by ensuring they are never masked
+    is_mask = torch.cat((torch.zeros(b, prompt_index.sum(), dtype=torch.bool, device=batch.device), is_mask), dim=1)
+    noisy_batch = torch.where(is_mask, mask_id, batch)
+
+    # Return the masked batch and the corresponding mask ratios (p_mask)
+    return noisy_batch, (x / target_len).unsqueeze(1).repeat(1, l)
+
+
+def get_logits(model, batch, prompt_index, cfg_scale, mask_id):
+    """Compute model logits, optionally with classifier-free guidance."""
+    if cfg_scale > 0.:
+        assert len(prompt_index) == batch.shape[1]
+        prompt_index_expanded = prompt_index.unsqueeze(0).repeat(batch.shape[0], 1)
+        
+        # Construct the unconditional pass by masking the entire prompt
+        un_batch = batch.clone()
+        un_batch[prompt_index_expanded] = mask_id
+        batch = torch.cat([batch, un_batch])
+
+    logits = _model_logits(model, batch)
+
+    if cfg_scale > 0.:
+        # Extrapolate between conditional and unconditional logits
+        logits_cond, logits_uncond = torch.chunk(logits, 2, dim=0)
+        logits = logits_uncond + (cfg_scale + 1) * (logits_cond - logits_uncond)
+        
+    return logits
+
+@torch.no_grad()
+def get_log_likelihood(
+    model,
+    tokenizer,
+    prompts,
+    continuations,
+    mc_nums=(128,),
+    batch_size=16,
+    cfg_scale=0.0,
+    seed=42,
+    progress_every=0,
+    progress_label="MC reconstruction scoring",
+):
+    """Estimate reconstruction loss at multiple Monte Carlo sample counts.
+
+    The return value contains one score list per requested sample count.
+    """
+    mask_id = get_mask_id(model, tokenizer)
+    device = get_model_device(model)
+    
+    # Sort mc_nums to ensure we can collect intermediate results
+    sorted_mc = sorted(list(set(mc_nums)))
+    max_mc = sorted_mc[-1]
+    
+    # Initialize result storage for each mc_level
+    results_per_level = {m: [] for m in sorted_mc}
+
+    started = time.time()
+    total_pairs = min(len(prompts), len(continuations))
+    for pair_index, (prompt_str, cont_str) in enumerate(zip(prompts, continuations), start=1):
+        if not cont_str.strip():
+            for m in sorted_mc: results_per_level[m].append(None)
+            if progress_every and pair_index % progress_every == 0:
+                print(f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs")
+            continue
+
+        # Deterministic seeding (Hash-based)
+        text_hash = int(hashlib.md5((prompt_str + cont_str).encode('utf-8')).hexdigest(), 16)
+        local_seed = (seed + text_hash) % (2**31)
+        rng = torch.Generator(device=device)
+        rng.manual_seed(local_seed)
+
+        p_ids = torch.tensor(tokenizer(prompt_str, add_special_tokens=True)["input_ids"], device=device)
+        c_ids = torch.tensor(tokenizer(cont_str, add_special_tokens=False)["input_ids"], device=device)
+        seq = torch.cat([p_ids, c_ids])[None, :]
+        prompt_index = torch.arange(seq.shape[1], device=device) < len(p_ids)
+
+        total_loss_running = 0.0
+        samples_processed = 0
+        
+        # Batch-Loop bis zum Maximum der MC-Liste
+        num_batches = math.ceil(max_mc / batch_size)
+        
+        mc_idx = 0
+        for b in range(num_batches):
+            current_batch_size = min(batch_size, max_mc - samples_processed)
+            seq_batch = seq.repeat((current_batch_size, 1))
+            
+            perturbed_seq, p_mask = forward_process(seq_batch, prompt_index, mask_id, rng=rng)
+            mask_index_tensor = perturbed_seq == mask_id
+            logits = get_logits(model, perturbed_seq, prompt_index, cfg_scale, mask_id)
+            
+            # 1. Compute Cross Entropy on the full flattened batch (B*L, Vocab) vs (B*L,)
+            ce_loss = F.cross_entropy(
+                logits.view(-1, logits.size(-1)), 
+                seq_batch.view(-1), 
+                reduction='none'
+            )
+            
+            # 2. Reshape back to (Batch, Sequence_Length)
+            ce_loss = ce_loss.view(current_batch_size, -1)
+            
+            # 3. Apply the p_mask weight only where the tokens are actually masked
+            weighted_loss = ce_loss * mask_index_tensor.float() / p_mask
+            
+            # 4. Zero out the loss for unmasked tokens, then sum across the sequence dimension
+            weighted_loss = weighted_loss.masked_fill(~mask_index_tensor, 0.0)
+            loss_items = weighted_loss.sum(dim=1)
+            
+            for item_loss in loss_items:
+                total_loss_running += item_loss.item()
+                samples_processed += 1
+                
+                # Wenn wir eine Grenze aus sorted_mc erreichen, speichern wir den aktuellen Durchschnitt
+                if mc_idx < len(sorted_mc) and samples_processed == sorted_mc[mc_idx]:
+                    results_per_level[sorted_mc[mc_idx]].append(total_loss_running / samples_processed)
+                    mc_idx += 1
+
+        if progress_every and (pair_index % progress_every == 0 or pair_index == total_pairs):
+            elapsed = time.time() - started
+            rate = pair_index / elapsed if elapsed > 0 else 0.0
+            print(
+                f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs "
+                f"({rate:.2f} pairs/s, {elapsed / 60:.1f} min)"
+            )
+
+    return [results_per_level[m] for m in sorted_mc]
+
+
+@torch.no_grad()
+def get_pseudo_log_likelihood(
+    model,
+    tokenizer,
+    prompts,
+    continuations,
+    batch_size: int = 16,
+    cfg_scale: float = 0.0,
+    progress_every: int = 0,
+    progress_label: str = "PLL scoring",
+):
+    """Compute deterministic continuation PLL by masking one token at a time.
+
+    For every continuation token, the function masks only that token, evaluates
+    its reconstruction cross-entropy, and sums these losses over the
+    continuation. Prompt tokens remain visible. The resulting total is a
+    pseudo-NLL compatibility score, not a calibrated sequence likelihood.
+    """
+    if batch_size < 1:
+        raise ValueError("batch_size must be at least 1")
+
+    mask_id = get_mask_id(model, tokenizer)
+    device = get_model_device(model)
+    results = []
+
+    started = time.time()
+    total_pairs = min(len(prompts), len(continuations))
+    for pair_index, (prompt_str, cont_str) in enumerate(zip(prompts, continuations), start=1):
+        if not str(cont_str).strip():
+            results.append(None)
+            if progress_every and pair_index % progress_every == 0:
+                print(f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs")
+            continue
+
+        p_ids = torch.tensor(
+            tokenizer(prompt_str, add_special_tokens=True)["input_ids"],
+            dtype=torch.long,
+            device=device,
+        )
+        c_ids = torch.tensor(
+            tokenizer(cont_str, add_special_tokens=False)["input_ids"],
+            dtype=torch.long,
+            device=device,
+        )
+        if c_ids.numel() == 0:
+            results.append(None)
+            continue
+
+        seq = torch.cat([p_ids, c_ids])
+        prompt_index = torch.arange(seq.numel(), device=device) < p_ids.numel()
+        continuation_positions = torch.arange(p_ids.numel(), seq.numel(), device=device)
+        total_loss = 0.0
+
+        for start in range(0, continuation_positions.numel(), batch_size):
+            positions = continuation_positions[start : start + batch_size]
+            batch = seq.unsqueeze(0).repeat(positions.numel(), 1)
+            row_indices = torch.arange(positions.numel(), device=device)
+            targets = batch[row_indices, positions].clone()
+            batch[row_indices, positions] = mask_id
+
+            logits = get_logits(model, batch, prompt_index, cfg_scale, mask_id)
+            token_logits = logits[row_indices, positions, :]
+            total_loss += float(F.cross_entropy(token_logits, targets, reduction="sum").item())
+
+        results.append(total_loss)
+        if progress_every and (pair_index % progress_every == 0 or pair_index == total_pairs):
+            elapsed = time.time() - started
+            rate = pair_index / elapsed if elapsed > 0 else 0.0
+            print(
+                f"[progress] {progress_label}: {pair_index}/{total_pairs} pairs "
+                f"({rate:.2f} pairs/s, {elapsed / 60:.1f} min)"
+            )
+
+    return results
